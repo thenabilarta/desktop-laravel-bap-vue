@@ -1,0 +1,207 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap");
+* {
+  padding: 0;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+html,
+body {
+  font-size: 14px;
+  font-family: "Lato", sans-serif;
+  --grey-100: #e4e9f0;
+  --grey-200: #cfd7e3;
+  --grey-300: #b5c0cd;
+  --grey-800: #3e4e63;
+  --grid-gap: 1px;
+  --day-label-size: 20px;
+}
+
+.time {
+  width: 10% !important;
+  text-align: center !important;
+}
+
+.events {
+  text-align: center !important;
+}
+
+.navigation {
+  padding: 2rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.navigation > * {
+  margin-left: 2rem !important;
+}
+
+.navigation h2 {
+  margin: 0px !important;
+  font-weight: 400 !important;
+}
+
+.date-input {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 0 2rem 1rem 2rem;
+}
+
+.date-input > * {
+  margin-left: 2rem !important;
+}
+
+.date-input .ui.input {
+  margin-left: 0 !important;
+}
+
+.date-input h2.ui.header {
+  padding: 0 2rem !important;
+}
+
+.date-input h2 {
+  margin: 0 !important;
+}
+
+.date-input .card .header {
+  padding: 0 !important;
+  border-bottom: 0px !important;
+}
+
+.card .header {
+  padding: 0 !important;
+  border-bottom: 0px !important;
+}
+
+.ui.selection.dropdown {
+  width: 150px !important;
+}
+
+main {
+  padding: 0 2rem 2rem 2rem;
+}
+
+ol,
+li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.month-of-year {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (1fr)[3];
+      grid-template-columns: repeat(3, 1fr);
+  grid-column-gap: 1px;
+  grid-row-gap: 1px;
+  border: solid 1px rgba(0, 0, 0, 0.1);
+  background-color: #e2e2e2;
+}
+
+.month-list {
+  min-height: 100px;
+  font-size: 16px;
+  background-color: #fff;
+  color: var(--grey-800);
+  padding: 5px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.month-list span {
+  cursor: pointer;
+}
+
+.day-of-week,
+.days-grid {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (1fr)[7];
+      grid-template-columns: repeat(7, 1fr);
+}
+
+.day-of-week {
+  color: var(--grey-800);
+  font-size: 18px;
+  background-color: #fff;
+  padding-bottom: 5px;
+  padding-top: 10px;
+}
+
+.day-list {
+  text-align: center;
+}
+
+.not-current {
+  background-color: #eeeeee !important;
+}
+
+.not-current span {
+  opacity: 0.5;
+}
+
+#calendar-days {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.calendar-day {
+  position: relative;
+  min-height: 100px;
+  font-size: 16px;
+  background-color: #fff;
+  color: var(--grey-800);
+  padding: 5px;
+}
+
+.dayNumber {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.days-grid {
+  height: 100%;
+  position: relative;
+  grid-column-gap: 1px;
+  grid-row-gap: 1px;
+  border-top: solid 1px black;
+  background-color: #e2e2e2;
+}
+
+.ui.selection.dropdown {
+  min-width: 5em;
+}
+
+.button-active {
+  background-color: #babbbc !important;
+}
+
+.day,
+.year {
+  margin-top: 2rem;
+}
+/*# sourceMappingURL=index.css.map */

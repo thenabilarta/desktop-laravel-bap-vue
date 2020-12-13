@@ -1,0 +1,202 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap");
+* {
+  padding: 0;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+html,
+body {
+  font-size: 14px;
+  font-family: "Lato", sans-serif;
+}
+
+.header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.header .header-filter {
+  width: 80%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+}
+
+.header .header-filter .ui.input > input {
+  max-width: 90px;
+}
+
+.header .header-icon {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  padding: 0 2rem;
+}
+
+.header .header-icon .ui.multiple.dropdown {
+  padding: 0 !important;
+}
+
+.header .header-icon i {
+  font-size: 2rem;
+  margin: 0 1rem;
+}
+
+.td-table-image {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.table-image {
+  height: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.footer {
+  min-height: 50px;
+  padding: 20px;
+}
+
+.footer button {
+  background-color: #0e6eb8;
+  padding: 0.8rem 1.6rem;
+  outline: none;
+  border-radius: 0.5rem;
+  border: none;
+  color: white;
+}
+
+.footer button:hover {
+  background-color: #2185d0;
+}
+
+i,
+th {
+  cursor: pointer !important;
+}
+
+.authorized-table-cell {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.my-modal {
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1100 !important;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.my-modal .my-modal-content {
+  z-index: 1111;
+  height: 30%;
+  width: 50%;
+  border-radius: 10px;
+  background-color: #f5f5f5;
+}
+
+.my-modal .my-modal-content .my-modal-header {
+  height: 30%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 0 3rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.my-modal .my-modal-content .my-modal-header h1 {
+  font-size: 20px;
+  font-weight: 400;
+  padding: 0 1rem;
+}
+
+.my-modal .my-modal-content .my-modal-body {
+  height: 40%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 0 3rem;
+}
+
+.my-modal .my-modal-content .my-modal-body p {
+  -webkit-margin-before: 0 !important;
+          margin-block-start: 0 !important;
+  -webkit-margin-after: 0 !important;
+          margin-block-end: 0 !important;
+  -webkit-margin-start: 0px;
+          margin-inline-start: 0px;
+  -webkit-margin-end: 0px;
+          margin-inline-end: 0px;
+}
+
+.my-modal .my-modal-content .my-modal-actions {
+  height: 30%;
+  padding: 0 3rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+[type="checkbox"]:not(.filled-in) + label:after {
+  transform: none !important;
+  -webkit-transform: none !important;
+}
+/*# sourceMappingURL=index.css.map */

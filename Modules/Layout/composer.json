@@ -1,0 +1,25 @@
+{
+    "name": "Laravel BAP/layout",
+    "description": "",
+    "authors": [
+        {
+            "name": "Laravel BAP - Business Application Platform",
+            "email": "code@laravel-bap.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Layout\\Providers\\LayoutServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Layout\\": ""
+        }
+    }
+}

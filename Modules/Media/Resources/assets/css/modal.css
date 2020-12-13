@@ -1,0 +1,148 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap");
+.my-modal {
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1100 !important;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.my-modal .my-modal-content {
+  height: 70%;
+  width: 70%;
+  border-radius: 10px;
+  background-color: #f5f5f5;
+}
+
+.my-modal .my-modal-content .my-modal-header {
+  height: 15%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.my-modal .my-modal-content .my-modal-header h1 {
+  font-weight: 400;
+  margin-left: 1rem;
+}
+
+.my-modal .my-modal-content .my-modal-row {
+  height: 65%;
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  overflow-y: scroll;
+}
+
+.my-modal .my-modal-content .my-modal-row .single-row {
+  width: 60%;
+  height: 100px;
+  margin: auto;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  background-color: #e9e9e9;
+  margin: 1rem auto;
+}
+
+.my-modal .my-modal-content .my-modal-row .single-row .img {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.my-modal .my-modal-content .my-modal-row .single-row .img img {
+  height: 80px;
+}
+
+.my-modal .my-modal-content .my-modal-row .single-row .input {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  padding: 0.4rem 0;
+}
+
+.my-modal .my-modal-content .my-modal-row .single-row .actions {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.my-modal .my-modal-content .my-modal-row .single-row .actions i {
+  font-size: 30px;
+  margin: 0 0.5rem;
+  cursor: pointer !important;
+}
+
+.my-modal .my-modal-content .my-modal-row .single-row .actions i i.icon {
+  height: 0 !important;
+}
+
+.my-modal .my-modal-content .my-modal-actions {
+  height: 20%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  margin-left: 1rem;
+}
+
+.my-modal .my-modal-content .my-modal-actions button {
+  margin: 0.5rem;
+}
+
+.my-modal .my-modal-content .my-modal-actions label {
+  cursor: pointer;
+  margin-bottom: 0px !important;
+}
+
+.my-modal .my-modal-content .my-modal-actions .add {
+  pointer-events: none;
+}
+
+.my-modal .my-modal-content .my-modal-actions input {
+  display: none;
+  opacity: 0;
+}
+/*# sourceMappingURL=modal.css.map */
