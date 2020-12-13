@@ -14,7 +14,7 @@ $brown: #a52a2a;
 $grey: #a0a0a0;
 $black: #000000;
 
-@import url("https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap');
 
 * {
   padding: 0;
@@ -25,7 +25,7 @@ $black: #000000;
 html,
 body {
   font-size: 14px;
-  font-family: "Lato", sans-serif;
+  font-family: 'Lato', sans-serif;
   --grey-100: #e4e9f0;
   --grey-200: #cfd7e3;
   --grey-300: #b5c0cd;
@@ -168,6 +168,30 @@ li {
   background-color: #fff;
   color: var(--grey-800);
   padding: 5px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+
+  .display-icon {
+    .icon-and-popup {
+      position: relative;
+      cursor: pointer;
+
+      .popup {
+        position: absolute;
+        bottom: 100%;
+        right: -200%;
+        font-size: 10px;
+        padding: 0.3rem;
+        border-radius: 3px;
+        z-index: 1300;
+        min-width: 100px;
+        background-color: black;
+        color: white;
+        text-align: center;
+      }
+    }
+  }
 }
 
 .dayNumber {

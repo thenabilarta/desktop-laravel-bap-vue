@@ -61,7 +61,16 @@
             v-for="(c, index) in calendarList"
             :key="index"
           >
-            <sui-icon v-if="c.displayExist" name="desktop" />
+            <div v-for="(n, index) in c.displayExist" :key="index" class="display-icon">
+              <div class="icon-and-popup">
+                <i class="fas fa-desktop" @mouseover="onShowPopUp(c.date, index)" @mouseleave="offShowPopUp"></i>
+                <span class="popup" 
+                    v-if="showPopUp === c.date + '-' + index ? true : false"
+                  >
+                    {{ n.title }}
+                  </span>
+              </div>
+            </div>
             <span @click="onClickDateNumber(c.date)" class="dayNumber">{{
               c.dayOfMonth
             }}</span>
@@ -293,6 +302,7 @@ export default {
   data() {
     return {
       currentDate: dayjs().format('YYYY-MM-DD'),
+      showPopUpNumber: null,
       displayForCurrentDay: false,
       dateToday: null,
       showTable: 'month',
@@ -354,12 +364,21 @@ export default {
             .split('-');
           let splittedEnd = toSplitEnd.splice(0, 3);
           let newDateEnd = splittedEnd.join('-');
+
+          let displayDate = [];
+
+          displayDate.push(newDateStart);
+
+          for (; newDateStart !== newDateEnd; ) {
+            newDateStart = dayjs(newDateStart)
+              .add(1, 'day')
+              .format('YYYY-MM-DD');
+            displayDate.push(newDateStart);
+          }
+
           this.displaySchedule.push({
             title: r.title,
-            start: dayjs.unix(r.start / 1000).format('YYYY-MM-DD-HH-mm'),
-            end: dayjs.unix(r.end / 1000).format('YYYY-MM-DD-HH-mm'),
-            displayDateStart: newDateStart,
-            displayDateEnd: newDateEnd,
+            displayDate: displayDate,
           });
         })
       );
@@ -371,24 +390,25 @@ export default {
     createDaysForCurrentMonth(year, month, schedule) {
       return [...Array(this.getNumberOfDaysInMonth(year, month))].map(
         (day, index) => {
-          let displayExist = false;
+          let displayExist = [];
 
           if (schedule.length > 0) {
-            if (
-              dayjs(`${year}-${month}-${index + 1}`).format('YYYY-MM-DD') ===
-              schedule[1].displayDateEnd
-            ) {
-              displayExist = true;
-            }
-          }
+            schedule.map((s) => {
+              s.displayDate.map((d) => {
+                let date = dayjs(`${year}-${month}-${index + 1}`).format(
+                  'YYYY-MM-DD'
+                );
 
-          if (schedule.length > 0) {
-            if (
-              dayjs(`${year}-${month}-${index + 1}`).format('YYYY-MM-DD') ===
-              schedule[1].displayDateStart
-            ) {
-              displayExist = true;
-            }
+                if (d === date) {
+                  console.log(d);
+                  console.log(s.title);
+                  displayExist.push({
+                    exist: true,
+                    title: s.title,
+                  });
+                }
+              });
+            });
           }
 
           return {
@@ -534,6 +554,13 @@ export default {
           console.log('Mantap gan');
       }
     },
+    onShowPopUp(date, index) {
+      this.showPopUpNumber = date;
+      this.showPopUpIndex = index;
+    },
+    offShowPopUp() {
+      this.showPopUpNumber = null;
+    },
   },
   computed: {
     INITIAL_DATE() {
@@ -570,6 +597,9 @@ export default {
     },
     selectedYear() {
       return this.INITIAL_YEAR;
+    },
+    showPopUp() {
+      return this.showPopUpNumber + '-' + this.showPopUpIndex;
     },
   },
 };
