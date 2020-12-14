@@ -14256,13 +14256,10 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
           }
         });
 
-        if (_this2.timeOfTheDayList.length <= 49) {
-          _this2.timeOfTheDayList.push({
-            timeStamp: added30Minutes
-          });
-        }
-
-        // timeEvent: events,
+        _this2.timeOfTheDayList.push({
+          timeStamp: added30Minutes,
+          timeEvent: events
+        });
       };
 
       for (var i = 0; added30Minutes !== '23-30'; i++) {

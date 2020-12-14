@@ -453,13 +453,10 @@ export default {
           }
         });
 
-        if (this.timeOfTheDayList.length <= 49) {
-          this.timeOfTheDayList.push({
-            timeStamp: added30Minutes,
-          });
-        }
-
-        // timeEvent: events,
+        this.timeOfTheDayList.push({
+          timeStamp: added30Minutes,
+          timeEvent: events,
+        });
       }
 
       return this.timeOfTheDayList;
