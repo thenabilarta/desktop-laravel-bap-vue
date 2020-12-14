@@ -13986,192 +13986,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -14195,6 +14009,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
       current: null,
       buttonFilterActive: 'month',
       displaySchedule: [],
+      timeOfTheDayList: [],
       displayList: [{
         text: 'Polytron',
         value: 1
@@ -14237,12 +14052,24 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
 
         _this.displaySchedule.push({
           title: r.title,
-          displayDate: displayDate
+          displayDate: displayDate,
+          displayTimeStart: __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.unix(r.start / 1000).format('YYYY-MM-DD-HH-mm'),
+          displayTimeEnd: __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.unix(r.end / 1000).format('YYYY-MM-DD-HH-mm')
         });
+
+        console.log(_this.displaySchedule);
       });
     });
   },
 
+  watch: {
+    currentDate: function currentDate() {
+      console.log(this.currentDate);
+    },
+    timeOfTheDayList: function timeOfTheDayList() {
+      console.log(this.timeOfTheDayList);
+    }
+  },
   methods: {
     getWeekday: function getWeekday(date) {
       return __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(date).weekday();
@@ -14257,8 +14084,6 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
               var date = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + '-' + month + '-' + (index + 1)).format('YYYY-MM-DD');
 
               if (d === date) {
-                console.log(d);
-                console.log(s.title);
                 displayExist.push({
                   exist: true,
                   title: s.title
@@ -14405,6 +14230,46 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
     },
     showPopUp: function showPopUp() {
       return this.showPopUpNumber + '-' + this.showPopUpIndex;
+    },
+    timeOfTheDay: function timeOfTheDay() {
+      var _this2 = this;
+
+      var midnight = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()().hour('0').minute('0');
+
+      var added30Minutes = void 0;
+
+      var _loop = function _loop(i) {
+        added30Minutes = midnight.add(30 * i, 'minute').format('HH-mm');
+
+        var events = [];
+
+        _this2.displaySchedule.map(function (d) {
+          var toSplitStart = d.displayTimeStart.split('-');
+
+          var toSpliceDate = toSplitStart.splice(0, 3);
+          var date = toSpliceDate.join('-');
+
+          var hour = toSplitStart.join('-');
+
+          if (date === _this2.currentDate && added30Minutes === hour) {
+            events.push(d.title);
+          }
+        });
+
+        if (_this2.timeOfTheDayList.length <= 49) {
+          _this2.timeOfTheDayList.push({
+            timeStamp: added30Minutes
+          });
+        }
+
+        // timeEvent: events,
+      };
+
+      for (var i = 0; added30Minutes !== '23-30'; i++) {
+        _loop(i);
+      }
+
+      return this.timeOfTheDayList;
     }
   }
 });
@@ -14725,584 +14590,27 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "sui-table-body",
-                    [
-                      _c(
+                    _vm._l(_vm.timeOfTheDay, function(t, index) {
+                      return _c(
                         "sui-table-row",
+                        { key: index },
                         [
                           _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("00:00")
+                            _vm._v(_vm._s(t.timeStamp))
                           ]),
                           _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("00:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("01:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("01:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("02:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("02:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("03:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("03:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("04:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("04:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("05:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("05:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("06:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("06:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("07:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("07:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("08:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("08:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("09:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("09:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("10:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("10:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("11:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("11:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("12:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("12:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("13:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("13:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("14:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("14:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("15:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("15:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("16:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("16:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("17:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("17:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("18:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("18:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("19:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("19:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("20:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("20:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("21:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("21:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("22:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("22:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("23:00")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v("23:30")
-                          ]),
-                          _vm._v(" "),
-                          _c("sui-table-cell")
+                          _c(
+                            "sui-table-cell",
+                            _vm._l(t.timeEvent, function(e, index) {
+                              return _c("p", { key: index }, [
+                                _vm._v(_vm._s(e))
+                              ])
+                            })
+                          )
                         ],
                         1
                       )
-                    ],
-                    1
+                    })
                   )
                 ],
                 1

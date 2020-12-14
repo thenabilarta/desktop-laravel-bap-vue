@@ -88,197 +88,11 @@
             </sui-table-row>
           </sui-table-header>
           <sui-table-body>
-            <sui-table-row>
-              <sui-table-cell class="time">00:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">00:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">01:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">01:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">02:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">02:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">03:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">03:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">04:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">04:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">05:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">05:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">06:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">06:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">07:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">07:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">08:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">08:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">09:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">09:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">10:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">10:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">11:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">11:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">12:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">12:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">13:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">13:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">14:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">14:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">15:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">15:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">16:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">16:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">17:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">17:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">18:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">18:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">19:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">19:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">20:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">20:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">21:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">21:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">22:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">22:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">23:00</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
-            </sui-table-row>
-            <sui-table-row>
-              <sui-table-cell class="time">23:30</sui-table-cell>
-              <sui-table-cell></sui-table-cell>
+            <sui-table-row v-for="(t, index) in timeOfTheDay" :key="index">
+              <sui-table-cell class="time">{{ t.timeStamp }}</sui-table-cell>
+                <sui-table-cell>
+                  <p v-for="(e, index) in t.timeEvent" :key="index">{{ e }}</p>
+                </sui-table-cell>
             </sui-table-row>
           </sui-table-body>
         </sui-table>
@@ -310,6 +124,7 @@ export default {
       current: null,
       buttonFilterActive: 'month',
       displaySchedule: [],
+      timeOfTheDayList: [],
       displayList: [
         {
           text: 'Polytron',
@@ -379,9 +194,23 @@ export default {
           this.displaySchedule.push({
             title: r.title,
             displayDate: displayDate,
+            displayTimeStart: dayjs
+              .unix(r.start / 1000)
+              .format('YYYY-MM-DD-HH-mm'),
+            displayTimeEnd: dayjs.unix(r.end / 1000).format('YYYY-MM-DD-HH-mm'),
           });
+
+          console.log(this.displaySchedule);
         })
       );
+  },
+  watch: {
+    currentDate: function() {
+      console.log(this.currentDate);
+    },
+    timeOfTheDayList: function() {
+      console.log(this.timeOfTheDayList);
+    },
   },
   methods: {
     getWeekday(date) {
@@ -400,8 +229,6 @@ export default {
                 );
 
                 if (d === date) {
-                  console.log(d);
-                  console.log(s.title);
                   displayExist.push({
                     exist: true,
                     title: s.title,
@@ -600,6 +427,42 @@ export default {
     },
     showPopUp() {
       return this.showPopUpNumber + '-' + this.showPopUpIndex;
+    },
+    timeOfTheDay() {
+      let midnight = dayjs()
+        .hour('0')
+        .minute('0');
+
+      let added30Minutes;
+
+      for (let i = 0; added30Minutes !== '23-30'; i++) {
+        added30Minutes = midnight.add(30 * i, 'minute').format('HH-mm');
+
+        let events = [];
+
+        this.displaySchedule.map((d) => {
+          let toSplitStart = d.displayTimeStart.split('-');
+
+          let toSpliceDate = toSplitStart.splice(0, 3);
+          let date = toSpliceDate.join('-');
+
+          let hour = toSplitStart.join('-');
+
+          if (date === this.currentDate && added30Minutes === hour) {
+            events.push(d.title);
+          }
+        });
+
+        if (this.timeOfTheDayList.length <= 49) {
+          this.timeOfTheDayList.push({
+            timeStamp: added30Minutes,
+          });
+        }
+
+        // timeEvent: events,
+      }
+
+      return this.timeOfTheDayList;
     },
   },
 };
