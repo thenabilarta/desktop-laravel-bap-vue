@@ -14062,14 +14062,14 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
     });
   },
 
-  watch: {
-    currentDate: function currentDate() {
-      console.log(this.currentDate);
-    },
-    timeOfTheDayList: function timeOfTheDayList() {
-      console.log(this.timeOfTheDayList);
-    }
-  },
+  // watch: {
+  //   currentDate: function() {
+  //     console.log(this.currentDate);
+  //   },
+  //   timeOfTheDayList: function() {
+  //     console.log(this.timeOfTheDayList);
+  //   },
+  // },
   methods: {
     getWeekday: function getWeekday(date) {
       return __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(date).weekday();
@@ -14238,6 +14238,8 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
 
       var added30Minutes = void 0;
 
+      var tableContent = [];
+
       var _loop = function _loop(i) {
         added30Minutes = midnight.add(30 * i, 'minute').format('HH-mm');
 
@@ -14251,12 +14253,16 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
 
           var hour = toSplitStart.join('-');
 
-          if (date === _this2.currentDate && added30Minutes === hour) {
+          var toSplitEnd = d.displayTimeEnd.split('-');
+
+          var toSpliceDateEnd = toSplitEnd.splice(3, 2);
+
+          if (date === _this2.currentDate && parseInt(added30Minutes.split('-').join('')) - 30 < parseInt(toSplitStart.join('')) && parseInt(added30Minutes.split('-').join('')) + 30 > parseInt(toSplitStart.join(''))) {
             events.push(d.title);
           }
         });
 
-        _this2.timeOfTheDayList.push({
+        tableContent.push({
           timeStamp: added30Minutes,
           timeEvent: events
         });
@@ -14265,6 +14271,8 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
       for (var i = 0; added30Minutes !== '23-30'; i++) {
         _loop(i);
       }
+
+      this.timeOfTheDayList = tableContent;
 
       return this.timeOfTheDayList;
     }

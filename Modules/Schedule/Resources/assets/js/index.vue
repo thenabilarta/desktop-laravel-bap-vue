@@ -204,14 +204,14 @@ export default {
         })
       );
   },
-  watch: {
-    currentDate: function() {
-      console.log(this.currentDate);
-    },
-    timeOfTheDayList: function() {
-      console.log(this.timeOfTheDayList);
-    },
-  },
+  // watch: {
+  //   currentDate: function() {
+  //     console.log(this.currentDate);
+  //   },
+  //   timeOfTheDayList: function() {
+  //     console.log(this.timeOfTheDayList);
+  //   },
+  // },
   methods: {
     getWeekday(date) {
       return dayjs(date).weekday();
@@ -435,6 +435,8 @@ export default {
 
       let added30Minutes;
 
+      let tableContent = [];
+
       for (let i = 0; added30Minutes !== '23-30'; i++) {
         added30Minutes = midnight.add(30 * i, 'minute').format('HH-mm');
 
@@ -448,16 +450,28 @@ export default {
 
           let hour = toSplitStart.join('-');
 
-          if (date === this.currentDate && added30Minutes === hour) {
+          let toSplitEnd = d.displayTimeEnd.split('-');
+
+          let toSpliceDateEnd = toSplitEnd.splice(3, 2);
+
+          if (
+            date === this.currentDate &&
+            parseInt(added30Minutes.split('-').join('')) - 30 <
+              parseInt(toSplitStart.join('')) &&
+            parseInt(added30Minutes.split('-').join('')) + 30 >
+              parseInt(toSplitStart.join(''))
+          ) {
             events.push(d.title);
           }
         });
 
-        this.timeOfTheDayList.push({
+        tableContent.push({
           timeStamp: added30Minutes,
           timeEvent: events,
         });
       }
+
+      this.timeOfTheDayList = tableContent;
 
       return this.timeOfTheDayList;
     },
