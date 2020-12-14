@@ -13986,6 +13986,20 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -13997,207 +14011,179 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_2
 __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3_dayjs_plugin_weekOfYear___default.a);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'App',
+  name: "App",
   data: function data() {
     return {
-      currentDate: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()().format('YYYY-MM-DD'),
-      showPopUpNumber: null,
+      currentDate: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()().format("YYYY-MM-DD"),
+      currentTime: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()().valueOf(),
       displayForCurrentDay: false,
-      dateToday: null,
-      showTable: 'month',
-      weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      showTable: "month",
+      weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       current: null,
-      buttonFilterActive: 'month',
+      buttonFilterActive: "month",
       displaySchedule: [],
-      timeOfTheDayList: [],
+      showPopUpNumber: null,
       displayList: [{
-        text: 'Polytron',
+        text: "Polytron",
         value: 1
       }, {
-        text: 'Xiaomi',
+        text: "Xiaomi",
         value: 2
       }, {
-        text: 'Dell',
+        text: "Dell",
         value: 3
       }, {
-        text: 'Samsung',
+        text: "Samsung",
         value: 4
       }],
-      monthsList: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+      monthsList: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     };
   },
   mounted: function mounted() {
     var _this = this;
 
-    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post('http://127.0.0.1:8000/schedule/data', {
+    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule/data", {
       dateFrom: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.calendarList[0].date).valueOf(),
       dateTo: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.calendarList.pop().date).valueOf()
     }).then(function (res) {
-      return res.data.result.map(function (r) {
-        var toSplitStart = __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.unix(r.start / 1000).format('YYYY-MM-DD-HH-mm').split('-');
-        var splittedStart = toSplitStart.splice(0, 3);
-        var newDateStart = splittedStart.join('-');
-        var toSplitEnd = __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.unix(r.end / 1000).format('YYYY-MM-DD-HH-mm').split('-');
-        var splittedEnd = toSplitEnd.splice(0, 3);
-        var newDateEnd = splittedEnd.join('-');
-
-        var displayDate = [];
-
-        displayDate.push(newDateStart);
-
-        for (; newDateStart !== newDateEnd;) {
-          newDateStart = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(newDateStart).add(1, 'day').format('YYYY-MM-DD');
-          displayDate.push(newDateStart);
-        }
+      res.data.result.map(function (r) {
+        var displayStart = r.start;
+        var displayEnd = r.end;
+        var sameDay = r.sameDay;
+        var title = r.title;
 
         _this.displaySchedule.push({
-          title: r.title,
-          displayDate: displayDate,
-          displayTimeStart: __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.unix(r.start / 1000).format('YYYY-MM-DD-HH-mm'),
-          displayTimeEnd: __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.unix(r.end / 1000).format('YYYY-MM-DD-HH-mm')
+          displayStart: displayStart,
+          displayEnd: displayEnd,
+          sameDay: sameDay,
+          title: title
         });
-
-        console.log(_this.displaySchedule);
       });
     });
   },
 
-  // watch: {
-  //   currentDate: function() {
-  //     console.log(this.currentDate);
-  //   },
-  //   timeOfTheDayList: function() {
-  //     console.log(this.timeOfTheDayList);
-  //   },
-  // },
   methods: {
     getWeekday: function getWeekday(date) {
       return __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(date).weekday();
     },
     createDaysForCurrentMonth: function createDaysForCurrentMonth(year, month, schedule) {
       return [].concat(_toConsumableArray(Array(this.getNumberOfDaysInMonth(year, month)))).map(function (day, index) {
-        var displayExist = [];
+        var displayProperty = [];
+
+        var dateInUnix = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-" + (index + 1)).valueOf();
 
         if (schedule.length > 0) {
           schedule.map(function (s) {
-            s.displayDate.map(function (d) {
-              var date = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + '-' + month + '-' + (index + 1)).format('YYYY-MM-DD');
-
-              if (d === date) {
-                displayExist.push({
-                  exist: true,
-                  title: s.title
-                });
-              }
-            });
+            if (dateInUnix + 86400 * 1000 - s.displayStart >= 0 && dateInUnix - s.displayEnd <= 0) {
+              displayProperty.push({
+                exist: true,
+                title: s.title
+              });
+            }
           });
         }
 
         return {
-          date: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + '-' + month + '-' + (index + 1)).format('YYYY-MM-DD'),
+          date: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-" + (index + 1)).format("YYYY-MM-DD"),
           dayOfMonth: index + 1,
           isCurrentMonth: true,
-          displayExist: displayExist
+          displayProperty: displayProperty
         };
       });
     },
     createDaysForPreviousMonth: function createDaysForPreviousMonth(year, month) {
-      var currentMonthDays = this.createDaysForCurrentMonth(year, month, __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + '-' + month + '-01').daysInMonth());
+      var currentMonthDays = this.createDaysForCurrentMonth(year, month, __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-01").daysInMonth());
       var firstDayOfTheMonthWeekday = this.getWeekday(currentMonthDays[0].date);
-      var previousMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + '-' + month + '-01').subtract(1, 'month');
+      var previousMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-01").subtract(1, "month");
       // Cover first day of the month being sunday (firstDayOfTheMonthWeekday === 0)
       var visibleNumberOfDaysFromPreviousMonth = firstDayOfTheMonthWeekday ? firstDayOfTheMonthWeekday - 1 : 6;
-      var previousMonthLastMondayDayOfMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(currentMonthDays[0].date).subtract(visibleNumberOfDaysFromPreviousMonth, 'day').date();
+      var previousMonthLastMondayDayOfMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(currentMonthDays[0].date).subtract(visibleNumberOfDaysFromPreviousMonth, "day").date();
       return [].concat(_toConsumableArray(Array(visibleNumberOfDaysFromPreviousMonth))).map(function (day, index) {
         return {
-          date: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(previousMonth.year() + '-' + (previousMonth.month() + 1) + '-' + (previousMonthLastMondayDayOfMonth + index)).format('YYYY-MM-DD'),
+          date: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(previousMonth.year() + "-" + (previousMonth.month() + 1) + "-" + (previousMonthLastMondayDayOfMonth + index)).format("YYYY-MM-DD"),
           dayOfMonth: previousMonthLastMondayDayOfMonth + index,
           isCurrentMonth: false
         };
       });
     },
     createDaysForNextMonth: function createDaysForNextMonth(year, month) {
-      var currentMonthDays = this.createDaysForCurrentMonth(year, month, __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + '-' + month + '-01').daysInMonth());
-      var lastDayOfTheMonthWeekday = this.getWeekday(year + '-' + month + '-' + currentMonthDays.length);
-      var nextMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + '-' + month + '-01').add(1, 'month');
+      var currentMonthDays = this.createDaysForCurrentMonth(year, month, __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-01").daysInMonth());
+      var lastDayOfTheMonthWeekday = this.getWeekday(year + "-" + month + "-" + currentMonthDays.length);
+      var nextMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-01").add(1, "month");
       var visibleNumberOfDaysFromNextMonth = lastDayOfTheMonthWeekday ? 7 - lastDayOfTheMonthWeekday : lastDayOfTheMonthWeekday;
       return [].concat(_toConsumableArray(Array(visibleNumberOfDaysFromNextMonth))).map(function (day, index) {
         return {
-          date: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(nextMonth.year() + '-' + (nextMonth.month() + 1) + '-' + (index + 1)).format('YYYY-MM-DD'),
+          date: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(nextMonth.year() + "-" + (nextMonth.month() + 1) + "-" + (index + 1)).format("YYYY-MM-DD"),
           dayOfMonth: index + 1,
           isCurrentMonth: false
         };
       });
     },
     getNumberOfDaysInMonth: function getNumberOfDaysInMonth(year, month) {
-      return __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + '-' + month + '-01').daysInMonth();
+      return __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-01").daysInMonth();
     },
     changeToYear: function changeToYear() {
-      this.showTable = 'year';
-      this.buttonFilterActive = 'year';
+      this.showTable = "year";
+      this.buttonFilterActive = "year";
     },
     changeToMonth: function changeToMonth() {
-      this.showTable = 'month';
-      this.buttonFilterActive = 'month';
+      this.showTable = "month";
+      this.buttonFilterActive = "month";
     },
     changeToDay: function changeToDay() {
-      this.showTable = 'day';
-      this.buttonFilterActive = 'day';
+      this.showTable = "day";
+      this.buttonFilterActive = "day";
     },
     onClickDateNumber: function onClickDateNumber(date) {
-      console.log(date);
-      this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(date).format('YYYY-MM-DD');
-      this.buttonFilterActive = 'day';
-      this.showTable = 'day';
+      this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(date).format("YYYY-MM-DD");
+      this.buttonFilterActive = "day";
+      this.showTable = "day";
     },
     changeDate: function changeDate(e) {
-      console.log(e.target.value);
-      this.showTable = 'day';
-      this.buttonFilterActive = 'day';
+      this.showTable = "day";
+      this.buttonFilterActive = "day";
     },
     onClickToday: function onClickToday() {
-      this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()().format('YYYY-MM-DD');
+      this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()().format("YYYY-MM-DD");
     },
     onClickMonthOfYear: function onClickMonthOfYear(i) {
-      console.log(i);
-      var splittedGetYear = this.currentDate.split('-');
-      this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()().month(i).year(splittedGetYear[0]).format('YYYY-MM-DD');
-      this.showTable = 'month';
-      this.buttonFilterActive = 'month';
+      var splittedGetYear = this.currentDate.split("-");
+      this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()().month(i).year(splittedGetYear[0]).format("YYYY-MM-DD");
+      this.showTable = "month";
+      this.buttonFilterActive = "month";
     },
     onClickPrev: function onClickPrev() {
       switch (this.buttonFilterActive) {
-        case 'year':
-          this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).subtract(1, 'year').format('YYYY-MM-DD');
+        case "year":
+          this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).subtract(1, "year").format("YYYY-MM-DD");
           break;
-        case 'month':
-          this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).subtract(1, 'month').format('YYYY-MM-DD');
+        case "month":
+          this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).subtract(1, "month").format("YYYY-MM-DD");
           break;
-        case 'day':
-          this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).subtract(1, 'day').format('YYYY-MM-DD');
+        case "day":
+          this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).subtract(1, "day").format("YYYY-MM-DD");
           break;
         default:
-          console.log('Mantap gan');
+          console.log("Mantap gan");
       }
     },
     onClickNext: function onClickNext() {
       switch (this.buttonFilterActive) {
-        case 'year':
-          this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).add(1, 'year').format('YYYY-MM-DD');
+        case "year":
+          this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).add(1, "year").format("YYYY-MM-DD");
           break;
-        case 'month':
-          this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).add(1, 'month').format('YYYY-MM-DD');
+        case "month":
+          this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).add(1, "month").format("YYYY-MM-DD");
           break;
-        case 'day':
-          this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).add(1, 'day').format('YYYY-MM-DD');
+        case "day":
+          this.currentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).add(1, "day").format("YYYY-MM-DD");
           break;
         default:
-          console.log('Mantap gan');
+          console.log("Mantap gan");
       }
     },
     onShowPopUp: function onShowPopUp(date, index) {
-      this.showPopUpNumber = date;
-      this.showPopUpIndex = index;
+      this.showPopUpNumber = date + "-" + index;
     },
     offShowPopUp: function offShowPopUp() {
       this.showPopUpNumber = null;
@@ -14205,15 +14191,15 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
   },
   computed: {
     INITIAL_DATE: function INITIAL_DATE() {
-      var splitted = this.currentDate.split('-');
+      var splitted = this.currentDate.split("-");
       return splitted[2];
     },
     INITIAL_MONTH: function INITIAL_MONTH() {
-      var splitted = this.currentDate.split('-');
+      var splitted = this.currentDate.split("-");
       return splitted[1];
     },
     INITIAL_YEAR: function INITIAL_YEAR() {
-      var splitted = this.currentDate.split('-');
+      var splitted = this.currentDate.split("-");
       return splitted[0];
     },
     calendarList: function calendarList() {
@@ -14228,53 +14214,35 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
     selectedYear: function selectedYear() {
       return this.INITIAL_YEAR;
     },
-    showPopUp: function showPopUp() {
-      return this.showPopUpNumber + '-' + this.showPopUpIndex;
-    },
-    timeOfTheDay: function timeOfTheDay() {
+    hourAndEventOfTheDay: function hourAndEventOfTheDay() {
       var _this2 = this;
 
-      var midnight = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()().hour('0').minute('0');
+      var arrayOfTimeAndEvent = [];
 
-      var added30Minutes = void 0;
+      var currentTime = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate);
 
-      var tableContent = [];
-
-      var _loop = function _loop(i) {
-        added30Minutes = midnight.add(30 * i, 'minute').format('HH-mm');
-
-        var events = [];
+      var _loop = function _loop() {
+        var eventArray = [];
 
         _this2.displaySchedule.map(function (d) {
-          var toSplitStart = d.displayTimeStart.split('-');
-
-          var toSpliceDate = toSplitStart.splice(0, 3);
-          var date = toSpliceDate.join('-');
-
-          var hour = toSplitStart.join('-');
-
-          var toSplitEnd = d.displayTimeEnd.split('-');
-
-          var toSpliceDateEnd = toSplitEnd.splice(3, 2);
-
-          if (date === _this2.currentDate && parseInt(added30Minutes.split('-').join('')) - 30 < parseInt(toSplitStart.join('')) && parseInt(added30Minutes.split('-').join('')) + 30 > parseInt(toSplitStart.join(''))) {
-            events.push(d.title);
+          if (d.displayStart <= currentTime.valueOf() && d.displayEnd >= currentTime.valueOf()) {
+            eventArray.push(d.title);
           }
         });
 
-        tableContent.push({
-          timeStamp: added30Minutes,
-          timeEvent: events
+        arrayOfTimeAndEvent.push({
+          time: currentTime.format("HH-mm"),
+          event: eventArray
         });
+
+        currentTime = currentTime.add(30, "minute");
       };
 
-      for (var i = 0; added30Minutes !== '23-30'; i++) {
-        _loop(i);
-      }
+      do {
+        _loop();
+      } while (currentTime.format("HH-mm") !== "00-00");
 
-      this.timeOfTheDayList = tableContent;
-
-      return this.timeOfTheDayList;
+      return arrayOfTimeAndEvent;
     }
   }
 });
@@ -14501,16 +14469,16 @@ var render = function() {
             _c(
               "ol",
               { staticClass: "days-grid", attrs: { id: "calendar-days" } },
-              _vm._l(_vm.calendarList, function(c, index) {
+              _vm._l(_vm.calendarList, function(cal, index) {
                 return _c(
                   "li",
                   {
                     key: index,
                     staticClass: "calendar-day",
-                    class: c.isCurrentMonth ? "" : "not-current"
+                    class: cal.isCurrentMonth ? "" : "not-current"
                   },
                   [
-                    _vm._l(c.displayExist, function(n, index) {
+                    _vm._l(cal.displayProperty, function(d, index) {
                       return _c(
                         "div",
                         { key: index, staticClass: "display-icon" },
@@ -14520,20 +14488,20 @@ var render = function() {
                               staticClass: "fas fa-desktop",
                               on: {
                                 mouseover: function($event) {
-                                  _vm.onShowPopUp(c.date, index)
+                                  _vm.onShowPopUp(cal.date, index)
                                 },
                                 mouseleave: _vm.offShowPopUp
                               }
                             }),
                             _vm._v(" "),
-                            (_vm.showPopUp === c.date + "-" + index
+                            (_vm.showPopUpNumber === cal.date + "-" + index
                             ? true
                             : false)
                               ? _c("span", { staticClass: "popup" }, [
                                   _vm._v(
-                                    "\n                  " +
-                                      _vm._s(n.title) +
-                                      "\n                "
+                                    "\n                " +
+                                      _vm._s(d.title) +
+                                      "\n              "
                                   )
                                 ])
                               : _vm._e()
@@ -14548,11 +14516,11 @@ var render = function() {
                         staticClass: "dayNumber",
                         on: {
                           click: function($event) {
-                            _vm.onClickDateNumber(c.date)
+                            _vm.onClickDateNumber(cal.date)
                           }
                         }
                       },
-                      [_vm._v(_vm._s(c.dayOfMonth))]
+                      [_vm._v(_vm._s(cal.dayOfMonth) + "\n          ")]
                     )
                   ],
                   2
@@ -14595,18 +14563,18 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "sui-table-body",
-                    _vm._l(_vm.timeOfTheDay, function(t, index) {
+                    _vm._l(_vm.hourAndEventOfTheDay, function(h, index) {
                       return _c(
                         "sui-table-row",
                         { key: index },
                         [
                           _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v(_vm._s(t.timeStamp))
+                            _vm._v(_vm._s(h.time))
                           ]),
                           _vm._v(" "),
                           _c(
                             "sui-table-cell",
-                            _vm._l(t.timeEvent, function(e, index) {
+                            _vm._l(h.event, function(e, index) {
                               return _c("p", { key: index }, [
                                 _vm._v(_vm._s(e))
                               ])
