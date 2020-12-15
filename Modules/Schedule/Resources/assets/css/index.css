@@ -18,15 +18,6 @@ body {
   --day-label-size: 20px;
 }
 
-.time {
-  width: 10% !important;
-  text-align: center !important;
-}
-
-.events {
-  text-align: center !important;
-}
-
 .navigation {
   padding: 2rem;
   display: -webkit-box;
@@ -70,40 +61,15 @@ body {
   margin-left: 0 !important;
 }
 
-.date-input h2.ui.header {
-  padding: 0 2rem !important;
-}
-
-.date-input h2 {
-  margin: 0 !important;
-}
-
-.date-input .card .header {
-  padding: 0 !important;
-  border-bottom: 0px !important;
-}
-
-.card .header {
-  padding: 0 !important;
-  border-bottom: 0px !important;
-}
-
-.ui.selection.dropdown {
-  width: 150px !important;
-}
-
 main {
   padding: 0 2rem 2rem 2rem;
 }
 
-ol,
-li {
-  padding: 0;
-  margin: 0;
-  list-style: none;
+main .year {
+  margin-top: 2rem;
 }
 
-.month-of-year {
+main .year .month-of-year {
   display: -ms-grid;
   display: grid;
   -ms-grid-columns: (1fr)[3];
@@ -114,7 +80,7 @@ li {
   background-color: #e2e2e2;
 }
 
-.month-list {
+main .year .month-list {
   min-height: 100px;
   font-size: 16px;
   background-color: #fff;
@@ -129,45 +95,42 @@ li {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+  position: relative;
 }
 
-.month-list span {
+main .year .month-list span {
   cursor: pointer;
 }
 
-.day-of-week,
-.days-grid {
+main .year .month-list i {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+main #calendar-days {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+main .days-grid {
+  height: 100%;
+  position: relative;
+  grid-column-gap: 1px;
+  grid-row-gap: 1px;
+  border-top: solid 1px black;
+  background-color: #e2e2e2;
+}
+
+main .day-of-week,
+main .days-grid {
   display: -ms-grid;
   display: grid;
   -ms-grid-columns: (1fr)[7];
       grid-template-columns: repeat(7, 1fr);
 }
 
-.day-of-week {
-  color: var(--grey-800);
-  font-size: 18px;
-  background-color: #fff;
-  padding-bottom: 5px;
-  padding-top: 10px;
-}
-
-.day-list {
-  text-align: center;
-}
-
-.not-current {
-  background-color: #eeeeee !important;
-}
-
-.not-current span {
-  opacity: 0.5;
-}
-
-#calendar-days {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.calendar-day {
+main .day-of-week .calendar-day,
+main .days-grid .calendar-day {
   position: relative;
   min-height: 100px;
   font-size: 16px;
@@ -185,12 +148,27 @@ li {
           align-items: flex-end;
 }
 
-.calendar-day .display-icon .icon-and-popup {
+main .day-of-week .calendar-day .not-current span,
+main .days-grid .calendar-day .not-current span {
+  opacity: 0.5;
+}
+
+main .day-of-week .calendar-day .dayNumber,
+main .days-grid .calendar-day .dayNumber {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+main .day-of-week .calendar-day .display-icon .icon-and-popup,
+main .days-grid .calendar-day .display-icon .icon-and-popup {
   position: relative;
   cursor: pointer;
 }
 
-.calendar-day .display-icon .icon-and-popup .popup {
+main .day-of-week .calendar-day .display-icon .icon-and-popup .popup,
+main .days-grid .calendar-day .display-icon .icon-and-popup .popup {
   position: absolute;
   bottom: 100%;
   right: -200%;
@@ -204,20 +182,41 @@ li {
   text-align: center;
 }
 
-.dayNumber {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
+main .day-of-week .not-current,
+main .days-grid .not-current {
+  background-color: #eeeeee !important;
 }
 
-.days-grid {
-  height: 100%;
-  position: relative;
-  grid-column-gap: 1px;
-  grid-row-gap: 1px;
-  border-top: solid 1px black;
-  background-color: #e2e2e2;
+main .day-of-week {
+  color: var(--grey-800);
+  font-size: 18px;
+  background-color: #fff;
+  padding-bottom: 5px;
+  padding-top: 10px;
+}
+
+main .day-of-week .day-list {
+  text-align: center;
+}
+
+main .day {
+  margin-top: 2rem;
+}
+
+main .day .time {
+  width: 10% !important;
+  text-align: center !important;
+}
+
+main .day .events {
+  text-align: center !important;
+}
+
+main ol,
+main li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
 .ui.selection.dropdown {
@@ -228,8 +227,7 @@ li {
   background-color: #babbbc !important;
 }
 
-.day,
-.year {
-  margin-top: 2rem;
+.ui.selection.dropdown {
+  width: 150px !important;
 }
 /*# sourceMappingURL=index.css.map */

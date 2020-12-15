@@ -70,7 +70,7 @@
 "use strict";
 
 
-var bind = __webpack_require__(6);
+var bind = __webpack_require__(7);
 var isBuffer = __webpack_require__(16);
 
 /*global toString:true*/
@@ -424,10 +424,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(8);
+    adapter = __webpack_require__(9);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(8);
+    adapter = __webpack_require__(9);
   }
   return adapter;
 }
@@ -498,7 +498,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
 
 /***/ }),
 /* 3 */
@@ -699,464 +699,6 @@ module.exports = __webpack_require__(15);
 
 /***/ }),
 /* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function bind(fn, thisArg) {
-  return function wrap() {
-    var args = new Array(arguments.length);
-    for (var i = 0; i < args.length; i++) {
-      args[i] = arguments[i];
-    }
-    return fn.apply(thisArg, args);
-  };
-};
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var utils = __webpack_require__(0);
-var settle = __webpack_require__(19);
-var buildURL = __webpack_require__(21);
-var parseHeaders = __webpack_require__(22);
-var isURLSameOrigin = __webpack_require__(23);
-var createError = __webpack_require__(9);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(24);
-
-module.exports = function xhrAdapter(config) {
-  return new Promise(function dispatchXhrRequest(resolve, reject) {
-    var requestData = config.data;
-    var requestHeaders = config.headers;
-
-    if (utils.isFormData(requestData)) {
-      delete requestHeaders['Content-Type']; // Let the browser set it
-    }
-
-    var request = new XMLHttpRequest();
-    var loadEvent = 'onreadystatechange';
-    var xDomain = false;
-
-    // For IE 8/9 CORS support
-    // Only supports POST and GET calls and doesn't returns the response headers.
-    // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
-    if ("development" !== 'test' &&
-        typeof window !== 'undefined' &&
-        window.XDomainRequest && !('withCredentials' in request) &&
-        !isURLSameOrigin(config.url)) {
-      request = new window.XDomainRequest();
-      loadEvent = 'onload';
-      xDomain = true;
-      request.onprogress = function handleProgress() {};
-      request.ontimeout = function handleTimeout() {};
-    }
-
-    // HTTP basic authentication
-    if (config.auth) {
-      var username = config.auth.username || '';
-      var password = config.auth.password || '';
-      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
-    }
-
-    request.open(config.method.toUpperCase(), buildURL(config.url, config.params, config.paramsSerializer), true);
-
-    // Set the request timeout in MS
-    request.timeout = config.timeout;
-
-    // Listen for ready state
-    request[loadEvent] = function handleLoad() {
-      if (!request || (request.readyState !== 4 && !xDomain)) {
-        return;
-      }
-
-      // The request errored out and we didn't get a response, this will be
-      // handled by onerror instead
-      // With one exception: request that using file: protocol, most browsers
-      // will return status as 0 even though it's a successful request
-      if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
-        return;
-      }
-
-      // Prepare the response
-      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
-      var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
-      var response = {
-        data: responseData,
-        // IE sends 1223 instead of 204 (https://github.com/mzabriskie/axios/issues/201)
-        status: request.status === 1223 ? 204 : request.status,
-        statusText: request.status === 1223 ? 'No Content' : request.statusText,
-        headers: responseHeaders,
-        config: config,
-        request: request
-      };
-
-      settle(resolve, reject, response);
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle low level network errors
-    request.onerror = function handleError() {
-      // Real errors are hidden from us by the browser
-      // onerror should only fire if it's a network error
-      reject(createError('Network Error', config, null, request));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle timeout
-    request.ontimeout = function handleTimeout() {
-      reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED',
-        request));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Add xsrf header
-    // This is only done if running in a standard browser environment.
-    // Specifically not if we're in a web worker, or react-native.
-    if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(25);
-
-      // Add xsrf header
-      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
-          cookies.read(config.xsrfCookieName) :
-          undefined;
-
-      if (xsrfValue) {
-        requestHeaders[config.xsrfHeaderName] = xsrfValue;
-      }
-    }
-
-    // Add headers to the request
-    if ('setRequestHeader' in request) {
-      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
-        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
-          // Remove Content-Type if data is undefined
-          delete requestHeaders[key];
-        } else {
-          // Otherwise add header to the request
-          request.setRequestHeader(key, val);
-        }
-      });
-    }
-
-    // Add withCredentials to request if needed
-    if (config.withCredentials) {
-      request.withCredentials = true;
-    }
-
-    // Add responseType to request if needed
-    if (config.responseType) {
-      try {
-        request.responseType = config.responseType;
-      } catch (e) {
-        // Expected DOMException thrown by browsers not compatible XMLHttpRequest Level 2.
-        // But, this can be suppressed for 'json' type as it can be parsed by default 'transformResponse' function.
-        if (config.responseType !== 'json') {
-          throw e;
-        }
-      }
-    }
-
-    // Handle progress if needed
-    if (typeof config.onDownloadProgress === 'function') {
-      request.addEventListener('progress', config.onDownloadProgress);
-    }
-
-    // Not all browsers support upload events
-    if (typeof config.onUploadProgress === 'function' && request.upload) {
-      request.upload.addEventListener('progress', config.onUploadProgress);
-    }
-
-    if (config.cancelToken) {
-      // Handle cancellation
-      config.cancelToken.promise.then(function onCanceled(cancel) {
-        if (!request) {
-          return;
-        }
-
-        request.abort();
-        reject(cancel);
-        // Clean up request
-        request = null;
-      });
-    }
-
-    if (requestData === undefined) {
-      requestData = null;
-    }
-
-    // Send the request
-    request.send(requestData);
-  });
-};
-
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var enhanceError = __webpack_require__(20);
-
-/**
- * Create an Error with the specified message, config, error code, request and response.
- *
- * @param {string} message The error message.
- * @param {Object} config The config.
- * @param {string} [code] The error code (for example, 'ECONNABORTED').
- * @param {Object} [request] The request.
- * @param {Object} [response] The response.
- * @returns {Error} The created error.
- */
-module.exports = function createError(message, config, code, request, response) {
-  var error = new Error(message);
-  return enhanceError(error, config, code, request, response);
-};
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function isCancel(value) {
-  return !!(value && value.__CANCEL__);
-};
-
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * A `Cancel` is an object that is thrown when an operation is canceled.
- *
- * @class
- * @param {string=} message The message.
- */
-function Cancel(message) {
-  this.message = message;
-}
-
-Cancel.prototype.toString = function toString() {
-  return 'Cancel' + (this.message ? ': ' + this.message : '');
-};
-
-Cancel.prototype.__CANCEL__ = true;
-
-module.exports = Cancel;
-
-
-/***/ }),
-/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -1512,6 +1054,464 @@ function updateLink (link, options, obj) {
 
 	if(oldSrc) URL.revokeObjectURL(oldSrc);
 }
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function bind(fn, thisArg) {
+  return function wrap() {
+    var args = new Array(arguments.length);
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+    return fn.apply(thisArg, args);
+  };
+};
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(0);
+var settle = __webpack_require__(19);
+var buildURL = __webpack_require__(21);
+var parseHeaders = __webpack_require__(22);
+var isURLSameOrigin = __webpack_require__(23);
+var createError = __webpack_require__(10);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(24);
+
+module.exports = function xhrAdapter(config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    var requestData = config.data;
+    var requestHeaders = config.headers;
+
+    if (utils.isFormData(requestData)) {
+      delete requestHeaders['Content-Type']; // Let the browser set it
+    }
+
+    var request = new XMLHttpRequest();
+    var loadEvent = 'onreadystatechange';
+    var xDomain = false;
+
+    // For IE 8/9 CORS support
+    // Only supports POST and GET calls and doesn't returns the response headers.
+    // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
+    if ("development" !== 'test' &&
+        typeof window !== 'undefined' &&
+        window.XDomainRequest && !('withCredentials' in request) &&
+        !isURLSameOrigin(config.url)) {
+      request = new window.XDomainRequest();
+      loadEvent = 'onload';
+      xDomain = true;
+      request.onprogress = function handleProgress() {};
+      request.ontimeout = function handleTimeout() {};
+    }
+
+    // HTTP basic authentication
+    if (config.auth) {
+      var username = config.auth.username || '';
+      var password = config.auth.password || '';
+      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+    }
+
+    request.open(config.method.toUpperCase(), buildURL(config.url, config.params, config.paramsSerializer), true);
+
+    // Set the request timeout in MS
+    request.timeout = config.timeout;
+
+    // Listen for ready state
+    request[loadEvent] = function handleLoad() {
+      if (!request || (request.readyState !== 4 && !xDomain)) {
+        return;
+      }
+
+      // The request errored out and we didn't get a response, this will be
+      // handled by onerror instead
+      // With one exception: request that using file: protocol, most browsers
+      // will return status as 0 even though it's a successful request
+      if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
+        return;
+      }
+
+      // Prepare the response
+      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+      var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
+      var response = {
+        data: responseData,
+        // IE sends 1223 instead of 204 (https://github.com/mzabriskie/axios/issues/201)
+        status: request.status === 1223 ? 204 : request.status,
+        statusText: request.status === 1223 ? 'No Content' : request.statusText,
+        headers: responseHeaders,
+        config: config,
+        request: request
+      };
+
+      settle(resolve, reject, response);
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle low level network errors
+    request.onerror = function handleError() {
+      // Real errors are hidden from us by the browser
+      // onerror should only fire if it's a network error
+      reject(createError('Network Error', config, null, request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle timeout
+    request.ontimeout = function handleTimeout() {
+      reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED',
+        request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Add xsrf header
+    // This is only done if running in a standard browser environment.
+    // Specifically not if we're in a web worker, or react-native.
+    if (utils.isStandardBrowserEnv()) {
+      var cookies = __webpack_require__(25);
+
+      // Add xsrf header
+      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
+          cookies.read(config.xsrfCookieName) :
+          undefined;
+
+      if (xsrfValue) {
+        requestHeaders[config.xsrfHeaderName] = xsrfValue;
+      }
+    }
+
+    // Add headers to the request
+    if ('setRequestHeader' in request) {
+      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
+        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
+          // Remove Content-Type if data is undefined
+          delete requestHeaders[key];
+        } else {
+          // Otherwise add header to the request
+          request.setRequestHeader(key, val);
+        }
+      });
+    }
+
+    // Add withCredentials to request if needed
+    if (config.withCredentials) {
+      request.withCredentials = true;
+    }
+
+    // Add responseType to request if needed
+    if (config.responseType) {
+      try {
+        request.responseType = config.responseType;
+      } catch (e) {
+        // Expected DOMException thrown by browsers not compatible XMLHttpRequest Level 2.
+        // But, this can be suppressed for 'json' type as it can be parsed by default 'transformResponse' function.
+        if (config.responseType !== 'json') {
+          throw e;
+        }
+      }
+    }
+
+    // Handle progress if needed
+    if (typeof config.onDownloadProgress === 'function') {
+      request.addEventListener('progress', config.onDownloadProgress);
+    }
+
+    // Not all browsers support upload events
+    if (typeof config.onUploadProgress === 'function' && request.upload) {
+      request.upload.addEventListener('progress', config.onUploadProgress);
+    }
+
+    if (config.cancelToken) {
+      // Handle cancellation
+      config.cancelToken.promise.then(function onCanceled(cancel) {
+        if (!request) {
+          return;
+        }
+
+        request.abort();
+        reject(cancel);
+        // Clean up request
+        request = null;
+      });
+    }
+
+    if (requestData === undefined) {
+      requestData = null;
+    }
+
+    // Send the request
+    request.send(requestData);
+  });
+};
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var enhanceError = __webpack_require__(20);
+
+/**
+ * Create an Error with the specified message, config, error code, request and response.
+ *
+ * @param {string} message The error message.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ * @returns {Error} The created error.
+ */
+module.exports = function createError(message, config, code, request, response) {
+  var error = new Error(message);
+  return enhanceError(error, config, code, request, response);
+};
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function isCancel(value) {
+  return !!(value && value.__CANCEL__);
+};
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * A `Cancel` is an object that is thrown when an operation is canceled.
+ *
+ * @class
+ * @param {string=} message The message.
+ */
+function Cancel(message) {
+  this.message = message;
+}
+
+Cancel.prototype.toString = function toString() {
+  return 'Cancel' + (this.message ? ': ' + this.message : '');
+};
+
+Cancel.prototype.__CANCEL__ = true;
+
+module.exports = Cancel;
 
 
 /***/ }),
@@ -12558,7 +12558,7 @@ module.exports = Vue;
 
 
 var utils = __webpack_require__(0);
-var bind = __webpack_require__(6);
+var bind = __webpack_require__(7);
 var Axios = __webpack_require__(17);
 var defaults = __webpack_require__(2);
 
@@ -12593,9 +12593,9 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(11);
+axios.Cancel = __webpack_require__(12);
 axios.CancelToken = __webpack_require__(31);
-axios.isCancel = __webpack_require__(10);
+axios.isCancel = __webpack_require__(11);
 
 // Expose all/spread
 axios.all = function all(promises) {
@@ -12755,7 +12755,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 "use strict";
 
 
-var createError = __webpack_require__(9);
+var createError = __webpack_require__(10);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -13174,7 +13174,7 @@ module.exports = InterceptorManager;
 
 var utils = __webpack_require__(0);
 var transformData = __webpack_require__(28);
-var isCancel = __webpack_require__(10);
+var isCancel = __webpack_require__(11);
 var defaults = __webpack_require__(2);
 
 /**
@@ -13327,7 +13327,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 "use strict";
 
 
-var Cancel = __webpack_require__(11);
+var Cancel = __webpack_require__(12);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -13704,7 +13704,7 @@ module.exports = function (css) {
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(7)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(8)))
 
 /***/ }),
 /* 35 */
@@ -13729,7 +13729,7 @@ var normalizeComponent = __webpack_require__(4)
 /* script */
 var __vue_script__ = __webpack_require__(107)
 /* template */
-var __vue_template__ = __webpack_require__(113)
+var __vue_template__ = __webpack_require__(118)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -13844,7 +13844,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue__ = __webpack_require__(35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_portal_vue__ = __webpack_require__(114);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_portal_vue__ = __webpack_require__(119);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_portal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_portal_vue__);
 
 
@@ -13879,8 +13879,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_dayjs_plugin_weekday___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_dayjs_plugin_weekday__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_dayjs_plugin_weekOfYear__ = __webpack_require__(110);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_dayjs_plugin_weekOfYear___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_dayjs_plugin_weekOfYear__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__css_index_css__ = __webpack_require__(111);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__css_index_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__css_index_css__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_dayjs_plugin_isBetween__ = __webpack_require__(120);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_dayjs_plugin_isBetween___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_dayjs_plugin_isBetween__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_AddEventModal__ = __webpack_require__(111);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_AddEventModal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__components_AddEventModal__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__css_index_css__ = __webpack_require__(116);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__css_index_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__css_index_css__);
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 //
@@ -14000,6 +14004,18 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
 
 
 
@@ -14009,22 +14025,29 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_2_dayjs_plugin_weekday___default.a);
 __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3_dayjs_plugin_weekOfYear___default.a);
+__WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4_dayjs_plugin_isBetween___default.a);
+
+console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15", "day"));
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "App",
+  components: {
+    AddEventModal: __WEBPACK_IMPORTED_MODULE_5__components_AddEventModal___default.a
+  },
   data: function data() {
     return {
       currentDate: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()().format("YYYY-MM-DD"),
-      currentTime: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()().valueOf(),
       displayForCurrentDay: false,
       showTable: "month",
       weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      current: null,
+      current: 1,
       buttonFilterActive: "month",
       displaySchedule: [],
       showPopUpNumber: null,
+      addEventModalIsOpen: false,
+      monthsList: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       displayList: [{
-        text: "Polytron",
+        text: "All Display",
         value: 1
       }, {
         text: "Xiaomi",
@@ -14035,30 +14058,103 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
       }, {
         text: "Samsung",
         value: 4
-      }],
-      monthsList: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+      }]
     };
   },
+
+  watch: {
+    currentDate: function currentDate() {
+      var _this = this;
+
+      switch (this.showTable) {
+        case "year":
+          var startYear = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("year").valueOf();
+          var endYear = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("year").valueOf();
+          __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule/data", {
+            dateFrom: startYear,
+            dateTo: endYear
+          }).then(function (res) {
+            var arrayOfData = [];
+            res.data.result.map(function (r) {
+              var data = {
+                displayStart: r.start,
+                displayEnd: r.end,
+                sameDay: r.sameDay,
+                title: r.title
+              };
+              arrayOfData.push(data);
+            });
+            _this.displaySchedule = arrayOfData;
+          });
+          break;
+        case "month":
+          var startMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("month").valueOf();
+          var endMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("month").valueOf();
+          __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule/data", {
+            dateFrom: startMonth,
+            dateTo: endMonth
+          }).then(function (res) {
+            var arrayOfData = [];
+            res.data.result.map(function (r) {
+              var data = {
+                displayStart: r.start,
+                displayEnd: r.end,
+                sameDay: r.sameDay,
+                title: r.title
+              };
+              arrayOfData.push(data);
+            });
+            _this.displaySchedule = arrayOfData;
+          });
+          break;
+        case "day":
+          var startDay = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("day").valueOf();
+          var endDay = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("day").valueOf();
+          __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule/data", {
+            dateFrom: startDay,
+            dateTo: endDay
+          }).then(function (res) {
+            var arrayOfData = [];
+            res.data.result.map(function (r) {
+              var data = {
+                displayStart: r.start,
+                displayEnd: r.end,
+                sameDay: r.sameDay,
+                title: r.title
+              };
+              arrayOfData.push(data);
+            });
+            _this.displaySchedule = arrayOfData;
+          });
+          break;
+        default:
+          console.log("Mantap gan");
+      }
+    },
+    showTable: function showTable() {
+      console.log(this.showTable);
+    }
+  },
   mounted: function mounted() {
-    var _this = this;
+    var _this2 = this;
 
+    var startMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("month").valueOf();
+    var endMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("month").valueOf();
     __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule/data", {
-      dateFrom: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.calendarList[0].date).valueOf(),
-      dateTo: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.calendarList.pop().date).valueOf()
+      dateFrom: startMonth,
+      dateTo: endMonth
     }).then(function (res) {
+      var arrayOfData = [];
       res.data.result.map(function (r) {
-        var displayStart = r.start;
-        var displayEnd = r.end;
-        var sameDay = r.sameDay;
-        var title = r.title;
-
-        _this.displaySchedule.push({
-          displayStart: displayStart,
-          displayEnd: displayEnd,
-          sameDay: sameDay,
-          title: title
-        });
+        var data = {
+          displayStart: r.start,
+          displayEnd: r.end,
+          sameDay: r.sameDay,
+          title: r.title
+        };
+        arrayOfData.push(data);
       });
+      _this2.displaySchedule = arrayOfData;
     });
   },
 
@@ -14069,12 +14165,10 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
     createDaysForCurrentMonth: function createDaysForCurrentMonth(year, month, schedule) {
       return [].concat(_toConsumableArray(Array(this.getNumberOfDaysInMonth(year, month)))).map(function (day, index) {
         var displayProperty = [];
-
-        var dateInUnix = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-" + (index + 1)).valueOf();
-
+        var dateInUnix = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-" + (index + 1));
         if (schedule.length > 0) {
           schedule.map(function (s) {
-            if (dateInUnix + 86400 * 1000 - s.displayStart >= 0 && dateInUnix - s.displayEnd <= 0) {
+            if (dateInUnix.isBetween(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayStart), __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayEnd)) || __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayStart).date() === dateInUnix.date() || __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayEnd).date() === dateInUnix.date()) {
               displayProperty.push({
                 exist: true,
                 title: s.title
@@ -14082,7 +14176,6 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
             }
           });
         }
-
         return {
           date: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-" + (index + 1)).format("YYYY-MM-DD"),
           dayOfMonth: index + 1,
@@ -14123,14 +14216,74 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
       return __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-01").daysInMonth();
     },
     changeToYear: function changeToYear() {
+      var _this3 = this;
+
+      var startYear = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("year").valueOf();
+      var endYear = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("year").valueOf();
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule/data", {
+        dateFrom: startYear,
+        dateTo: endYear
+      }).then(function (res) {
+        var arrayOfData = [];
+        res.data.result.map(function (r) {
+          var data = {
+            displayStart: r.start,
+            displayEnd: r.end,
+            sameDay: r.sameDay,
+            title: r.title
+          };
+          arrayOfData.push(data);
+        });
+        _this3.displaySchedule = arrayOfData;
+      });
       this.showTable = "year";
       this.buttonFilterActive = "year";
     },
     changeToMonth: function changeToMonth() {
+      var _this4 = this;
+
+      var startMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("month").valueOf();
+      var endMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("month").valueOf();
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule/data", {
+        dateFrom: startMonth,
+        dateTo: endMonth
+      }).then(function (res) {
+        var arrayOfData = [];
+        res.data.result.map(function (r) {
+          var data = {
+            displayStart: r.start,
+            displayEnd: r.end,
+            sameDay: r.sameDay,
+            title: r.title
+          };
+          arrayOfData.push(data);
+        });
+        _this4.displaySchedule = arrayOfData;
+      });
       this.showTable = "month";
       this.buttonFilterActive = "month";
     },
     changeToDay: function changeToDay() {
+      var _this5 = this;
+
+      var startDay = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("day").valueOf();
+      var endDay = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("day").valueOf();
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule/data", {
+        dateFrom: startDay,
+        dateTo: endDay
+      }).then(function (res) {
+        var arrayOfData = [];
+        res.data.result.map(function (r) {
+          var data = {
+            displayStart: r.start,
+            displayEnd: r.end,
+            sameDay: r.sameDay,
+            title: r.title
+          };
+          arrayOfData.push(data);
+        });
+        _this5.displaySchedule = arrayOfData;
+      });
       this.showTable = "day";
       this.buttonFilterActive = "day";
     },
@@ -14187,6 +14340,12 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
     },
     offShowPopUp: function offShowPopUp() {
       this.showPopUpNumber = null;
+    },
+    closeAddEventModal: function closeAddEventModal() {
+      this.addEventModalIsOpen = false;
+    },
+    openAddEventModal: function openAddEventModal() {
+      this.addEventModalIsOpen = true;
     }
   },
   computed: {
@@ -14215,34 +14374,76 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
       return this.INITIAL_YEAR;
     },
     hourAndEventOfTheDay: function hourAndEventOfTheDay() {
-      var _this2 = this;
+      var _this6 = this;
 
       var arrayOfTimeAndEvent = [];
-
       var currentTime = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate);
 
       var _loop = function _loop() {
         var eventArray = [];
-
-        _this2.displaySchedule.map(function (d) {
+        _this6.displaySchedule.map(function (d) {
           if (d.displayStart <= currentTime.valueOf() && d.displayEnd >= currentTime.valueOf()) {
             eventArray.push(d.title);
           }
         });
-
         arrayOfTimeAndEvent.push({
           time: currentTime.format("HH-mm"),
           event: eventArray
         });
-
         currentTime = currentTime.add(30, "minute");
       };
 
       do {
         _loop();
       } while (currentTime.format("HH-mm") !== "00-00");
-
       return arrayOfTimeAndEvent;
+    },
+    monthsListComputed: function monthsListComputed() {
+      var monthArray = [{
+        month: "January",
+        display: false
+      }, {
+        month: "February",
+        display: false
+      }, {
+        month: "March",
+        display: false
+      }, {
+        month: "April",
+        display: false
+      }, {
+        month: "May",
+        display: false
+      }, {
+        month: "June",
+        display: false
+      }, {
+        month: "July",
+        display: false
+      }, {
+        month: "August",
+        display: false
+      }, {
+        month: "September",
+        display: false
+      }, {
+        month: "October",
+        display: false
+      }, {
+        month: "November",
+        display: false
+      }, {
+        month: "December",
+        display: false
+      }];
+      var checkingCurrentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).format("YYYY");
+      var checkingDisplaySchedule = this.displaySchedule;
+      checkingDisplaySchedule.map(function (c, index) {
+        if (__WEBPACK_IMPORTED_MODULE_1_dayjs___default()(c.displayStart).format("YYYY") === checkingCurrentDate) {
+          monthArray[parseInt(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()(c.displayStart).format("MM")) - 1].display = true;
+        }
+      });
+      return monthArray;
     }
   }
 });
@@ -14272,10 +14473,142 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_3
 /* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var disposed = false
+var normalizeComponent = __webpack_require__(4)
+/* script */
+var __vue_script__ = __webpack_require__(112)
+/* template */
+var __vue_template__ = __webpack_require__(115)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "modules\\schedule\\resources\\assets\\js\\components\\AddEventModal.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-324b8d31", Component.options)
+  } else {
+    hotAPI.reload("data-v-324b8d31", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 112 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_AddEventModal_css__ = __webpack_require__(113);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_AddEventModal_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__css_AddEventModal_css__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: "AddEventModal",
+  data: function data() {
+    return {
+      eventType: 1,
+      eventTypeOption: [{
+        text: "Campaign/Layout",
+        value: 1
+      }, {
+        text: "Command",
+        value: 2
+      }, {
+        text: "Overlay Layout",
+        value: 3
+      }]
+    };
+  },
+
+  methods: {
+    closeAddEventModal: function closeAddEventModal() {
+      this.$emit("closeAddEventModal");
+    }
+  }
+});
+
+/***/ }),
+/* 113 */
+/***/ (function(module, exports, __webpack_require__) {
+
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(112);
+var content = __webpack_require__(114);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -14283,7 +14616,190 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(12)(content, options);
+var update = __webpack_require__(6)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../../node_modules/css-loader/index.js!./AddEventModal.css", function() {
+			var newContent = require("!!../../../../../node_modules/css-loader/index.js!./AddEventModal.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 114 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(3)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".edit-display-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.5);\n  z-index: 1100 !important;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content {\n  height: 80%;\n  width: 70%;\n  border-radius: 10px;\n  background-color: #f5f5f5;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header h1 {\n  font-weight: 400;\n  margin-left: 1rem;\n  font-size: 24px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body {\n  height: 70%;\n  border-top: 1px solid rgba(0, 0, 0, 0.2);\n  border-bottom: 1px solid rgba(0, 0, 0, 0.2);\n  padding: 2rem 5rem;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  margin: 0.4rem 0;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row input {\n  min-width: 400px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row label {\n  margin-bottom: 0 !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row .ui.selection.dropdown {\n  min-width: 400px !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .time input {\n  width: calc(200px - 0.1rem) !important;\n  min-width: calc(200px - 0.1rem) !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-actions {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 5rem;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+/* 115 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "edit-display-modal",
+      on: {
+        click: function($event) {
+          if ($event.target !== $event.currentTarget) {
+            return null
+          }
+          return _vm.closeAddEventModal($event)
+        }
+      }
+    },
+    [
+      _c("div", { staticClass: "edit-display-modal-content" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c("div", { staticClass: "edit-display-modal-body" }, [
+          _c(
+            "div",
+            { staticClass: "edit-display-modal-body-row" },
+            [
+              _c("label", [_vm._v("Display")]),
+              _vm._v(" "),
+              _c("sui-input", { attrs: { fluid: "" } })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "edit-display-modal-body-row" },
+            [
+              _c("label", [_vm._v("Event Type")]),
+              _vm._v(" "),
+              _c("sui-dropdown", {
+                attrs: {
+                  placeholder: "--",
+                  selection: "",
+                  options: _vm.eventTypeOption
+                },
+                model: {
+                  value: _vm.eventType,
+                  callback: function($$v) {
+                    _vm.eventType = $$v
+                  },
+                  expression: "eventType"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "edit-display-modal-body-row" },
+            [
+              _c("label", [_vm._v("Layout / Campaign")]),
+              _vm._v(" "),
+              _c("sui-input", { attrs: { fluid: "" } })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "edit-display-modal-body-row time" }, [
+            _c("label", [_vm._v("From")]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "time-input" },
+              [
+                _c("sui-input", { attrs: { type: "date" } }),
+                _vm._v(" "),
+                _c("sui-input", { attrs: { type: "time" } })
+              ],
+              1
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "edit-display-modal-body-row time" }, [
+            _c("label", [_vm._v("To")]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "time-input" },
+              [
+                _c("sui-input", { attrs: { type: "date" } }),
+                _vm._v(" "),
+                _c("sui-input", { attrs: { type: "time" } })
+              ],
+              1
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "edit-display-modal-actions" },
+          [
+            _c("sui-button", { attrs: { color: "yellow" } }, [
+              _vm._v("Cancel")
+            ]),
+            _vm._v(" "),
+            _c("sui-button", { attrs: { color: "green" } }, [_vm._v("Save")])
+          ],
+          1
+        )
+      ])
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "edit-display-modal-header" }, [
+      _c("h1", [_vm._v("Add Event")])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-324b8d31", module.exports)
+  }
+}
+
+/***/ }),
+/* 116 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(117);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(6)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -14300,7 +14816,7 @@ if(false) {
 }
 
 /***/ }),
-/* 112 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(3)(false);
@@ -14308,292 +14824,311 @@ exports = module.exports = __webpack_require__(3)(false);
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap);", ""]);
 
 // module
-exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n  --grey-100: #e4e9f0;\n  --grey-200: #cfd7e3;\n  --grey-300: #b5c0cd;\n  --grey-800: #3e4e63;\n  --grid-gap: 1px;\n  --day-label-size: 20px;\n}\n\n.time {\n  width: 10% !important;\n  text-align: center !important;\n}\n\n.events {\n  text-align: center !important;\n}\n\n.navigation {\n  padding: 2rem;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.navigation > * {\n  margin-left: 2rem !important;\n}\n\n.navigation h2 {\n  margin: 0px !important;\n  font-weight: 400 !important;\n}\n\n.date-input {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 2rem 1rem 2rem;\n}\n\n.date-input > * {\n  margin-left: 2rem !important;\n}\n\n.date-input .ui.input {\n  margin-left: 0 !important;\n}\n\n.date-input h2.ui.header {\n  padding: 0 2rem !important;\n}\n\n.date-input h2 {\n  margin: 0 !important;\n}\n\n.date-input .card .header {\n  padding: 0 !important;\n  border-bottom: 0px !important;\n}\n\n.card .header {\n  padding: 0 !important;\n  border-bottom: 0px !important;\n}\n\n.ui.selection.dropdown {\n  width: 150px !important;\n}\n\nmain {\n  padding: 0 2rem 2rem 2rem;\n}\n\nol,\nli {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n\n.month-of-year {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[3];\n      grid-template-columns: repeat(3, 1fr);\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border: solid 1px rgba(0, 0, 0, 0.1);\n  background-color: #e2e2e2;\n}\n\n.month-list {\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.month-list span {\n  cursor: pointer;\n}\n\n.day-of-week,\n.days-grid {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[7];\n      grid-template-columns: repeat(7, 1fr);\n}\n\n.day-of-week {\n  color: var(--grey-800);\n  font-size: 18px;\n  background-color: #fff;\n  padding-bottom: 5px;\n  padding-top: 10px;\n}\n\n.day-list {\n  text-align: center;\n}\n\n.not-current {\n  background-color: #eeeeee !important;\n}\n\n.not-current span {\n  opacity: 0.5;\n}\n\n#calendar-days {\n  border: 1px solid rgba(0, 0, 0, 0.1);\n}\n\n.calendar-day {\n  position: relative;\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: end;\n      -ms-flex-align: end;\n          align-items: flex-end;\n}\n\n.calendar-day .display-icon .icon-and-popup {\n  position: relative;\n  cursor: pointer;\n}\n\n.calendar-day .display-icon .icon-and-popup .popup {\n  position: absolute;\n  bottom: 100%;\n  right: -200%;\n  font-size: 10px;\n  padding: 0.3rem;\n  border-radius: 3px;\n  z-index: 1300;\n  min-width: 100px;\n  background-color: black;\n  color: white;\n  text-align: center;\n}\n\n.dayNumber {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  cursor: pointer;\n}\n\n.days-grid {\n  height: 100%;\n  position: relative;\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border-top: solid 1px black;\n  background-color: #e2e2e2;\n}\n\n.ui.selection.dropdown {\n  min-width: 5em;\n}\n\n.button-active {\n  background-color: #babbbc !important;\n}\n\n.day,\n.year {\n  margin-top: 2rem;\n}", ""]);
+exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n  --grey-100: #e4e9f0;\n  --grey-200: #cfd7e3;\n  --grey-300: #b5c0cd;\n  --grey-800: #3e4e63;\n  --grid-gap: 1px;\n  --day-label-size: 20px;\n}\n\n.navigation {\n  padding: 2rem;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.navigation > * {\n  margin-left: 2rem !important;\n}\n\n.navigation h2 {\n  margin: 0px !important;\n  font-weight: 400 !important;\n}\n\n.date-input {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 2rem 1rem 2rem;\n}\n\n.date-input > * {\n  margin-left: 2rem !important;\n}\n\n.date-input .ui.input {\n  margin-left: 0 !important;\n}\n\nmain {\n  padding: 0 2rem 2rem 2rem;\n}\n\nmain .year {\n  margin-top: 2rem;\n}\n\nmain .year .month-of-year {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[3];\n      grid-template-columns: repeat(3, 1fr);\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border: solid 1px rgba(0, 0, 0, 0.1);\n  background-color: #e2e2e2;\n}\n\nmain .year .month-list {\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  position: relative;\n}\n\nmain .year .month-list span {\n  cursor: pointer;\n}\n\nmain .year .month-list i {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n}\n\nmain #calendar-days {\n  border: 1px solid rgba(0, 0, 0, 0.1);\n}\n\nmain .days-grid {\n  height: 100%;\n  position: relative;\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border-top: solid 1px black;\n  background-color: #e2e2e2;\n}\n\nmain .day-of-week,\nmain .days-grid {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[7];\n      grid-template-columns: repeat(7, 1fr);\n}\n\nmain .day-of-week .calendar-day,\nmain .days-grid .calendar-day {\n  position: relative;\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: end;\n      -ms-flex-align: end;\n          align-items: flex-end;\n}\n\nmain .day-of-week .calendar-day .not-current span,\nmain .days-grid .calendar-day .not-current span {\n  opacity: 0.5;\n}\n\nmain .day-of-week .calendar-day .dayNumber,\nmain .days-grid .calendar-day .dayNumber {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  cursor: pointer;\n}\n\nmain .day-of-week .calendar-day .display-icon .icon-and-popup,\nmain .days-grid .calendar-day .display-icon .icon-and-popup {\n  position: relative;\n  cursor: pointer;\n}\n\nmain .day-of-week .calendar-day .display-icon .icon-and-popup .popup,\nmain .days-grid .calendar-day .display-icon .icon-and-popup .popup {\n  position: absolute;\n  bottom: 100%;\n  right: -200%;\n  font-size: 10px;\n  padding: 0.3rem;\n  border-radius: 3px;\n  z-index: 1300;\n  min-width: 100px;\n  background-color: black;\n  color: white;\n  text-align: center;\n}\n\nmain .day-of-week .not-current,\nmain .days-grid .not-current {\n  background-color: #eeeeee !important;\n}\n\nmain .day-of-week {\n  color: var(--grey-800);\n  font-size: 18px;\n  background-color: #fff;\n  padding-bottom: 5px;\n  padding-top: 10px;\n}\n\nmain .day-of-week .day-list {\n  text-align: center;\n}\n\nmain .day {\n  margin-top: 2rem;\n}\n\nmain .day .time {\n  width: 10% !important;\n  text-align: center !important;\n}\n\nmain .day .events {\n  text-align: center !important;\n}\n\nmain ol,\nmain li {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n\n.ui.selection.dropdown {\n  min-width: 5em;\n}\n\n.button-active {\n  background-color: #babbbc !important;\n}\n\n.ui.selection.dropdown {\n  width: 150px !important;\n}", ""]);
 
 // exports
 
 
 /***/ }),
-/* 113 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { attrs: { id: "app" } }, [
-    _c(
-      "div",
-      { staticClass: "navigation" },
-      [
-        _c("h2", [
-          _vm._v(
-            _vm._s(_vm.selectedDate) +
-              " " +
-              _vm._s(_vm.selectedMonth) +
-              " " +
-              _vm._s(_vm.selectedYear)
-          )
-        ]),
-        _vm._v(" "),
-        _c("sui-button", [_vm._v("Add Event")]),
-        _vm._v(" "),
-        _c("sui-dropdown", {
-          attrs: {
-            placeholder: "Select Display",
-            selection: "",
-            options: _vm.displayList
-          },
-          model: {
-            value: _vm.current,
-            callback: function($$v) {
-              _vm.current = $$v
-            },
-            expression: "current"
-          }
-        })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "date-input" },
-      [
-        _c("sui-input", {
-          attrs: { placeholder: "Search...", type: "date" },
-          on: { change: _vm.changeDate },
-          model: {
-            value: _vm.currentDate,
-            callback: function($$v) {
-              _vm.currentDate = $$v
-            },
-            expression: "currentDate"
-          }
-        }),
-        _vm._v(" "),
-        _c(
-          "sui-button-group",
-          [
-            _c("sui-button", {
-              attrs: { content: "Prev" },
-              on: { click: _vm.onClickPrev }
-            }),
-            _vm._v(" "),
-            _c("sui-button", {
-              attrs: { content: "Today" },
-              on: { click: _vm.onClickToday }
-            }),
-            _vm._v(" "),
-            _c("sui-button", {
-              attrs: { content: "Next" },
-              on: { click: _vm.onClickNext }
-            })
-          ],
-          1
-        ),
-        _vm._v(" "),
-        _c(
-          "sui-button-group",
-          [
-            _c(
-              "sui-button",
-              {
-                class: _vm.buttonFilterActive === "year" && "button-active",
-                on: { click: _vm.changeToYear }
-              },
-              [_vm._v("Year")]
-            ),
-            _vm._v(" "),
-            _c(
-              "sui-button",
-              {
-                class: _vm.buttonFilterActive === "month" && "button-active",
-                on: { click: _vm.changeToMonth }
-              },
-              [_vm._v("Month")]
-            ),
-            _vm._v(" "),
-            _c(
-              "sui-button",
-              {
-                class: _vm.buttonFilterActive === "day" && "button-active",
-                on: { click: _vm.changeToDay }
-              },
-              [_vm._v("Day")]
-            )
-          ],
-          1
-        )
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c("main", [
-      _vm.showTable === "year"
-        ? _c("div", { staticClass: "year" }, [
-            _c(
-              "ol",
-              { staticClass: "month-of-year" },
-              _vm._l(_vm.monthsList, function(m, index) {
-                return _c("li", { key: index, staticClass: "month-list" }, [
-                  _c(
-                    "span",
-                    {
-                      on: {
-                        click: function($event) {
-                          _vm.onClickMonthOfYear(index)
-                        }
-                      }
-                    },
-                    [_vm._v(_vm._s(m))]
-                  )
-                ])
-              })
-            )
-          ])
+  return _c(
+    "div",
+    { attrs: { id: "app" } },
+    [
+      _vm.addEventModalIsOpen
+        ? _c("add-event-modal", {
+            on: { closeAddEventModal: _vm.closeAddEventModal }
+          })
         : _vm._e(),
       _vm._v(" "),
-      _vm.showTable === "month"
-        ? _c("div", [
-            _c(
-              "ol",
-              { staticClass: "day-of-week", attrs: { id: "days-of-week" } },
-              _vm._l(_vm.weekdays, function(w, index) {
-                return _c("li", { key: index, staticClass: "day-list" }, [
-                  _vm._v("\n          " + _vm._s(w) + "\n        ")
-                ])
-              })
-            ),
-            _vm._v(" "),
-            _c(
-              "ol",
-              { staticClass: "days-grid", attrs: { id: "calendar-days" } },
-              _vm._l(_vm.calendarList, function(cal, index) {
-                return _c(
-                  "li",
-                  {
-                    key: index,
-                    staticClass: "calendar-day",
-                    class: cal.isCurrentMonth ? "" : "not-current"
-                  },
-                  [
-                    _vm._l(cal.displayProperty, function(d, index) {
-                      return _c(
-                        "div",
-                        { key: index, staticClass: "display-icon" },
-                        [
-                          _c("div", { staticClass: "icon-and-popup" }, [
-                            _c("i", {
-                              staticClass: "fas fa-desktop",
-                              on: {
-                                mouseover: function($event) {
-                                  _vm.onShowPopUp(cal.date, index)
-                                },
-                                mouseleave: _vm.offShowPopUp
-                              }
-                            }),
-                            _vm._v(" "),
-                            (_vm.showPopUpNumber === cal.date + "-" + index
-                            ? true
-                            : false)
-                              ? _c("span", { staticClass: "popup" }, [
-                                  _vm._v(
-                                    "\n                " +
-                                      _vm._s(d.title) +
-                                      "\n              "
-                                  )
-                                ])
-                              : _vm._e()
-                          ])
-                        ]
-                      )
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "span",
-                      {
-                        staticClass: "dayNumber",
-                        on: {
-                          click: function($event) {
-                            _vm.onClickDateNumber(cal.date)
-                          }
-                        }
-                      },
-                      [_vm._v(_vm._s(cal.dayOfMonth) + "\n          ")]
-                    )
-                  ],
-                  2
-                )
-              })
+      _c(
+        "div",
+        { staticClass: "navigation" },
+        [
+          _c("h2", [
+            _vm._v(
+              _vm._s(_vm.selectedDate) +
+                " " +
+                _vm._s(_vm.selectedMonth) +
+                " " +
+                _vm._s(_vm.selectedYear)
             )
-          ])
-        : _vm._e(),
+          ]),
+          _vm._v(" "),
+          _c("sui-button", { on: { click: _vm.openAddEventModal } }, [
+            _vm._v("Add Event")
+          ]),
+          _vm._v(" "),
+          _c("sui-dropdown", {
+            attrs: {
+              placeholder: "Select Display",
+              selection: "",
+              options: _vm.displayList
+            },
+            model: {
+              value: _vm.current,
+              callback: function($$v) {
+                _vm.current = $$v
+              },
+              expression: "current"
+            }
+          })
+        ],
+        1
+      ),
       _vm._v(" "),
-      _vm.showTable === "day"
-        ? _c(
-            "div",
-            { staticClass: "day" },
+      _c(
+        "div",
+        { staticClass: "date-input" },
+        [
+          _c("sui-input", {
+            attrs: { placeholder: "Search...", type: "date" },
+            on: { change: _vm.changeDate },
+            model: {
+              value: _vm.currentDate,
+              callback: function($$v) {
+                _vm.currentDate = $$v
+              },
+              expression: "currentDate"
+            }
+          }),
+          _vm._v(" "),
+          _c(
+            "sui-button-group",
+            [
+              _c("sui-button", {
+                attrs: { content: "Prev" },
+                on: { click: _vm.onClickPrev }
+              }),
+              _vm._v(" "),
+              _c("sui-button", {
+                attrs: { content: "Today" },
+                on: { click: _vm.onClickToday }
+              }),
+              _vm._v(" "),
+              _c("sui-button", {
+                attrs: { content: "Next" },
+                on: { click: _vm.onClickNext }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "sui-button-group",
             [
               _c(
-                "sui-table",
-                { attrs: { striped: "" } },
-                [
-                  _c(
-                    "sui-table-header",
-                    [
-                      _c(
-                        "sui-table-row",
-                        [
-                          _c("sui-table-header-cell", { staticClass: "time" }, [
-                            _vm._v("Time")
-                          ]),
-                          _vm._v(" "),
-                          _c(
-                            "sui-table-header-cell",
-                            { staticClass: "events" },
-                            [_vm._v("Events")]
-                          )
-                        ],
-                        1
-                      )
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "sui-table-body",
-                    _vm._l(_vm.hourAndEventOfTheDay, function(h, index) {
-                      return _c(
-                        "sui-table-row",
-                        { key: index },
-                        [
-                          _c("sui-table-cell", { staticClass: "time" }, [
-                            _vm._v(_vm._s(h.time))
-                          ]),
-                          _vm._v(" "),
-                          _c(
-                            "sui-table-cell",
-                            _vm._l(h.event, function(e, index) {
-                              return _c("p", { key: index }, [
-                                _vm._v(_vm._s(e))
-                              ])
-                            })
-                          )
-                        ],
-                        1
-                      )
-                    })
-                  )
-                ],
-                1
+                "sui-button",
+                {
+                  class: _vm.buttonFilterActive === "year" && "button-active",
+                  on: { click: _vm.changeToYear }
+                },
+                [_vm._v("Year")]
+              ),
+              _vm._v(" "),
+              _c(
+                "sui-button",
+                {
+                  class: _vm.buttonFilterActive === "month" && "button-active",
+                  on: { click: _vm.changeToMonth }
+                },
+                [_vm._v("Month")]
+              ),
+              _vm._v(" "),
+              _c(
+                "sui-button",
+                {
+                  class: _vm.buttonFilterActive === "day" && "button-active",
+                  on: { click: _vm.changeToDay }
+                },
+                [_vm._v("Day")]
               )
             ],
             1
           )
-        : _vm._e()
-    ])
-  ])
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c("main", [
+        _vm.showTable === "year"
+          ? _c("div", { staticClass: "year" }, [
+              _c(
+                "ol",
+                { staticClass: "month-of-year" },
+                _vm._l(_vm.monthsListComputed, function(m, index) {
+                  return _c("li", { key: index, staticClass: "month-list" }, [
+                    _c(
+                      "span",
+                      {
+                        on: {
+                          click: function($event) {
+                            _vm.onClickMonthOfYear(index)
+                          }
+                        }
+                      },
+                      [_vm._v(_vm._s(m.month))]
+                    ),
+                    _vm._v(" "),
+                    m.display
+                      ? _c("i", { staticClass: "fas fa-desktop" })
+                      : _vm._e()
+                  ])
+                })
+              )
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.showTable === "month"
+          ? _c("div", [
+              _c(
+                "ol",
+                { staticClass: "day-of-week", attrs: { id: "days-of-week" } },
+                _vm._l(_vm.weekdays, function(w, index) {
+                  return _c("li", { key: index, staticClass: "day-list" }, [
+                    _vm._v("\n          " + _vm._s(w) + "\n        ")
+                  ])
+                })
+              ),
+              _vm._v(" "),
+              _c(
+                "ol",
+                { staticClass: "days-grid", attrs: { id: "calendar-days" } },
+                _vm._l(_vm.calendarList, function(cal, index) {
+                  return _c(
+                    "li",
+                    {
+                      key: index,
+                      staticClass: "calendar-day",
+                      class: cal.isCurrentMonth ? "" : "not-current"
+                    },
+                    [
+                      _vm._l(cal.displayProperty, function(d, index) {
+                        return _c(
+                          "div",
+                          { key: index, staticClass: "display-icon" },
+                          [
+                            _c("div", { staticClass: "icon-and-popup" }, [
+                              _c("i", {
+                                staticClass: "fas fa-desktop",
+                                on: {
+                                  mouseover: function($event) {
+                                    _vm.onShowPopUp(cal.date, index)
+                                  },
+                                  mouseleave: _vm.offShowPopUp
+                                }
+                              }),
+                              _vm._v(" "),
+                              (_vm.showPopUpNumber === cal.date + "-" + index
+                              ? true
+                              : false)
+                                ? _c("span", { staticClass: "popup" }, [
+                                    _vm._v(
+                                      "\n                " +
+                                        _vm._s(d.title) +
+                                        "\n              "
+                                    )
+                                  ])
+                                : _vm._e()
+                            ])
+                          ]
+                        )
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticClass: "dayNumber",
+                          on: {
+                            click: function($event) {
+                              _vm.onClickDateNumber(cal.date)
+                            }
+                          }
+                        },
+                        [_vm._v(_vm._s(cal.dayOfMonth) + "\n          ")]
+                      )
+                    ],
+                    2
+                  )
+                })
+              )
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.showTable === "day"
+          ? _c(
+              "div",
+              { staticClass: "day" },
+              [
+                _c(
+                  "sui-table",
+                  { attrs: { striped: "" } },
+                  [
+                    _c(
+                      "sui-table-header",
+                      [
+                        _c(
+                          "sui-table-row",
+                          [
+                            _c(
+                              "sui-table-header-cell",
+                              { staticClass: "time" },
+                              [_vm._v("Time")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "sui-table-header-cell",
+                              { staticClass: "events" },
+                              [_vm._v("Events")]
+                            )
+                          ],
+                          1
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "sui-table-body",
+                      _vm._l(_vm.hourAndEventOfTheDay, function(h, index) {
+                        return _c(
+                          "sui-table-row",
+                          { key: index },
+                          [
+                            _c("sui-table-cell", { staticClass: "time" }, [
+                              _vm._v(_vm._s(h.time))
+                            ]),
+                            _vm._v(" "),
+                            _c(
+                              "sui-table-cell",
+                              _vm._l(h.event, function(e, index) {
+                                return _c("p", { key: index }, [
+                                  _vm._v(_vm._s(e))
+                                ])
+                              })
+                            )
+                          ],
+                          1
+                        )
+                      })
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
+          : _vm._e()
+      ])
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -14606,7 +15141,7 @@ if (false) {
 }
 
 /***/ }),
-/* 114 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15226,6 +15761,13 @@ exports.PortalTarget = PortalTarget;
 exports.MountingPortal = MountingPortal;
 exports.Wormhole = wormhole;
 //# sourceMappingURL=portal-vue.common.js.map
+
+
+/***/ }),
+/* 120 */
+/***/ (function(module, exports, __webpack_require__) {
+
+!function(e,t){ true?module.exports=t():"function"==typeof define&&define.amd?define(t):e.dayjs_plugin_isBetween=t()}(this,function(){"use strict";return function(e,t,i){t.prototype.isBetween=function(e,t,s,f){var n=i(e),o=i(t),r="("===(f=f||"()")[0],u=")"===f[1];return(r?this.isAfter(n,s):!this.isBefore(n,s))&&(u?this.isBefore(o,s):!this.isAfter(o,s))||(r?this.isBefore(n,s):!this.isAfter(n,s))&&(u?this.isAfter(o,s):!this.isBefore(o,s))}}});
 
 
 /***/ })

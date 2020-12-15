@@ -1,8 +1,12 @@
 <template>
   <div id="app">
+    <add-event-modal
+      v-if="addEventModalIsOpen"
+      v-on:closeAddEventModal="closeAddEventModal"
+    ></add-event-modal>
     <div class="navigation">
       <h2>{{ selectedDate }} {{ selectedMonth }} {{ selectedYear }}</h2>
-      <sui-button>Add Event</sui-button>
+      <sui-button @click="openAddEventModal">Add Event</sui-button>
       <sui-dropdown
         placeholder="Select Display"
         selection
@@ -43,8 +47,13 @@
     <main>
       <div v-if="showTable === 'year'" class="year">
         <ol class="month-of-year">
-          <li class="month-list" v-for="(m, index) in monthsList" :key="index">
-            <span @click="onClickMonthOfYear(index)">{{ m }}</span>
+          <li
+            class="month-list"
+            v-for="(m, index) in monthsListComputed"
+            :key="index"
+          >
+            <span @click="onClickMonthOfYear(index)">{{ m.month }}</span>
+            <i class="fas fa-desktop" v-if="m.display"></i>
           </li>
         </ol>
       </div>
@@ -120,27 +129,50 @@ import axios from "axios";
 import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
 import weekOfYear from "dayjs/plugin/weekOfYear";
+import isBetween from "dayjs/plugin/isBetween";
+
+import AddEventModal from "./components/AddEventModal";
 import "../css/index.css";
 
 dayjs.extend(weekday);
 dayjs.extend(weekOfYear);
+dayjs.extend(isBetween);
+
+console.log(dayjs().isSame("2020-12-15", "day"));
 
 export default {
   name: "App",
+  components: {
+    AddEventModal: AddEventModal,
+  },
   data() {
     return {
       currentDate: dayjs().format("YYYY-MM-DD"),
-      currentTime: dayjs().valueOf(),
       displayForCurrentDay: false,
       showTable: "month",
       weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      current: null,
+      current: 1,
       buttonFilterActive: "month",
       displaySchedule: [],
       showPopUpNumber: null,
+      addEventModalIsOpen: false,
+      monthsList: [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ],
       displayList: [
         {
-          text: "Polytron",
+          text: "All Display",
           value: 1,
         },
         {
@@ -156,42 +188,105 @@ export default {
           value: 4,
         },
       ],
-      monthsList: [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ],
     };
   },
+  watch: {
+    currentDate: function () {
+      switch (this.showTable) {
+        case "year":
+          let startYear = dayjs(this.currentDate).startOf("year").valueOf();
+          let endYear = dayjs(this.currentDate).endOf("year").valueOf();
+          axios
+            .post("http://127.0.0.1:8000/schedule/data", {
+              dateFrom: startYear,
+              dateTo: endYear,
+            })
+            .then((res) => {
+              let arrayOfData = [];
+              res.data.result.map((r) => {
+                let data = {
+                  displayStart: r.start,
+                  displayEnd: r.end,
+                  sameDay: r.sameDay,
+                  title: r.title,
+                };
+                arrayOfData.push(data);
+              });
+              this.displaySchedule = arrayOfData;
+            });
+          break;
+        case "month":
+          let startMonth = dayjs(this.currentDate).startOf("month").valueOf();
+          let endMonth = dayjs(this.currentDate).endOf("month").valueOf();
+          axios
+            .post("http://127.0.0.1:8000/schedule/data", {
+              dateFrom: startMonth,
+              dateTo: endMonth,
+            })
+            .then((res) => {
+              let arrayOfData = [];
+              res.data.result.map((r) => {
+                let data = {
+                  displayStart: r.start,
+                  displayEnd: r.end,
+                  sameDay: r.sameDay,
+                  title: r.title,
+                };
+                arrayOfData.push(data);
+              });
+              this.displaySchedule = arrayOfData;
+            });
+          break;
+        case "day":
+          let startDay = dayjs(this.currentDate).startOf("day").valueOf();
+          let endDay = dayjs(this.currentDate).endOf("day").valueOf();
+          axios
+            .post("http://127.0.0.1:8000/schedule/data", {
+              dateFrom: startDay,
+              dateTo: endDay,
+            })
+            .then((res) => {
+              let arrayOfData = [];
+              res.data.result.map((r) => {
+                let data = {
+                  displayStart: r.start,
+                  displayEnd: r.end,
+                  sameDay: r.sameDay,
+                  title: r.title,
+                };
+                arrayOfData.push(data);
+              });
+              this.displaySchedule = arrayOfData;
+            });
+          break;
+        default:
+          console.log("Mantap gan");
+      }
+    },
+    showTable: function () {
+      console.log(this.showTable);
+    },
+  },
   mounted() {
+    let startMonth = dayjs(this.currentDate).startOf("month").valueOf();
+    let endMonth = dayjs(this.currentDate).endOf("month").valueOf();
     axios
       .post("http://127.0.0.1:8000/schedule/data", {
-        dateFrom: dayjs(this.calendarList[0].date).valueOf(),
-        dateTo: dayjs(this.calendarList.pop().date).valueOf(),
+        dateFrom: startMonth,
+        dateTo: endMonth,
       })
       .then((res) => {
+        let arrayOfData = [];
         res.data.result.map((r) => {
-          let displayStart = r.start;
-          let displayEnd = r.end;
-          let sameDay = r.sameDay;
-          let title = r.title;
-
-          this.displaySchedule.push({
-            displayStart: displayStart,
-            displayEnd: displayEnd,
-            sameDay: sameDay,
-            title: title,
-          });
+          let data = {
+            displayStart: r.start,
+            displayEnd: r.end,
+            sameDay: r.sameDay,
+            title: r.title,
+          };
+          arrayOfData.push(data);
         });
+        this.displaySchedule = arrayOfData;
       });
   },
   methods: {
@@ -202,14 +297,16 @@ export default {
       return [...Array(this.getNumberOfDaysInMonth(year, month))].map(
         (day, index) => {
           let displayProperty = [];
-
-          let dateInUnix = dayjs(`${year}-${month}-${index + 1}`).valueOf();
-
+          let dateInUnix = dayjs(`${year}-${month}-${index + 1}`);
           if (schedule.length > 0) {
             schedule.map((s) => {
               if (
-                dateInUnix + 86400 * 1000 - s.displayStart >= 0 &&
-                dateInUnix - s.displayEnd <= 0
+                dateInUnix.isBetween(
+                  dayjs(s.displayStart),
+                  dayjs(s.displayEnd)
+                ) ||
+                dayjs(s.displayStart).date() === dateInUnix.date() ||
+                dayjs(s.displayEnd).date() === dateInUnix.date()
               ) {
                 displayProperty.push({
                   exist: true,
@@ -218,7 +315,6 @@ export default {
               }
             });
           }
-
           return {
             date: dayjs(`${year}-${month}-${index + 1}`).format("YYYY-MM-DD"),
             dayOfMonth: index + 1,
@@ -286,14 +382,74 @@ export default {
       return dayjs(`${year}-${month}-01`).daysInMonth();
     },
     changeToYear() {
+      let startYear = dayjs(this.currentDate).startOf("year").valueOf();
+      let endYear = dayjs(this.currentDate).endOf("year").valueOf();
+      axios
+        .post("http://127.0.0.1:8000/schedule/data", {
+          dateFrom: startYear,
+          dateTo: endYear,
+        })
+        .then((res) => {
+          let arrayOfData = [];
+          res.data.result.map((r) => {
+            let data = {
+              displayStart: r.start,
+              displayEnd: r.end,
+              sameDay: r.sameDay,
+              title: r.title,
+            };
+            arrayOfData.push(data);
+          });
+          this.displaySchedule = arrayOfData;
+        });
       this.showTable = "year";
       this.buttonFilterActive = "year";
     },
     changeToMonth() {
+      let startMonth = dayjs(this.currentDate).startOf("month").valueOf();
+      let endMonth = dayjs(this.currentDate).endOf("month").valueOf();
+      axios
+        .post("http://127.0.0.1:8000/schedule/data", {
+          dateFrom: startMonth,
+          dateTo: endMonth,
+        })
+        .then((res) => {
+          let arrayOfData = [];
+          res.data.result.map((r) => {
+            let data = {
+              displayStart: r.start,
+              displayEnd: r.end,
+              sameDay: r.sameDay,
+              title: r.title,
+            };
+            arrayOfData.push(data);
+          });
+          this.displaySchedule = arrayOfData;
+        });
       this.showTable = "month";
       this.buttonFilterActive = "month";
     },
     changeToDay() {
+      let startDay = dayjs(this.currentDate).startOf("day").valueOf();
+      let endDay = dayjs(this.currentDate).endOf("day").valueOf();
+      axios
+        .post("http://127.0.0.1:8000/schedule/data", {
+          dateFrom: startDay,
+          dateTo: endDay,
+        })
+        .then((res) => {
+          let arrayOfData = [];
+          res.data.result.map((r) => {
+            let data = {
+              displayStart: r.start,
+              displayEnd: r.end,
+              sameDay: r.sameDay,
+              title: r.title,
+            };
+            arrayOfData.push(data);
+          });
+          this.displaySchedule = arrayOfData;
+        });
       this.showTable = "day";
       this.buttonFilterActive = "day";
     },
@@ -366,6 +522,12 @@ export default {
     offShowPopUp() {
       this.showPopUpNumber = null;
     },
+    closeAddEventModal() {
+      this.addEventModalIsOpen = false;
+    },
+    openAddEventModal() {
+      this.addEventModalIsOpen = true;
+    },
   },
   computed: {
     INITIAL_DATE() {
@@ -405,12 +567,9 @@ export default {
     },
     hourAndEventOfTheDay() {
       let arrayOfTimeAndEvent = [];
-
       let currentTime = dayjs(this.currentDate);
-
       do {
         let eventArray = [];
-
         this.displaySchedule.map((d) => {
           if (
             d.displayStart <= currentTime.valueOf() &&
@@ -419,16 +578,75 @@ export default {
             eventArray.push(d.title);
           }
         });
-
         arrayOfTimeAndEvent.push({
           time: currentTime.format("HH-mm"),
           event: eventArray,
         });
-
         currentTime = currentTime.add(30, "minute");
       } while (currentTime.format("HH-mm") !== "00-00");
-
       return arrayOfTimeAndEvent;
+    },
+    monthsListComputed() {
+      let monthArray = [
+        {
+          month: "January",
+          display: false,
+        },
+        {
+          month: "February",
+          display: false,
+        },
+        {
+          month: "March",
+          display: false,
+        },
+        {
+          month: "April",
+          display: false,
+        },
+        {
+          month: "May",
+          display: false,
+        },
+        {
+          month: "June",
+          display: false,
+        },
+        {
+          month: "July",
+          display: false,
+        },
+        {
+          month: "August",
+          display: false,
+        },
+        {
+          month: "September",
+          display: false,
+        },
+        {
+          month: "October",
+          display: false,
+        },
+        {
+          month: "November",
+          display: false,
+        },
+        {
+          month: "December",
+          display: false,
+        },
+      ];
+      let checkingCurrentDate = dayjs(this.currentDate).format("YYYY");
+      let checkingDisplaySchedule = this.displaySchedule;
+      checkingDisplaySchedule.map((c, index) => {
+        if (dayjs(c.displayStart).format("YYYY") === checkingCurrentDate) {
+          monthArray[
+            parseInt(dayjs(c.displayStart).format("MM")) - 1
+          ].display = true;
+        }
+      });
+      return monthArray;
     },
   },
 };
