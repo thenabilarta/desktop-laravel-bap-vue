@@ -402,6 +402,88 @@ module.exports = g;
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -499,88 +581,6 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
 
 /***/ }),
 /* 4 */
@@ -12560,7 +12560,7 @@ module.exports = Vue;
 var utils = __webpack_require__(0);
 var bind = __webpack_require__(7);
 var Axios = __webpack_require__(17);
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(3);
 
 /**
  * Create an instance of Axios
@@ -12643,7 +12643,7 @@ function isSlowBuffer (obj) {
 "use strict";
 
 
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(3);
 var utils = __webpack_require__(0);
 var InterceptorManager = __webpack_require__(26);
 var dispatchRequest = __webpack_require__(27);
@@ -13175,7 +13175,7 @@ module.exports = InterceptorManager;
 var utils = __webpack_require__(0);
 var transformData = __webpack_require__(28);
 var isCancel = __webpack_require__(11);
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(3);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -13729,7 +13729,7 @@ var normalizeComponent = __webpack_require__(4)
 /* script */
 var __vue_script__ = __webpack_require__(107)
 /* template */
-var __vue_template__ = __webpack_require__(119)
+var __vue_template__ = __webpack_require__(124)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -13844,7 +13844,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue__ = __webpack_require__(35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_portal_vue__ = __webpack_require__(120);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_portal_vue__ = __webpack_require__(125);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_portal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_portal_vue__);
 
 
@@ -13883,12 +13883,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_dayjs_plugin_isBetween___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_dayjs_plugin_isBetween__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_AddEventModal__ = __webpack_require__(112);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_AddEventModal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__components_AddEventModal__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_EditEventModal__ = __webpack_require__(121);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_EditEventModal__ = __webpack_require__(117);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_EditEventModal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__components_EditEventModal__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__css_index_css__ = __webpack_require__(117);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__css_index_css__ = __webpack_require__(122);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__css_index_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__css_index_css__);
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -14062,6 +14068,8 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
       displaySchedule: [],
       showPopUpNumber: null,
       addEventModalIsOpen: false,
+      editEventModalIsOpen: false,
+      idWhenEditEventModalIsOpen: null,
       monthsList: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       displayList: [{
         text: "All Display",
@@ -14097,7 +14105,8 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
                 displayStart: r.start,
                 displayEnd: r.end,
                 sameDay: r.sameDay,
-                title: r.title
+                title: r.title,
+                id: r.id
               };
               arrayOfData.push(data);
             });
@@ -14139,7 +14148,8 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
                 displayStart: r.start,
                 displayEnd: r.end,
                 sameDay: r.sameDay,
-                title: r.title
+                title: r.title,
+                id: r.id
               };
               arrayOfData.push(data);
             });
@@ -14152,6 +14162,9 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
     },
     showTable: function showTable() {
       console.log(this.showTable);
+    },
+    displaySchedule: function displaySchedule() {
+      console.log(this.displaySchedule);
     }
   },
   mounted: function mounted() {
@@ -14169,7 +14182,8 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
           displayStart: r.start,
           displayEnd: r.end,
           sameDay: r.sameDay,
-          title: r.title
+          title: r.title,
+          id: r.id
         };
         arrayOfData.push(data);
       });
@@ -14250,10 +14264,12 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
             displayStart: r.start,
             displayEnd: r.end,
             sameDay: r.sameDay,
-            title: r.title
+            title: r.title,
+            id: r.id
           };
           arrayOfData.push(data);
         });
+        console.log(arrayOfData);
         _this3.displaySchedule = arrayOfData;
       });
       this.showTable = "year";
@@ -14274,7 +14290,8 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
             displayStart: r.start,
             displayEnd: r.end,
             sameDay: r.sameDay,
-            title: r.title
+            title: r.title,
+            id: r.id
           };
           arrayOfData.push(data);
         });
@@ -14298,7 +14315,8 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
             displayStart: r.start,
             displayEnd: r.end,
             sameDay: r.sameDay,
-            title: r.title
+            title: r.title,
+            id: r.id
           };
           arrayOfData.push(data);
         });
@@ -14367,14 +14385,24 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
     openAddEventModal: function openAddEventModal() {
       this.addEventModalIsOpen = true;
     },
-    onClickYearDisplayIcon: function onClickYearDisplayIcon() {
-      console.log("Display Icon Year clicked");
+    closeEditEventModal: function closeEditEventModal() {
+      this.editEventModalIsOpen = false;
+    },
+    openEditEventModal: function openEditEventModal() {
+      this.editEventModalIsOpen = true;
+    },
+    onClickYearDisplayIcon: function onClickYearDisplayIcon(id) {
+      console.log(id);
     },
     onClickMonthDisplayIcon: function onClickMonthDisplayIcon(id) {
       console.log("Display Icon Month clicked, Id = " + id);
+      this.editEventModalIsOpen = true;
+      this.idWhenEditEventModalIsOpen = id;
     },
-    onClickDayDisplayTitle: function onClickDayDisplayTitle() {
-      console.log("Display Icon Day clicked");
+    onClickDayDisplayTitle: function onClickDayDisplayTitle(id) {
+      console.log("Display Icon Day clicked, Id = " + id);
+      this.editEventModalIsOpen = true;
+      this.idWhenEditEventModalIsOpen = id;
     }
   },
   computed: {
@@ -14410,14 +14438,19 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
 
       var _loop = function _loop() {
         var eventArray = [];
+        var id = null;
         _this6.displaySchedule.map(function (d) {
           if (d.displayStart <= currentTime.valueOf() && d.displayEnd >= currentTime.valueOf()) {
-            eventArray.push(d.title);
+            eventArray.push({
+              title: d.title,
+              id: d.id
+            });
           }
         });
         arrayOfTimeAndEvent.push({
           time: currentTime.format("HH-mm"),
-          event: eventArray
+          event: eventArray,
+          id: id
         });
         currentTime = currentTime.add(30, "minute");
       };
@@ -14430,46 +14463,59 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
     monthsListComputed: function monthsListComputed() {
       var monthArray = [{
         month: "January",
-        display: false
+        display: false,
+        id: []
       }, {
         month: "February",
-        display: false
+        display: false,
+        id: []
       }, {
         month: "March",
-        display: false
+        display: false,
+        id: []
       }, {
         month: "April",
-        display: false
+        display: false,
+        id: []
       }, {
         month: "May",
-        display: false
+        display: false,
+        id: []
       }, {
         month: "June",
-        display: false
+        display: false,
+        id: []
       }, {
         month: "July",
-        display: false
+        display: false,
+        id: []
       }, {
         month: "August",
-        display: false
+        display: false,
+        id: []
       }, {
         month: "September",
-        display: false
+        display: false,
+        id: []
       }, {
         month: "October",
-        display: false
+        display: false,
+        id: []
       }, {
         month: "November",
-        display: false
+        display: false,
+        id: []
       }, {
         month: "December",
-        display: false
+        display: false,
+        id: []
       }];
       var checkingCurrentDate = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).format("YYYY");
       var checkingDisplaySchedule = this.displaySchedule;
       checkingDisplaySchedule.map(function (c, index) {
         if (__WEBPACK_IMPORTED_MODULE_1_dayjs___default()(c.displayStart).format("YYYY") === checkingCurrentDate) {
           monthArray[parseInt(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()(c.displayStart).format("MM")) - 1].display = true;
+          monthArray[parseInt(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()(c.displayStart).format("MM")) - 1].id.push(c.id);
         }
       });
       return monthArray;
@@ -14752,7 +14798,7 @@ if(false) {
 /* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(3)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -14960,10 +15006,461 @@ if (false) {
 /* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var disposed = false
+var normalizeComponent = __webpack_require__(4)
+/* script */
+var __vue_script__ = __webpack_require__(118)
+/* template */
+var __vue_template__ = __webpack_require__(121)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "modules\\schedule\\resources\\assets\\js\\components\\EditEventModal.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-753119b0", Component.options)
+  } else {
+    hotAPI.reload("data-v-753119b0", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 118 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_dayjs__ = __webpack_require__(108);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_dayjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_dayjs__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__css_EditEventModal_css__ = __webpack_require__(119);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__css_EditEventModal_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__css_EditEventModal_css__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: "EditEventModal",
+  data: function data() {
+    return {
+      eventType: 1,
+      display: null,
+      layout: null,
+      dateFrom: "",
+      dateTo: "",
+      timeFrom: "",
+      timeTo: "",
+      eventIdAsProps: null,
+      eventTypeOption: [{
+        text: "Campaign/Layout",
+        value: 1
+      }, {
+        text: "Command",
+        value: 2
+      }, {
+        text: "Overlay Layout",
+        value: 3
+      }],
+      displayOption: [{
+        text: "Display",
+        disabled: true
+      }],
+      layoutOption: [{
+        text: "Layouts",
+        disabled: true
+      }]
+    };
+  },
+
+  props: {
+    idWhenEditEventModalIsOpen: Number,
+    showTable: String,
+    currentDate: String
+  },
+  watch: {
+    timeFrom: function timeFrom() {
+      console.log(this.timeFrom);
+    }
+  },
+  mounted: function mounted() {
+    console.log(this.idWhenEditEventModalIsOpen);
+    console.log(this.showTable);
+    this.getStartOfTheMonthUnix();
+  },
+
+  methods: {
+    closeEditEventModal: function closeEditEventModal() {
+      this.$emit("closeEditEventModal");
+    },
+    getStartOfTheMonthUnix: function getStartOfTheMonthUnix() {
+      var getStartOfMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("month");
+      var getEndOfMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("month");
+      console.log(getStartOfMonth);
+      console.log(getEndOfMonth);
+    },
+    onAddEventClick: function onAddEventClick() {
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule", {
+        display: this.display,
+        eventType: this.eventType,
+        layout: this.layout,
+        dateFrom: this.dateFrom,
+        dateTo: this.dateTo,
+        timeFrom: this.computedTimeFrom,
+        timeTo: this.computedTimeTo
+      }).then(function (res) {
+        return console.log(res.data);
+      });
+    }
+  },
+  computed: {
+    computedTimeFrom: function computedTimeFrom() {
+      var newTimeFrom = this.timeFrom.split(":");
+      var tFrom = newTimeFrom.join("%3A") + "%3A00";
+
+      return tFrom;
+    },
+    computedTimeTo: function computedTimeTo() {
+      var newTimeFrom = this.timeTo.split(":");
+      var tTo = newTimeFrom.join("%3A") + "%3A00";
+
+      return tTo;
+    }
+  }
+});
+
+/***/ }),
+/* 119 */
+/***/ (function(module, exports, __webpack_require__) {
+
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(118);
+var content = __webpack_require__(120);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(6)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../../node_modules/css-loader/index.js!./EditEventModal.css", function() {
+			var newContent = require("!!../../../../../node_modules/css-loader/index.js!./EditEventModal.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 120 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".edit-display-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.5);\n  z-index: 1100 !important;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content {\n  height: 80%;\n  width: 70%;\n  border-radius: 10px;\n  background-color: #f5f5f5;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header h1 {\n  font-weight: 400;\n  margin-left: 5rem;\n  font-size: 24px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body {\n  height: 70%;\n  border-top: 1px solid rgba(0, 0, 0, 0.2);\n  border-bottom: 1px solid rgba(0, 0, 0, 0.2);\n  padding: 2rem 5rem;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  margin: 0.4rem 0;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row input {\n  min-width: 400px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row label {\n  margin-bottom: 0 !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row .ui.selection.dropdown {\n  min-width: 400px !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .time input {\n  width: calc(200px - 0.1rem) !important;\n  min-width: calc(200px - 0.1rem) !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-actions {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 5rem;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+/* 121 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "edit-display-modal",
+      on: {
+        click: function($event) {
+          if ($event.target !== $event.currentTarget) {
+            return null
+          }
+          return _vm.closeEditEventModal($event)
+        }
+      }
+    },
+    [
+      _c("div", { staticClass: "edit-display-modal-content" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c("div", { staticClass: "edit-display-modal-body" }, [
+          _c(
+            "div",
+            { staticClass: "edit-display-modal-body-row" },
+            [
+              _c("label", [_vm._v("Display / Display Group")]),
+              _vm._v(" "),
+              _c("sui-dropdown", {
+                attrs: {
+                  selection: "",
+                  search: "",
+                  options: _vm.displayOption
+                },
+                model: {
+                  value: _vm.display,
+                  callback: function($$v) {
+                    _vm.display = $$v
+                  },
+                  expression: "display"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "edit-display-modal-body-row" },
+            [
+              _c("label", [_vm._v("Event Type")]),
+              _vm._v(" "),
+              _c("sui-dropdown", {
+                attrs: { selection: "", options: _vm.eventTypeOption },
+                model: {
+                  value: _vm.eventType,
+                  callback: function($$v) {
+                    _vm.eventType = $$v
+                  },
+                  expression: "eventType"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "edit-display-modal-body-row" },
+            [
+              _c("label", [_vm._v("Layout / Campaign")]),
+              _vm._v(" "),
+              _c("sui-dropdown", {
+                attrs: { selection: "", search: "", options: _vm.layoutOption },
+                model: {
+                  value: _vm.layout,
+                  callback: function($$v) {
+                    _vm.layout = $$v
+                  },
+                  expression: "layout"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "edit-display-modal-body-row time" }, [
+            _c("label", [_vm._v("From")]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "time-input" },
+              [
+                _c("sui-input", {
+                  attrs: { type: "date" },
+                  model: {
+                    value: _vm.dateFrom,
+                    callback: function($$v) {
+                      _vm.dateFrom = $$v
+                    },
+                    expression: "dateFrom"
+                  }
+                }),
+                _vm._v(" "),
+                _c("sui-input", {
+                  attrs: { type: "time" },
+                  model: {
+                    value: _vm.timeFrom,
+                    callback: function($$v) {
+                      _vm.timeFrom = $$v
+                    },
+                    expression: "timeFrom"
+                  }
+                })
+              ],
+              1
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "edit-display-modal-body-row time" }, [
+            _c("label", [_vm._v("To")]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "time-input" },
+              [
+                _c("sui-input", {
+                  attrs: { type: "date" },
+                  model: {
+                    value: _vm.dateTo,
+                    callback: function($$v) {
+                      _vm.dateTo = $$v
+                    },
+                    expression: "dateTo"
+                  }
+                }),
+                _vm._v(" "),
+                _c("sui-input", {
+                  attrs: { type: "time" },
+                  model: {
+                    value: _vm.timeTo,
+                    callback: function($$v) {
+                      _vm.timeTo = $$v
+                    },
+                    expression: "timeTo"
+                  }
+                })
+              ],
+              1
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "edit-display-modal-actions" },
+          [
+            _c("sui-button", [_vm._v("Cancel")]),
+            _vm._v(" "),
+            _c(
+              "sui-button",
+              { attrs: { color: "green" }, on: { click: _vm.onAddEventClick } },
+              [_vm._v("Edit Event")]
+            )
+          ],
+          1
+        )
+      ])
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "edit-display-modal-header" }, [
+      _c("h1", [_vm._v("Edit Event")])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-753119b0", module.exports)
+  }
+}
+
+/***/ }),
+/* 122 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(123);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -14988,10 +15485,10 @@ if(false) {
 }
 
 /***/ }),
-/* 118 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(3)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap);", ""]);
 
@@ -15002,7 +15499,7 @@ exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing:
 
 
 /***/ }),
-/* 119 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -15016,6 +15513,17 @@ var render = function() {
       _vm.addEventModalIsOpen
         ? _c("add-event-modal", {
             on: { closeAddEventModal: _vm.closeAddEventModal }
+          })
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.editEventModalIsOpen
+        ? _c("edit-event-modal", {
+            attrs: {
+              idWhenEditEventModalIsOpen: _vm.idWhenEditEventModalIsOpen,
+              showTable: _vm.showTable,
+              currentDate: _vm.currentDate
+            },
+            on: { closeEditEventModal: _vm.closeEditEventModal }
           })
         : _vm._e(),
       _vm._v(" "),
@@ -15151,7 +15659,11 @@ var render = function() {
                     m.display
                       ? _c("i", {
                           staticClass: "fas fa-desktop",
-                          on: { click: _vm.onClickYearDisplayIcon }
+                          on: {
+                            click: function($event) {
+                              _vm.onClickYearDisplayIcon(m.id)
+                            }
+                          }
                         })
                       : _vm._e()
                   ])
@@ -15291,12 +15803,16 @@ var render = function() {
                                   {
                                     key: index,
                                     staticClass: "day-title",
-                                    on: { click: _vm.onClickDayDisplayTitle }
+                                    on: {
+                                      click: function($event) {
+                                        _vm.onClickDayDisplayTitle(e.id)
+                                      }
+                                    }
                                   },
                                   [
                                     _vm._v(
                                       "\n                " +
-                                        _vm._s(e) +
+                                        _vm._s(e.title) +
                                         "\n              "
                                     )
                                   ]
@@ -15331,7 +15847,7 @@ if (false) {
 }
 
 /***/ }),
-/* 120 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15951,457 +16467,6 @@ exports.PortalTarget = PortalTarget;
 exports.MountingPortal = MountingPortal;
 exports.Wormhole = wormhole;
 //# sourceMappingURL=portal-vue.common.js.map
-
-
-/***/ }),
-/* 121 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(4)
-/* script */
-var __vue_script__ = __webpack_require__(122)
-/* template */
-var __vue_template__ = __webpack_require__(123)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "modules\\schedule\\resources\\assets\\js\\components\\EditEventModal.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-753119b0", Component.options)
-  } else {
-    hotAPI.reload("data-v-753119b0", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 122 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_EditEventModal_css__ = __webpack_require__(124);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_EditEventModal_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__css_EditEventModal_css__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  name: "EditEventModal",
-  data: function data() {
-    return {
-      eventType: 1,
-      display: null,
-      layout: null,
-      dateFrom: "",
-      dateTo: "",
-      timeFrom: "",
-      timeTo: "",
-      eventTypeOption: [{
-        text: "Campaign/Layout",
-        value: 1
-      }, {
-        text: "Command",
-        value: 2
-      }, {
-        text: "Overlay Layout",
-        value: 3
-      }],
-      displayOption: [{
-        text: "Display",
-        disabled: true
-      }],
-      layoutOption: [{
-        text: "Layouts",
-        disabled: true
-      }]
-    };
-  },
-
-  watch: {
-    timeFrom: function timeFrom() {
-      console.log(this.timeFrom);
-    }
-  },
-  mounted: function mounted() {
-    var _this = this;
-
-    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.all([__WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/display/data"), __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/layout/data")]).then(function (res) {
-      console.log(res[0].data);
-      res[0].data.map(function (d) {
-        _this.displayOption.push({
-          text: d.display,
-          value: d.displayId
-        });
-      });
-      console.log(res[1].data);
-      res[1].data.map(function (l) {
-        _this.layoutOption.push({
-          text: l.layout,
-          value: l.layoutId
-        });
-      });
-    });
-  },
-
-  methods: {
-    closeAddEventModal: function closeAddEventModal() {
-      this.$emit("closeAddEventModal");
-    },
-    onAddEventClick: function onAddEventClick() {
-      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule", {
-        display: this.display,
-        eventType: this.eventType,
-        layout: this.layout,
-        dateFrom: this.dateFrom,
-        dateTo: this.dateTo,
-        timeFrom: this.computedTimeFrom,
-        timeTo: this.computedTimeTo
-      }).then(function (res) {
-        return console.log(res.data);
-      });
-    }
-  },
-  computed: {
-    computedTimeFrom: function computedTimeFrom() {
-      var newTimeFrom = this.timeFrom.split(":");
-      var tFrom = newTimeFrom.join("%3A") + "%3A00";
-
-      return tFrom;
-    },
-    computedTimeTo: function computedTimeTo() {
-      var newTimeFrom = this.timeTo.split(":");
-      var tTo = newTimeFrom.join("%3A") + "%3A00";
-
-      return tTo;
-    }
-  }
-});
-
-/***/ }),
-/* 123 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass: "edit-display-modal",
-      on: {
-        click: function($event) {
-          if ($event.target !== $event.currentTarget) {
-            return null
-          }
-          return _vm.closeAddEventModal($event)
-        }
-      }
-    },
-    [
-      _c("div", { staticClass: "edit-display-modal-content" }, [
-        _vm._m(0),
-        _vm._v(" "),
-        _c("div", { staticClass: "edit-display-modal-body" }, [
-          _c(
-            "div",
-            { staticClass: "edit-display-modal-body-row" },
-            [
-              _c("label", [_vm._v("Display / Display Group")]),
-              _vm._v(" "),
-              _c("sui-dropdown", {
-                attrs: {
-                  selection: "",
-                  search: "",
-                  options: _vm.displayOption
-                },
-                model: {
-                  value: _vm.display,
-                  callback: function($$v) {
-                    _vm.display = $$v
-                  },
-                  expression: "display"
-                }
-              })
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "edit-display-modal-body-row" },
-            [
-              _c("label", [_vm._v("Event Type")]),
-              _vm._v(" "),
-              _c("sui-dropdown", {
-                attrs: { selection: "", options: _vm.eventTypeOption },
-                model: {
-                  value: _vm.eventType,
-                  callback: function($$v) {
-                    _vm.eventType = $$v
-                  },
-                  expression: "eventType"
-                }
-              })
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "edit-display-modal-body-row" },
-            [
-              _c("label", [_vm._v("Layout / Campaign")]),
-              _vm._v(" "),
-              _c("sui-dropdown", {
-                attrs: { selection: "", search: "", options: _vm.layoutOption },
-                model: {
-                  value: _vm.layout,
-                  callback: function($$v) {
-                    _vm.layout = $$v
-                  },
-                  expression: "layout"
-                }
-              })
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c("div", { staticClass: "edit-display-modal-body-row time" }, [
-            _c("label", [_vm._v("From")]),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "time-input" },
-              [
-                _c("sui-input", {
-                  attrs: { type: "date" },
-                  model: {
-                    value: _vm.dateFrom,
-                    callback: function($$v) {
-                      _vm.dateFrom = $$v
-                    },
-                    expression: "dateFrom"
-                  }
-                }),
-                _vm._v(" "),
-                _c("sui-input", {
-                  attrs: { type: "time" },
-                  model: {
-                    value: _vm.timeFrom,
-                    callback: function($$v) {
-                      _vm.timeFrom = $$v
-                    },
-                    expression: "timeFrom"
-                  }
-                })
-              ],
-              1
-            )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "edit-display-modal-body-row time" }, [
-            _c("label", [_vm._v("To")]),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "time-input" },
-              [
-                _c("sui-input", {
-                  attrs: { type: "date" },
-                  model: {
-                    value: _vm.dateTo,
-                    callback: function($$v) {
-                      _vm.dateTo = $$v
-                    },
-                    expression: "dateTo"
-                  }
-                }),
-                _vm._v(" "),
-                _c("sui-input", {
-                  attrs: { type: "time" },
-                  model: {
-                    value: _vm.timeTo,
-                    callback: function($$v) {
-                      _vm.timeTo = $$v
-                    },
-                    expression: "timeTo"
-                  }
-                })
-              ],
-              1
-            )
-          ])
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "edit-display-modal-actions" },
-          [
-            _c("sui-button", [_vm._v("Cancel")]),
-            _vm._v(" "),
-            _c(
-              "sui-button",
-              { attrs: { color: "green" }, on: { click: _vm.onAddEventClick } },
-              [_vm._v("Edit Event")]
-            )
-          ],
-          1
-        )
-      ])
-    ]
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "edit-display-modal-header" }, [
-      _c("h1", [_vm._v("Edit Event")])
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-753119b0", module.exports)
-  }
-}
-
-/***/ }),
-/* 124 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(125);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(6)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../../../../node_modules/css-loader/index.js!./EditEventModal.css", function() {
-			var newContent = require("!!../../../../../node_modules/css-loader/index.js!./EditEventModal.css");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 125 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(3)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".edit-display-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.5);\n  z-index: 1100 !important;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content {\n  height: 80%;\n  width: 70%;\n  border-radius: 10px;\n  background-color: #f5f5f5;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header h1 {\n  font-weight: 400;\n  margin-left: 5rem;\n  font-size: 24px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body {\n  height: 70%;\n  border-top: 1px solid rgba(0, 0, 0, 0.2);\n  border-bottom: 1px solid rgba(0, 0, 0, 0.2);\n  padding: 2rem 5rem;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  margin: 0.4rem 0;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row input {\n  min-width: 400px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row label {\n  margin-bottom: 0 !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row .ui.selection.dropdown {\n  min-width: 400px !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .time input {\n  width: calc(200px - 0.1rem) !important;\n  min-width: calc(200px - 0.1rem) !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-actions {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 5rem;\n}", ""]);
-
-// exports
 
 
 /***/ })

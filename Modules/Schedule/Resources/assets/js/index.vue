@@ -4,7 +4,13 @@
       v-if="addEventModalIsOpen"
       v-on:closeAddEventModal="closeAddEventModal"
     ></add-event-modal>
-    <!-- <edit-event-modal></edit-event-modal> -->
+    <edit-event-modal
+      v-if="editEventModalIsOpen"
+      v-on:closeEditEventModal="closeEditEventModal"
+      v-bind:idWhenEditEventModalIsOpen="idWhenEditEventModalIsOpen"
+      v-bind:showTable="showTable"
+      v-bind:currentDate="currentDate"
+    ></edit-event-modal>
     <div class="navigation">
       <h2>{{ selectedDate }} {{ selectedMonth }} {{ selectedYear }}</h2>
       <sui-button @click="openAddEventModal">Add Event</sui-button>
@@ -55,7 +61,7 @@
           >
             <span @click="onClickMonthOfYear(index)">{{ m.month }}</span>
             <i
-              @click="onClickYearDisplayIcon"
+              @click="onClickYearDisplayIcon(m.id)"
               class="fas fa-desktop"
               v-if="m.display"
             ></i>
@@ -121,12 +127,12 @@
               <sui-table-cell class="time">{{ h.time }}</sui-table-cell>
               <sui-table-cell>
                 <p
-                  @click="onClickDayDisplayTitle"
+                  @click="onClickDayDisplayTitle(e.id)"
                   v-for="(e, index) in h.event"
                   :key="index"
                   class="day-title"
                 >
-                  {{ e }}
+                  {{ e.title }}
                 </p>
               </sui-table-cell>
             </sui-table-row>
@@ -171,6 +177,8 @@ export default {
       displaySchedule: [],
       showPopUpNumber: null,
       addEventModalIsOpen: false,
+      editEventModalIsOpen: false,
+      idWhenEditEventModalIsOpen: null,
       monthsList: [
         "January",
         "February",
@@ -224,6 +232,7 @@ export default {
                   displayEnd: r.end,
                   sameDay: r.sameDay,
                   title: r.title,
+                  id: r.id,
                 };
                 arrayOfData.push(data);
               });
@@ -270,6 +279,7 @@ export default {
                   displayEnd: r.end,
                   sameDay: r.sameDay,
                   title: r.title,
+                  id: r.id,
                 };
                 arrayOfData.push(data);
               });
@@ -282,6 +292,9 @@ export default {
     },
     showTable: function () {
       console.log(this.showTable);
+    },
+    displaySchedule: function () {
+      console.log(this.displaySchedule);
     },
   },
   mounted() {
@@ -300,6 +313,7 @@ export default {
             displayEnd: r.end,
             sameDay: r.sameDay,
             title: r.title,
+            id: r.id,
           };
           arrayOfData.push(data);
         });
@@ -415,9 +429,11 @@ export default {
               displayEnd: r.end,
               sameDay: r.sameDay,
               title: r.title,
+              id: r.id,
             };
             arrayOfData.push(data);
           });
+          console.log(arrayOfData);
           this.displaySchedule = arrayOfData;
         });
       this.showTable = "year";
@@ -439,6 +455,7 @@ export default {
               displayEnd: r.end,
               sameDay: r.sameDay,
               title: r.title,
+              id: r.id,
             };
             arrayOfData.push(data);
           });
@@ -463,6 +480,7 @@ export default {
               displayEnd: r.end,
               sameDay: r.sameDay,
               title: r.title,
+              id: r.id,
             };
             arrayOfData.push(data);
           });
@@ -546,14 +564,24 @@ export default {
     openAddEventModal() {
       this.addEventModalIsOpen = true;
     },
-    onClickYearDisplayIcon() {
-      console.log("Display Icon Year clicked");
+    closeEditEventModal() {
+      this.editEventModalIsOpen = false;
+    },
+    openEditEventModal() {
+      this.editEventModalIsOpen = true;
+    },
+    onClickYearDisplayIcon(id) {
+      console.log(id);
     },
     onClickMonthDisplayIcon(id) {
       console.log("Display Icon Month clicked, Id = " + id);
+      this.editEventModalIsOpen = true;
+      this.idWhenEditEventModalIsOpen = id;
     },
-    onClickDayDisplayTitle() {
-      console.log("Display Icon Day clicked");
+    onClickDayDisplayTitle(id) {
+      console.log("Display Icon Day clicked, Id = " + id);
+      this.editEventModalIsOpen = true;
+      this.idWhenEditEventModalIsOpen = id;
     },
   },
   computed: {
@@ -597,17 +625,22 @@ export default {
       let currentTime = dayjs(this.currentDate);
       do {
         let eventArray = [];
+        let id = null;
         this.displaySchedule.map((d) => {
           if (
             d.displayStart <= currentTime.valueOf() &&
             d.displayEnd >= currentTime.valueOf()
           ) {
-            eventArray.push(d.title);
+            eventArray.push({
+              title: d.title,
+              id: d.id,
+            });
           }
         });
         arrayOfTimeAndEvent.push({
           time: currentTime.format("HH-mm"),
           event: eventArray,
+          id: id,
         });
         currentTime = currentTime.add(30, "minute");
       } while (currentTime.format("HH-mm") !== "00-00");
@@ -618,50 +651,62 @@ export default {
         {
           month: "January",
           display: false,
+          id: [],
         },
         {
           month: "February",
           display: false,
+          id: [],
         },
         {
           month: "March",
           display: false,
+          id: [],
         },
         {
           month: "April",
           display: false,
+          id: [],
         },
         {
           month: "May",
           display: false,
+          id: [],
         },
         {
           month: "June",
           display: false,
+          id: [],
         },
         {
           month: "July",
           display: false,
+          id: [],
         },
         {
           month: "August",
           display: false,
+          id: [],
         },
         {
           month: "September",
           display: false,
+          id: [],
         },
         {
           month: "October",
           display: false,
+          id: [],
         },
         {
           month: "November",
           display: false,
+          id: [],
         },
         {
           month: "December",
           display: false,
+          id: [],
         },
       ];
       let checkingCurrentDate = dayjs(this.currentDate).format("YYYY");
@@ -671,6 +716,9 @@ export default {
           monthArray[
             parseInt(dayjs(c.displayStart).format("MM")) - 1
           ].display = true;
+          monthArray[parseInt(dayjs(c.displayStart).format("MM")) - 1].id.push(
+            c.id
+          );
         }
       });
       return monthArray;

@@ -1,5 +1,5 @@
 <template>
-  <div class="edit-display-modal" @click.self="closeAddEventModal">
+  <div class="edit-display-modal" @click.self="closeEditEventModal">
     <div class="edit-display-modal-content">
       <div class="edit-display-modal-header">
         <h1>Edit Event</h1>
@@ -58,6 +58,7 @@
 
 <script>
 import axios from "axios";
+import dayjs from "dayjs";
 
 import "../../css/EditEventModal.css";
 
@@ -72,6 +73,7 @@ export default {
       dateTo: "",
       timeFrom: "",
       timeTo: "",
+      eventIdAsProps: null,
       eventTypeOption: [
         {
           text: "Campaign/Layout",
@@ -100,37 +102,30 @@ export default {
       ],
     };
   },
+  props: {
+    idWhenEditEventModalIsOpen: Number,
+    showTable: String,
+    currentDate: String,
+  },
   watch: {
     timeFrom: function () {
       console.log(this.timeFrom);
     },
   },
   mounted() {
-    axios
-      .all([
-        axios.get("http://127.0.0.1:8000/display/data"),
-        axios.get("http://127.0.0.1:8000/layout/data"),
-      ])
-      .then((res) => {
-        console.log(res[0].data);
-        res[0].data.map((d) => {
-          this.displayOption.push({
-            text: d.display,
-            value: d.displayId,
-          });
-        });
-        console.log(res[1].data);
-        res[1].data.map((l) => {
-          this.layoutOption.push({
-            text: l.layout,
-            value: l.layoutId,
-          });
-        });
-      });
+    console.log(this.idWhenEditEventModalIsOpen);
+    console.log(this.showTable);
+    this.getStartOfTheMonthUnix();
   },
   methods: {
-    closeAddEventModal() {
-      this.$emit("closeAddEventModal");
+    closeEditEventModal() {
+      this.$emit("closeEditEventModal");
+    },
+    getStartOfTheMonthUnix() {
+      let getStartOfMonth = dayjs(this.currentDate).startOf("month");
+      let getEndOfMonth = dayjs(this.currentDate).endOf("month");
+      console.log(getStartOfMonth);
+      console.log(getEndOfMonth);
     },
     onAddEventClick() {
       axios
