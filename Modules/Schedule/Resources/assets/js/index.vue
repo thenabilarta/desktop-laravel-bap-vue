@@ -4,6 +4,7 @@
       v-if="addEventModalIsOpen"
       v-on:closeAddEventModal="closeAddEventModal"
     ></add-event-modal>
+    <!-- <edit-event-modal></edit-event-modal> -->
     <div class="navigation">
       <h2>{{ selectedDate }} {{ selectedMonth }} {{ selectedYear }}</h2>
       <sui-button @click="openAddEventModal">Add Event</sui-button>
@@ -53,7 +54,11 @@
             :key="index"
           >
             <span @click="onClickMonthOfYear(index)">{{ m.month }}</span>
-            <i class="fas fa-desktop" v-if="m.display"></i>
+            <i
+              @click="onClickYearDisplayIcon"
+              class="fas fa-desktop"
+              v-if="m.display"
+            ></i>
           </li>
         </ol>
       </div>
@@ -79,6 +84,7 @@
                 <i
                   @mouseover="onShowPopUp(cal.date, index)"
                   @mouseleave="offShowPopUp"
+                  @click="onClickMonthDisplayIcon(d.id)"
                   class="fas fa-desktop"
                 ></i>
                 <span
@@ -114,7 +120,14 @@
             >
               <sui-table-cell class="time">{{ h.time }}</sui-table-cell>
               <sui-table-cell>
-                <p v-for="(e, index) in h.event" :key="index">{{ e }}</p>
+                <p
+                  @click="onClickDayDisplayTitle"
+                  v-for="(e, index) in h.event"
+                  :key="index"
+                  class="day-title"
+                >
+                  {{ e }}
+                </p>
               </sui-table-cell>
             </sui-table-row>
           </sui-table-body>
@@ -132,6 +145,7 @@ import weekOfYear from "dayjs/plugin/weekOfYear";
 import isBetween from "dayjs/plugin/isBetween";
 
 import AddEventModal from "./components/AddEventModal";
+import EditEventModal from "./components/EditEventModal";
 import "../css/index.css";
 
 dayjs.extend(weekday);
@@ -144,6 +158,7 @@ export default {
   name: "App",
   components: {
     AddEventModal: AddEventModal,
+    EditEventModal: EditEventModal,
   },
   data() {
     return {
@@ -224,6 +239,7 @@ export default {
               dateTo: endMonth,
             })
             .then((res) => {
+              console.log(res.data);
               let arrayOfData = [];
               res.data.result.map((r) => {
                 let data = {
@@ -231,6 +247,7 @@ export default {
                   displayEnd: r.end,
                   sameDay: r.sameDay,
                   title: r.title,
+                  id: r.id,
                 };
                 arrayOfData.push(data);
               });
@@ -311,6 +328,7 @@ export default {
                 displayProperty.push({
                   exist: true,
                   title: s.title,
+                  id: s.id,
                 });
               }
             });
@@ -527,6 +545,15 @@ export default {
     },
     openAddEventModal() {
       this.addEventModalIsOpen = true;
+    },
+    onClickYearDisplayIcon() {
+      console.log("Display Icon Year clicked");
+    },
+    onClickMonthDisplayIcon(id) {
+      console.log("Display Icon Month clicked, Id = " + id);
+    },
+    onClickDayDisplayTitle() {
+      console.log("Display Icon Day clicked");
     },
   },
   computed: {

@@ -2,7 +2,7 @@
   <div class="edit-display-modal" @click.self="closeAddEventModal">
     <div class="edit-display-modal-content">
       <div class="edit-display-modal-header">
-        <h1>Add Event</h1>
+        <h1>Edit Event</h1>
       </div>
       <div class="edit-display-modal-body">
         <div class="edit-display-modal-body-row">
@@ -49,7 +49,7 @@
       <div class="edit-display-modal-actions">
         <sui-button>Cancel</sui-button>
         <sui-button color="green" @click="onAddEventClick"
-          >Add Event</sui-button
+          >Edit Event</sui-button
         >
       </div>
     </div>
@@ -59,19 +59,19 @@
 <script>
 import axios from "axios";
 
-import "../../css/AddEventModal.css";
+import "../../css/EditEventModal.css";
 
 export default {
-  name: "AddEventModal",
+  name: "EditEventModal",
   data() {
     return {
       eventType: 1,
       display: null,
       layout: null,
-      dateFrom: "2020-12-18",
-      dateTo: "2020-12-25",
-      timeFrom: "01:00",
-      timeTo: "23:00",
+      dateFrom: "",
+      dateTo: "",
+      timeFrom: "",
+      timeTo: "",
       eventTypeOption: [
         {
           text: "Campaign/Layout",

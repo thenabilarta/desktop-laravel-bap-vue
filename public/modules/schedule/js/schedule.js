@@ -13729,7 +13729,7 @@ var normalizeComponent = __webpack_require__(4)
 /* script */
 var __vue_script__ = __webpack_require__(107)
 /* template */
-var __vue_template__ = __webpack_require__(118)
+var __vue_template__ = __webpack_require__(119)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -13844,7 +13844,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue__ = __webpack_require__(35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_portal_vue__ = __webpack_require__(119);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_portal_vue__ = __webpack_require__(120);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_portal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_portal_vue__);
 
 
@@ -13879,12 +13879,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_dayjs_plugin_weekday___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_dayjs_plugin_weekday__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_dayjs_plugin_weekOfYear__ = __webpack_require__(110);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_dayjs_plugin_weekOfYear___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_dayjs_plugin_weekOfYear__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_dayjs_plugin_isBetween__ = __webpack_require__(120);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_dayjs_plugin_isBetween__ = __webpack_require__(111);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_dayjs_plugin_isBetween___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_dayjs_plugin_isBetween__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_AddEventModal__ = __webpack_require__(111);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_AddEventModal__ = __webpack_require__(112);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_AddEventModal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__components_AddEventModal__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__css_index_css__ = __webpack_require__(116);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__css_index_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__css_index_css__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_EditEventModal__ = __webpack_require__(121);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_EditEventModal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__components_EditEventModal__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__css_index_css__ = __webpack_require__(117);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__css_index_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__css_index_css__);
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 //
@@ -14013,6 +14015,20 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -14032,7 +14048,8 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "App",
   components: {
-    AddEventModal: __WEBPACK_IMPORTED_MODULE_5__components_AddEventModal___default.a
+    AddEventModal: __WEBPACK_IMPORTED_MODULE_5__components_AddEventModal___default.a,
+    EditEventModal: __WEBPACK_IMPORTED_MODULE_6__components_EditEventModal___default.a
   },
   data: function data() {
     return {
@@ -14094,13 +14111,15 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
             dateFrom: startMonth,
             dateTo: endMonth
           }).then(function (res) {
+            console.log(res.data);
             var arrayOfData = [];
             res.data.result.map(function (r) {
               var data = {
                 displayStart: r.start,
                 displayEnd: r.end,
                 sameDay: r.sameDay,
-                title: r.title
+                title: r.title,
+                id: r.id
               };
               arrayOfData.push(data);
             });
@@ -14171,7 +14190,8 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
             if (dateInUnix.isBetween(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayStart), __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayEnd)) || __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayStart).date() === dateInUnix.date() || __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayEnd).date() === dateInUnix.date()) {
               displayProperty.push({
                 exist: true,
-                title: s.title
+                title: s.title,
+                id: s.id
               });
             }
           });
@@ -14346,6 +14366,15 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
     },
     openAddEventModal: function openAddEventModal() {
       this.addEventModalIsOpen = true;
+    },
+    onClickYearDisplayIcon: function onClickYearDisplayIcon() {
+      console.log("Display Icon Year clicked");
+    },
+    onClickMonthDisplayIcon: function onClickMonthDisplayIcon(id) {
+      console.log("Display Icon Month clicked, Id = " + id);
+    },
+    onClickDayDisplayTitle: function onClickDayDisplayTitle() {
+      console.log("Display Icon Day clicked");
     }
   },
   computed: {
@@ -14473,12 +14502,19 @@ console.log(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()().isSame("2020-12-15",
 /* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
+!function(e,t){ true?module.exports=t():"function"==typeof define&&define.amd?define(t):e.dayjs_plugin_isBetween=t()}(this,function(){"use strict";return function(e,t,i){t.prototype.isBetween=function(e,t,s,f){var n=i(e),o=i(t),r="("===(f=f||"()")[0],u=")"===f[1];return(r?this.isAfter(n,s):!this.isBefore(n,s))&&(u?this.isBefore(o,s):!this.isAfter(o,s))||(r?this.isBefore(n,s):!this.isAfter(n,s))&&(u?this.isAfter(o,s):!this.isBefore(o,s))}}});
+
+
+/***/ }),
+/* 112 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var disposed = false
 var normalizeComponent = __webpack_require__(4)
 /* script */
-var __vue_script__ = __webpack_require__(112)
+var __vue_script__ = __webpack_require__(113)
 /* template */
-var __vue_template__ = __webpack_require__(115)
+var __vue_template__ = __webpack_require__(116)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -14517,14 +14553,14 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_AddEventModal_css__ = __webpack_require__(113);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_AddEventModal_css__ = __webpack_require__(114);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_AddEventModal_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__css_AddEventModal_css__);
 //
 //
@@ -14573,6 +14609,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 
 
@@ -14581,6 +14630,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   data: function data() {
     return {
       eventType: 1,
+      display: null,
+      layout: null,
+      dateFrom: "2020-12-18",
+      dateTo: "2020-12-25",
+      timeFrom: "01:00",
+      timeTo: "23:00",
       eventTypeOption: [{
         text: "Campaign/Layout",
         value: 1
@@ -14590,25 +14645,86 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       }, {
         text: "Overlay Layout",
         value: 3
+      }],
+      displayOption: [{
+        text: "Display",
+        disabled: true
+      }],
+      layoutOption: [{
+        text: "Layouts",
+        disabled: true
       }]
     };
+  },
+
+  watch: {
+    timeFrom: function timeFrom() {
+      console.log(this.timeFrom);
+    }
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.all([__WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/display/data"), __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/layout/data")]).then(function (res) {
+      console.log(res[0].data);
+      res[0].data.map(function (d) {
+        _this.displayOption.push({
+          text: d.display,
+          value: d.displayId
+        });
+      });
+      console.log(res[1].data);
+      res[1].data.map(function (l) {
+        _this.layoutOption.push({
+          text: l.layout,
+          value: l.layoutId
+        });
+      });
+    });
   },
 
   methods: {
     closeAddEventModal: function closeAddEventModal() {
       this.$emit("closeAddEventModal");
+    },
+    onAddEventClick: function onAddEventClick() {
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule", {
+        display: this.display,
+        eventType: this.eventType,
+        layout: this.layout,
+        dateFrom: this.dateFrom,
+        dateTo: this.dateTo,
+        timeFrom: this.computedTimeFrom,
+        timeTo: this.computedTimeTo
+      }).then(function (res) {
+        return console.log(res.data);
+      });
+    }
+  },
+  computed: {
+    computedTimeFrom: function computedTimeFrom() {
+      var newTimeFrom = this.timeFrom.split(":");
+      var tFrom = newTimeFrom.join("%3A") + "%3A00";
+
+      return tFrom;
+    },
+    computedTimeTo: function computedTimeTo() {
+      var newTimeFrom = this.timeTo.split(":");
+      var tTo = newTimeFrom.join("%3A") + "%3A00";
+
+      return tTo;
     }
   }
 });
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(114);
+var content = __webpack_require__(115);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -14633,7 +14749,7 @@ if(false) {
 }
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(3)(false);
@@ -14641,13 +14757,13 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, ".edit-display-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.5);\n  z-index: 1100 !important;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content {\n  height: 80%;\n  width: 70%;\n  border-radius: 10px;\n  background-color: #f5f5f5;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header h1 {\n  font-weight: 400;\n  margin-left: 1rem;\n  font-size: 24px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body {\n  height: 70%;\n  border-top: 1px solid rgba(0, 0, 0, 0.2);\n  border-bottom: 1px solid rgba(0, 0, 0, 0.2);\n  padding: 2rem 5rem;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  margin: 0.4rem 0;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row input {\n  min-width: 400px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row label {\n  margin-bottom: 0 !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row .ui.selection.dropdown {\n  min-width: 400px !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .time input {\n  width: calc(200px - 0.1rem) !important;\n  min-width: calc(200px - 0.1rem) !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-actions {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 5rem;\n}", ""]);
+exports.push([module.i, ".edit-display-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.5);\n  z-index: 1100 !important;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content {\n  height: 80%;\n  width: 70%;\n  border-radius: 10px;\n  background-color: #f5f5f5;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header h1 {\n  font-weight: 400;\n  margin-left: 5rem;\n  font-size: 24px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body {\n  height: 70%;\n  border-top: 1px solid rgba(0, 0, 0, 0.2);\n  border-bottom: 1px solid rgba(0, 0, 0, 0.2);\n  padding: 2rem 5rem;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  margin: 0.4rem 0;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row input {\n  min-width: 400px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row label {\n  margin-bottom: 0 !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row .ui.selection.dropdown {\n  min-width: 400px !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .time input {\n  width: calc(200px - 0.1rem) !important;\n  min-width: calc(200px - 0.1rem) !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-actions {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 5rem;\n}", ""]);
 
 // exports
 
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -14676,9 +14792,22 @@ var render = function() {
             "div",
             { staticClass: "edit-display-modal-body-row" },
             [
-              _c("label", [_vm._v("Display")]),
+              _c("label", [_vm._v("Display / Display Group")]),
               _vm._v(" "),
-              _c("sui-input", { attrs: { fluid: "" } })
+              _c("sui-dropdown", {
+                attrs: {
+                  selection: "",
+                  search: "",
+                  options: _vm.displayOption
+                },
+                model: {
+                  value: _vm.display,
+                  callback: function($$v) {
+                    _vm.display = $$v
+                  },
+                  expression: "display"
+                }
+              })
             ],
             1
           ),
@@ -14690,11 +14819,7 @@ var render = function() {
               _c("label", [_vm._v("Event Type")]),
               _vm._v(" "),
               _c("sui-dropdown", {
-                attrs: {
-                  placeholder: "--",
-                  selection: "",
-                  options: _vm.eventTypeOption
-                },
+                attrs: { selection: "", options: _vm.eventTypeOption },
                 model: {
                   value: _vm.eventType,
                   callback: function($$v) {
@@ -14713,7 +14838,16 @@ var render = function() {
             [
               _c("label", [_vm._v("Layout / Campaign")]),
               _vm._v(" "),
-              _c("sui-input", { attrs: { fluid: "" } })
+              _c("sui-dropdown", {
+                attrs: { selection: "", search: "", options: _vm.layoutOption },
+                model: {
+                  value: _vm.layout,
+                  callback: function($$v) {
+                    _vm.layout = $$v
+                  },
+                  expression: "layout"
+                }
+              })
             ],
             1
           ),
@@ -14725,9 +14859,27 @@ var render = function() {
               "div",
               { staticClass: "time-input" },
               [
-                _c("sui-input", { attrs: { type: "date" } }),
+                _c("sui-input", {
+                  attrs: { type: "date" },
+                  model: {
+                    value: _vm.dateFrom,
+                    callback: function($$v) {
+                      _vm.dateFrom = $$v
+                    },
+                    expression: "dateFrom"
+                  }
+                }),
                 _vm._v(" "),
-                _c("sui-input", { attrs: { type: "time" } })
+                _c("sui-input", {
+                  attrs: { type: "time" },
+                  model: {
+                    value: _vm.timeFrom,
+                    callback: function($$v) {
+                      _vm.timeFrom = $$v
+                    },
+                    expression: "timeFrom"
+                  }
+                })
               ],
               1
             )
@@ -14740,9 +14892,27 @@ var render = function() {
               "div",
               { staticClass: "time-input" },
               [
-                _c("sui-input", { attrs: { type: "date" } }),
+                _c("sui-input", {
+                  attrs: { type: "date" },
+                  model: {
+                    value: _vm.dateTo,
+                    callback: function($$v) {
+                      _vm.dateTo = $$v
+                    },
+                    expression: "dateTo"
+                  }
+                }),
                 _vm._v(" "),
-                _c("sui-input", { attrs: { type: "time" } })
+                _c("sui-input", {
+                  attrs: { type: "time" },
+                  model: {
+                    value: _vm.timeTo,
+                    callback: function($$v) {
+                      _vm.timeTo = $$v
+                    },
+                    expression: "timeTo"
+                  }
+                })
               ],
               1
             )
@@ -14753,11 +14923,13 @@ var render = function() {
           "div",
           { staticClass: "edit-display-modal-actions" },
           [
-            _c("sui-button", { attrs: { color: "yellow" } }, [
-              _vm._v("Cancel")
-            ]),
+            _c("sui-button", [_vm._v("Cancel")]),
             _vm._v(" "),
-            _c("sui-button", { attrs: { color: "green" } }, [_vm._v("Save")])
+            _c(
+              "sui-button",
+              { attrs: { color: "green" }, on: { click: _vm.onAddEventClick } },
+              [_vm._v("Add Event")]
+            )
           ],
           1
         )
@@ -14785,13 +14957,13 @@ if (false) {
 }
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(117);
+var content = __webpack_require__(118);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -14816,7 +14988,7 @@ if(false) {
 }
 
 /***/ }),
-/* 117 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(3)(false);
@@ -14824,13 +14996,13 @@ exports = module.exports = __webpack_require__(3)(false);
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap);", ""]);
 
 // module
-exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n  --grey-100: #e4e9f0;\n  --grey-200: #cfd7e3;\n  --grey-300: #b5c0cd;\n  --grey-800: #3e4e63;\n  --grid-gap: 1px;\n  --day-label-size: 20px;\n}\n\n.navigation {\n  padding: 2rem;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.navigation > * {\n  margin-left: 2rem !important;\n}\n\n.navigation h2 {\n  margin: 0px !important;\n  font-weight: 400 !important;\n}\n\n.date-input {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 2rem 1rem 2rem;\n}\n\n.date-input > * {\n  margin-left: 2rem !important;\n}\n\n.date-input .ui.input {\n  margin-left: 0 !important;\n}\n\nmain {\n  padding: 0 2rem 2rem 2rem;\n}\n\nmain .year {\n  margin-top: 2rem;\n}\n\nmain .year .month-of-year {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[3];\n      grid-template-columns: repeat(3, 1fr);\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border: solid 1px rgba(0, 0, 0, 0.1);\n  background-color: #e2e2e2;\n}\n\nmain .year .month-list {\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  position: relative;\n}\n\nmain .year .month-list span {\n  cursor: pointer;\n}\n\nmain .year .month-list i {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n}\n\nmain #calendar-days {\n  border: 1px solid rgba(0, 0, 0, 0.1);\n}\n\nmain .days-grid {\n  height: 100%;\n  position: relative;\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border-top: solid 1px black;\n  background-color: #e2e2e2;\n}\n\nmain .day-of-week,\nmain .days-grid {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[7];\n      grid-template-columns: repeat(7, 1fr);\n}\n\nmain .day-of-week .calendar-day,\nmain .days-grid .calendar-day {\n  position: relative;\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: end;\n      -ms-flex-align: end;\n          align-items: flex-end;\n}\n\nmain .day-of-week .calendar-day .not-current span,\nmain .days-grid .calendar-day .not-current span {\n  opacity: 0.5;\n}\n\nmain .day-of-week .calendar-day .dayNumber,\nmain .days-grid .calendar-day .dayNumber {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  cursor: pointer;\n}\n\nmain .day-of-week .calendar-day .display-icon .icon-and-popup,\nmain .days-grid .calendar-day .display-icon .icon-and-popup {\n  position: relative;\n  cursor: pointer;\n}\n\nmain .day-of-week .calendar-day .display-icon .icon-and-popup .popup,\nmain .days-grid .calendar-day .display-icon .icon-and-popup .popup {\n  position: absolute;\n  bottom: 100%;\n  right: -200%;\n  font-size: 10px;\n  padding: 0.3rem;\n  border-radius: 3px;\n  z-index: 1300;\n  min-width: 100px;\n  background-color: black;\n  color: white;\n  text-align: center;\n}\n\nmain .day-of-week .not-current,\nmain .days-grid .not-current {\n  background-color: #eeeeee !important;\n}\n\nmain .day-of-week {\n  color: var(--grey-800);\n  font-size: 18px;\n  background-color: #fff;\n  padding-bottom: 5px;\n  padding-top: 10px;\n}\n\nmain .day-of-week .day-list {\n  text-align: center;\n}\n\nmain .day {\n  margin-top: 2rem;\n}\n\nmain .day .time {\n  width: 10% !important;\n  text-align: center !important;\n}\n\nmain .day .events {\n  text-align: center !important;\n}\n\nmain ol,\nmain li {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n\n.ui.selection.dropdown {\n  min-width: 5em;\n}\n\n.button-active {\n  background-color: #babbbc !important;\n}\n\n.ui.selection.dropdown {\n  width: 150px !important;\n}", ""]);
+exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n  --grey-100: #e4e9f0;\n  --grey-200: #cfd7e3;\n  --grey-300: #b5c0cd;\n  --grey-800: #3e4e63;\n  --grid-gap: 1px;\n  --day-label-size: 20px;\n}\n\n.navigation {\n  padding: 2rem;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.navigation > * {\n  margin-left: 2rem !important;\n}\n\n.navigation h2 {\n  margin: 0px !important;\n  font-weight: 400 !important;\n}\n\n.date-input {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 2rem 1rem 2rem;\n}\n\n.date-input > * {\n  margin-left: 2rem !important;\n}\n\n.date-input .ui.input {\n  margin-left: 0 !important;\n}\n\nmain {\n  padding: 0 2rem 2rem 2rem;\n}\n\nmain .year {\n  margin-top: 2rem;\n}\n\nmain .year .month-of-year {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[3];\n      grid-template-columns: repeat(3, 1fr);\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border: solid 1px rgba(0, 0, 0, 0.1);\n  background-color: #e2e2e2;\n}\n\nmain .year .month-list {\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  position: relative;\n}\n\nmain .year .month-list span {\n  cursor: pointer;\n}\n\nmain .year .month-list i {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  cursor: pointer;\n}\n\nmain #calendar-days {\n  border: 1px solid rgba(0, 0, 0, 0.1);\n}\n\nmain .days-grid {\n  height: 100%;\n  position: relative;\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border-top: solid 1px black;\n  background-color: #e2e2e2;\n}\n\nmain .day-of-week,\nmain .days-grid {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[7];\n      grid-template-columns: repeat(7, 1fr);\n}\n\nmain .day-of-week .calendar-day,\nmain .days-grid .calendar-day {\n  position: relative;\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: end;\n      -ms-flex-align: end;\n          align-items: flex-end;\n}\n\nmain .day-of-week .calendar-day .not-current span,\nmain .days-grid .calendar-day .not-current span {\n  opacity: 0.5;\n}\n\nmain .day-of-week .calendar-day .dayNumber,\nmain .days-grid .calendar-day .dayNumber {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  cursor: pointer;\n}\n\nmain .day-of-week .calendar-day .display-icon .icon-and-popup,\nmain .days-grid .calendar-day .display-icon .icon-and-popup {\n  position: relative;\n  cursor: pointer;\n}\n\nmain .day-of-week .calendar-day .display-icon .icon-and-popup .popup,\nmain .days-grid .calendar-day .display-icon .icon-and-popup .popup {\n  position: absolute;\n  bottom: 100%;\n  right: -200%;\n  font-size: 10px;\n  padding: 0.3rem;\n  border-radius: 3px;\n  z-index: 1300;\n  min-width: 100px;\n  background-color: black;\n  color: white;\n  text-align: center;\n}\n\nmain .day-of-week .not-current,\nmain .days-grid .not-current {\n  background-color: #eeeeee !important;\n}\n\nmain .day-of-week {\n  color: var(--grey-800);\n  font-size: 18px;\n  background-color: #fff;\n  padding-bottom: 5px;\n  padding-top: 10px;\n}\n\nmain .day-of-week .day-list {\n  text-align: center;\n}\n\nmain .day {\n  margin-top: 2rem;\n}\n\nmain .day .time {\n  width: 10% !important;\n  text-align: center !important;\n}\n\nmain .day .events {\n  text-align: center !important;\n}\n\nmain .day .day-title {\n  cursor: pointer;\n}\n\nmain ol,\nmain li {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n\n.ui.selection.dropdown {\n  min-width: 5em;\n}\n\n.button-active {\n  background-color: #babbbc !important;\n}\n\n.ui.selection.dropdown {\n  width: 150px !important;\n}", ""]);
 
 // exports
 
 
 /***/ }),
-/* 118 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -14977,7 +15149,10 @@ var render = function() {
                     ),
                     _vm._v(" "),
                     m.display
-                      ? _c("i", { staticClass: "fas fa-desktop" })
+                      ? _c("i", {
+                          staticClass: "fas fa-desktop",
+                          on: { click: _vm.onClickYearDisplayIcon }
+                        })
                       : _vm._e()
                   ])
                 })
@@ -15021,7 +15196,10 @@ var render = function() {
                                   mouseover: function($event) {
                                     _vm.onShowPopUp(cal.date, index)
                                   },
-                                  mouseleave: _vm.offShowPopUp
+                                  mouseleave: _vm.offShowPopUp,
+                                  click: function($event) {
+                                    _vm.onClickMonthDisplayIcon(d.id)
+                                  }
                                 }
                               }),
                               _vm._v(" "),
@@ -15108,9 +15286,21 @@ var render = function() {
                             _c(
                               "sui-table-cell",
                               _vm._l(h.event, function(e, index) {
-                                return _c("p", { key: index }, [
-                                  _vm._v(_vm._s(e))
-                                ])
+                                return _c(
+                                  "p",
+                                  {
+                                    key: index,
+                                    staticClass: "day-title",
+                                    on: { click: _vm.onClickDayDisplayTitle }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                " +
+                                        _vm._s(e) +
+                                        "\n              "
+                                    )
+                                  ]
+                                )
                               })
                             )
                           ],
@@ -15141,7 +15331,7 @@ if (false) {
 }
 
 /***/ }),
-/* 119 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15764,10 +15954,454 @@ exports.Wormhole = wormhole;
 
 
 /***/ }),
-/* 120 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
-!function(e,t){ true?module.exports=t():"function"==typeof define&&define.amd?define(t):e.dayjs_plugin_isBetween=t()}(this,function(){"use strict";return function(e,t,i){t.prototype.isBetween=function(e,t,s,f){var n=i(e),o=i(t),r="("===(f=f||"()")[0],u=")"===f[1];return(r?this.isAfter(n,s):!this.isBefore(n,s))&&(u?this.isBefore(o,s):!this.isAfter(o,s))||(r?this.isBefore(n,s):!this.isAfter(n,s))&&(u?this.isAfter(o,s):!this.isBefore(o,s))}}});
+var disposed = false
+var normalizeComponent = __webpack_require__(4)
+/* script */
+var __vue_script__ = __webpack_require__(122)
+/* template */
+var __vue_template__ = __webpack_require__(123)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "modules\\schedule\\resources\\assets\\js\\components\\EditEventModal.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-753119b0", Component.options)
+  } else {
+    hotAPI.reload("data-v-753119b0", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 122 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_EditEventModal_css__ = __webpack_require__(124);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_EditEventModal_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__css_EditEventModal_css__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: "EditEventModal",
+  data: function data() {
+    return {
+      eventType: 1,
+      display: null,
+      layout: null,
+      dateFrom: "",
+      dateTo: "",
+      timeFrom: "",
+      timeTo: "",
+      eventTypeOption: [{
+        text: "Campaign/Layout",
+        value: 1
+      }, {
+        text: "Command",
+        value: 2
+      }, {
+        text: "Overlay Layout",
+        value: 3
+      }],
+      displayOption: [{
+        text: "Display",
+        disabled: true
+      }],
+      layoutOption: [{
+        text: "Layouts",
+        disabled: true
+      }]
+    };
+  },
+
+  watch: {
+    timeFrom: function timeFrom() {
+      console.log(this.timeFrom);
+    }
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.all([__WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/display/data"), __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/layout/data")]).then(function (res) {
+      console.log(res[0].data);
+      res[0].data.map(function (d) {
+        _this.displayOption.push({
+          text: d.display,
+          value: d.displayId
+        });
+      });
+      console.log(res[1].data);
+      res[1].data.map(function (l) {
+        _this.layoutOption.push({
+          text: l.layout,
+          value: l.layoutId
+        });
+      });
+    });
+  },
+
+  methods: {
+    closeAddEventModal: function closeAddEventModal() {
+      this.$emit("closeAddEventModal");
+    },
+    onAddEventClick: function onAddEventClick() {
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule", {
+        display: this.display,
+        eventType: this.eventType,
+        layout: this.layout,
+        dateFrom: this.dateFrom,
+        dateTo: this.dateTo,
+        timeFrom: this.computedTimeFrom,
+        timeTo: this.computedTimeTo
+      }).then(function (res) {
+        return console.log(res.data);
+      });
+    }
+  },
+  computed: {
+    computedTimeFrom: function computedTimeFrom() {
+      var newTimeFrom = this.timeFrom.split(":");
+      var tFrom = newTimeFrom.join("%3A") + "%3A00";
+
+      return tFrom;
+    },
+    computedTimeTo: function computedTimeTo() {
+      var newTimeFrom = this.timeTo.split(":");
+      var tTo = newTimeFrom.join("%3A") + "%3A00";
+
+      return tTo;
+    }
+  }
+});
+
+/***/ }),
+/* 123 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "edit-display-modal",
+      on: {
+        click: function($event) {
+          if ($event.target !== $event.currentTarget) {
+            return null
+          }
+          return _vm.closeAddEventModal($event)
+        }
+      }
+    },
+    [
+      _c("div", { staticClass: "edit-display-modal-content" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c("div", { staticClass: "edit-display-modal-body" }, [
+          _c(
+            "div",
+            { staticClass: "edit-display-modal-body-row" },
+            [
+              _c("label", [_vm._v("Display / Display Group")]),
+              _vm._v(" "),
+              _c("sui-dropdown", {
+                attrs: {
+                  selection: "",
+                  search: "",
+                  options: _vm.displayOption
+                },
+                model: {
+                  value: _vm.display,
+                  callback: function($$v) {
+                    _vm.display = $$v
+                  },
+                  expression: "display"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "edit-display-modal-body-row" },
+            [
+              _c("label", [_vm._v("Event Type")]),
+              _vm._v(" "),
+              _c("sui-dropdown", {
+                attrs: { selection: "", options: _vm.eventTypeOption },
+                model: {
+                  value: _vm.eventType,
+                  callback: function($$v) {
+                    _vm.eventType = $$v
+                  },
+                  expression: "eventType"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "edit-display-modal-body-row" },
+            [
+              _c("label", [_vm._v("Layout / Campaign")]),
+              _vm._v(" "),
+              _c("sui-dropdown", {
+                attrs: { selection: "", search: "", options: _vm.layoutOption },
+                model: {
+                  value: _vm.layout,
+                  callback: function($$v) {
+                    _vm.layout = $$v
+                  },
+                  expression: "layout"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "edit-display-modal-body-row time" }, [
+            _c("label", [_vm._v("From")]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "time-input" },
+              [
+                _c("sui-input", {
+                  attrs: { type: "date" },
+                  model: {
+                    value: _vm.dateFrom,
+                    callback: function($$v) {
+                      _vm.dateFrom = $$v
+                    },
+                    expression: "dateFrom"
+                  }
+                }),
+                _vm._v(" "),
+                _c("sui-input", {
+                  attrs: { type: "time" },
+                  model: {
+                    value: _vm.timeFrom,
+                    callback: function($$v) {
+                      _vm.timeFrom = $$v
+                    },
+                    expression: "timeFrom"
+                  }
+                })
+              ],
+              1
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "edit-display-modal-body-row time" }, [
+            _c("label", [_vm._v("To")]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "time-input" },
+              [
+                _c("sui-input", {
+                  attrs: { type: "date" },
+                  model: {
+                    value: _vm.dateTo,
+                    callback: function($$v) {
+                      _vm.dateTo = $$v
+                    },
+                    expression: "dateTo"
+                  }
+                }),
+                _vm._v(" "),
+                _c("sui-input", {
+                  attrs: { type: "time" },
+                  model: {
+                    value: _vm.timeTo,
+                    callback: function($$v) {
+                      _vm.timeTo = $$v
+                    },
+                    expression: "timeTo"
+                  }
+                })
+              ],
+              1
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "edit-display-modal-actions" },
+          [
+            _c("sui-button", [_vm._v("Cancel")]),
+            _vm._v(" "),
+            _c(
+              "sui-button",
+              { attrs: { color: "green" }, on: { click: _vm.onAddEventClick } },
+              [_vm._v("Edit Event")]
+            )
+          ],
+          1
+        )
+      ])
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "edit-display-modal-header" }, [
+      _c("h1", [_vm._v("Edit Event")])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-753119b0", module.exports)
+  }
+}
+
+/***/ }),
+/* 124 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(125);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(6)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../../node_modules/css-loader/index.js!./EditEventModal.css", function() {
+			var newContent = require("!!../../../../../node_modules/css-loader/index.js!./EditEventModal.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 125 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(3)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".edit-display-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.5);\n  z-index: 1100 !important;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content {\n  height: 80%;\n  width: 70%;\n  border-radius: 10px;\n  background-color: #f5f5f5;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header h1 {\n  font-weight: 400;\n  margin-left: 5rem;\n  font-size: 24px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body {\n  height: 70%;\n  border-top: 1px solid rgba(0, 0, 0, 0.2);\n  border-bottom: 1px solid rgba(0, 0, 0, 0.2);\n  padding: 2rem 5rem;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  margin: 0.4rem 0;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row input {\n  min-width: 400px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row label {\n  margin-bottom: 0 !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row .ui.selection.dropdown {\n  min-width: 400px !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .time input {\n  width: calc(200px - 0.1rem) !important;\n  min-width: calc(200px - 0.1rem) !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-actions {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 5rem;\n}", ""]);
+
+// exports
 
 
 /***/ })
