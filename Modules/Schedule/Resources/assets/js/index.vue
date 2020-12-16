@@ -158,8 +158,6 @@ dayjs.extend(weekday);
 dayjs.extend(weekOfYear);
 dayjs.extend(isBetween);
 
-console.log(dayjs().isSame("2020-12-15", "day"));
-
 export default {
   name: "App",
   components: {
@@ -248,7 +246,6 @@ export default {
               dateTo: endMonth,
             })
             .then((res) => {
-              console.log(res.data);
               let arrayOfData = [];
               res.data.result.map((r) => {
                 let data = {
@@ -433,7 +430,6 @@ export default {
             };
             arrayOfData.push(data);
           });
-          console.log(arrayOfData);
           this.displaySchedule = arrayOfData;
         });
       this.showTable = "year";
