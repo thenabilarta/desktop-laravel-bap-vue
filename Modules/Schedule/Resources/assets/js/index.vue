@@ -11,6 +11,7 @@
       v-bind:showTable="showTable"
       v-bind:currentDate="currentDate"
     ></edit-event-modal>
+    <sui-loader v-if="loading" active size="massive" />
     <div class="navigation">
       <h2>{{ selectedDate }} {{ selectedMonth }} {{ selectedYear }}</h2>
       <sui-button @click="openAddEventModal">Add Event</sui-button>
@@ -177,6 +178,7 @@ export default {
       addEventModalIsOpen: false,
       editEventModalIsOpen: false,
       idWhenEditEventModalIsOpen: null,
+      loading: false,
       monthsList: [
         "January",
         "February",
@@ -213,6 +215,7 @@ export default {
   },
   watch: {
     currentDate: function () {
+      this.loading = true;
       switch (this.showTable) {
         case "year":
           let startYear = dayjs(this.currentDate).startOf("year").valueOf();
@@ -235,6 +238,7 @@ export default {
                 arrayOfData.push(data);
               });
               this.displaySchedule = arrayOfData;
+              this.loading = false;
             });
           break;
         case "month":
@@ -258,6 +262,7 @@ export default {
                 arrayOfData.push(data);
               });
               this.displaySchedule = arrayOfData;
+              this.loading = false;
             });
           break;
         case "day":
@@ -281,22 +286,18 @@ export default {
                 arrayOfData.push(data);
               });
               this.displaySchedule = arrayOfData;
+              this.loading = false;
             });
           break;
         default:
           console.log("Mantap gan");
       }
     },
-    showTable: function () {
-      console.log(this.showTable);
-    },
-    displaySchedule: function () {
-      console.log(this.displaySchedule);
-    },
   },
   mounted() {
     let startMonth = dayjs(this.currentDate).startOf("month").valueOf();
     let endMonth = dayjs(this.currentDate).endOf("month").valueOf();
+    this.loading = true;
     axios
       .post("http://127.0.0.1:8000/schedule/data", {
         dateFrom: startMonth,
@@ -315,9 +316,90 @@ export default {
           arrayOfData.push(data);
         });
         this.displaySchedule = arrayOfData;
+        this.loading = false;
       });
   },
   methods: {
+    refreshPage() {
+      console.log("Refresh");
+      this.loading = true;
+      switch (this.showTable) {
+        case "year":
+          let startYear = dayjs(this.currentDate).startOf("year").valueOf();
+          let endYear = dayjs(this.currentDate).endOf("year").valueOf();
+          axios
+            .post("http://127.0.0.1:8000/schedule/data", {
+              dateFrom: startYear,
+              dateTo: endYear,
+            })
+            .then((res) => {
+              let arrayOfData = [];
+              res.data.result.map((r) => {
+                let data = {
+                  displayStart: r.start,
+                  displayEnd: r.end,
+                  sameDay: r.sameDay,
+                  title: r.title,
+                  id: r.id,
+                };
+                arrayOfData.push(data);
+              });
+              this.displaySchedule = arrayOfData;
+              this.loading = false;
+            });
+          break;
+        case "month":
+          let startMonth = dayjs(this.currentDate).startOf("month").valueOf();
+          let endMonth = dayjs(this.currentDate).endOf("month").valueOf();
+          axios
+            .post("http://127.0.0.1:8000/schedule/data", {
+              dateFrom: startMonth,
+              dateTo: endMonth,
+            })
+            .then((res) => {
+              let arrayOfData = [];
+              res.data.result.map((r) => {
+                let data = {
+                  displayStart: r.start,
+                  displayEnd: r.end,
+                  sameDay: r.sameDay,
+                  title: r.title,
+                  id: r.id,
+                };
+                arrayOfData.push(data);
+              });
+              this.displaySchedule = arrayOfData;
+              this.loading = false;
+            });
+          break;
+        case "day":
+          let startDay = dayjs(this.currentDate).startOf("day").valueOf();
+          let endDay = dayjs(this.currentDate).endOf("day").valueOf();
+          axios
+            .post("http://127.0.0.1:8000/schedule/data", {
+              dateFrom: startDay,
+              dateTo: endDay,
+            })
+            .then((res) => {
+              let arrayOfData = [];
+              res.data.result.map((r) => {
+                let data = {
+                  displayStart: r.start,
+                  displayEnd: r.end,
+                  sameDay: r.sameDay,
+                  title: r.title,
+                  id: r.id,
+                };
+                arrayOfData.push(data);
+              });
+              this.displaySchedule = arrayOfData;
+              this.loading = false;
+            });
+          break;
+        default:
+          console.log("Mantap gan");
+      }
+    },
     getWeekday(date) {
       return dayjs(date).weekday();
     },
@@ -556,12 +638,14 @@ export default {
     },
     closeAddEventModal() {
       this.addEventModalIsOpen = false;
+      this.refreshPage();
     },
     openAddEventModal() {
       this.addEventModalIsOpen = true;
     },
     closeEditEventModal() {
       this.editEventModalIsOpen = false;
+      this.refreshPage();
     },
     openEditEventModal() {
       this.editEventModalIsOpen = true;

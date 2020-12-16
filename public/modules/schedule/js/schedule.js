@@ -14041,6 +14041,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
 
 
 
@@ -14075,6 +14076,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
       addEventModalIsOpen: false,
       editEventModalIsOpen: false,
       idWhenEditEventModalIsOpen: null,
+      loading: false,
       monthsList: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       displayList: [{
         text: "All Display",
@@ -14096,6 +14098,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
     currentDate: function currentDate() {
       var _this = this;
 
+      this.loading = true;
       switch (this.showTable) {
         case "year":
           var startYear = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("year").valueOf();
@@ -14116,6 +14119,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
               arrayOfData.push(data);
             });
             _this.displaySchedule = arrayOfData;
+            _this.loading = false;
           });
           break;
         case "month":
@@ -14137,6 +14141,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
               arrayOfData.push(data);
             });
             _this.displaySchedule = arrayOfData;
+            _this.loading = false;
           });
           break;
         case "day":
@@ -14158,17 +14163,12 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
               arrayOfData.push(data);
             });
             _this.displaySchedule = arrayOfData;
+            _this.loading = false;
           });
           break;
         default:
           console.log("Mantap gan");
       }
-    },
-    showTable: function showTable() {
-      console.log(this.showTable);
-    },
-    displaySchedule: function displaySchedule() {
-      console.log(this.displaySchedule);
     }
   },
   mounted: function mounted() {
@@ -14176,6 +14176,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
 
     var startMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("month").valueOf();
     var endMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("month").valueOf();
+    this.loading = true;
     __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule/data", {
       dateFrom: startMonth,
       dateTo: endMonth
@@ -14192,10 +14193,87 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
         arrayOfData.push(data);
       });
       _this2.displaySchedule = arrayOfData;
+      _this2.loading = false;
     });
   },
 
   methods: {
+    refreshPage: function refreshPage() {
+      var _this3 = this;
+
+      console.log("Refresh");
+      this.loading = true;
+      switch (this.showTable) {
+        case "year":
+          var startYear = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("year").valueOf();
+          var endYear = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("year").valueOf();
+          __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule/data", {
+            dateFrom: startYear,
+            dateTo: endYear
+          }).then(function (res) {
+            var arrayOfData = [];
+            res.data.result.map(function (r) {
+              var data = {
+                displayStart: r.start,
+                displayEnd: r.end,
+                sameDay: r.sameDay,
+                title: r.title,
+                id: r.id
+              };
+              arrayOfData.push(data);
+            });
+            _this3.displaySchedule = arrayOfData;
+            _this3.loading = false;
+          });
+          break;
+        case "month":
+          var startMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("month").valueOf();
+          var endMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("month").valueOf();
+          __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule/data", {
+            dateFrom: startMonth,
+            dateTo: endMonth
+          }).then(function (res) {
+            var arrayOfData = [];
+            res.data.result.map(function (r) {
+              var data = {
+                displayStart: r.start,
+                displayEnd: r.end,
+                sameDay: r.sameDay,
+                title: r.title,
+                id: r.id
+              };
+              arrayOfData.push(data);
+            });
+            _this3.displaySchedule = arrayOfData;
+            _this3.loading = false;
+          });
+          break;
+        case "day":
+          var startDay = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("day").valueOf();
+          var endDay = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("day").valueOf();
+          __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule/data", {
+            dateFrom: startDay,
+            dateTo: endDay
+          }).then(function (res) {
+            var arrayOfData = [];
+            res.data.result.map(function (r) {
+              var data = {
+                displayStart: r.start,
+                displayEnd: r.end,
+                sameDay: r.sameDay,
+                title: r.title,
+                id: r.id
+              };
+              arrayOfData.push(data);
+            });
+            _this3.displaySchedule = arrayOfData;
+            _this3.loading = false;
+          });
+          break;
+        default:
+          console.log("Mantap gan");
+      }
+    },
     getWeekday: function getWeekday(date) {
       return __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(date).weekday();
     },
@@ -14254,7 +14332,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
       return __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-01").daysInMonth();
     },
     changeToYear: function changeToYear() {
-      var _this3 = this;
+      var _this4 = this;
 
       var startYear = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("year").valueOf();
       var endYear = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("year").valueOf();
@@ -14273,13 +14351,13 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
           };
           arrayOfData.push(data);
         });
-        _this3.displaySchedule = arrayOfData;
+        _this4.displaySchedule = arrayOfData;
       });
       this.showTable = "year";
       this.buttonFilterActive = "year";
     },
     changeToMonth: function changeToMonth() {
-      var _this4 = this;
+      var _this5 = this;
 
       var startMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("month").valueOf();
       var endMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("month").valueOf();
@@ -14298,13 +14376,13 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
           };
           arrayOfData.push(data);
         });
-        _this4.displaySchedule = arrayOfData;
+        _this5.displaySchedule = arrayOfData;
       });
       this.showTable = "month";
       this.buttonFilterActive = "month";
     },
     changeToDay: function changeToDay() {
-      var _this5 = this;
+      var _this6 = this;
 
       var startDay = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("day").valueOf();
       var endDay = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("day").valueOf();
@@ -14323,7 +14401,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
           };
           arrayOfData.push(data);
         });
-        _this5.displaySchedule = arrayOfData;
+        _this6.displaySchedule = arrayOfData;
       });
       this.showTable = "day";
       this.buttonFilterActive = "day";
@@ -14384,12 +14462,14 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
     },
     closeAddEventModal: function closeAddEventModal() {
       this.addEventModalIsOpen = false;
+      this.refreshPage();
     },
     openAddEventModal: function openAddEventModal() {
       this.addEventModalIsOpen = true;
     },
     closeEditEventModal: function closeEditEventModal() {
       this.editEventModalIsOpen = false;
+      this.refreshPage();
     },
     openEditEventModal: function openEditEventModal() {
       this.editEventModalIsOpen = true;
@@ -14434,7 +14514,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
       return this.INITIAL_YEAR;
     },
     hourAndEventOfTheDay: function hourAndEventOfTheDay() {
-      var _this6 = this;
+      var _this7 = this;
 
       var arrayOfTimeAndEvent = [];
       var currentTime = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate);
@@ -14442,7 +14522,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
       var _loop = function _loop() {
         var eventArray = [];
         var id = null;
-        _this6.displaySchedule.map(function (d) {
+        _this7.displaySchedule.map(function (d) {
           if (d.displayStart <= currentTime.valueOf() && d.displayEnd >= currentTime.valueOf()) {
             eventArray.push({
               title: d.title,
@@ -15600,6 +15680,10 @@ var render = function() {
             },
             on: { closeEditEventModal: _vm.closeEditEventModal }
           })
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.loading
+        ? _c("sui-loader", { attrs: { active: "", size: "massive" } })
         : _vm._e(),
       _vm._v(" "),
       _c(
