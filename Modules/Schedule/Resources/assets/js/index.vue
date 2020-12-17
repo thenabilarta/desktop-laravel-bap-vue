@@ -234,6 +234,10 @@ export default {
                   sameDay: r.sameDay,
                   title: r.title,
                   id: r.id,
+                  isPriority: r.event.isPriority,
+                  displayOrder: r.event.displayOrder,
+                  syncTimezone: r.event.syncTimezone,
+                  displayGroups: r.event.displayGroups,
                 };
                 arrayOfData.push(data);
               });
@@ -258,6 +262,10 @@ export default {
                   sameDay: r.sameDay,
                   title: r.title,
                   id: r.id,
+                  isPriority: r.event.isPriority,
+                  displayOrder: r.event.displayOrder,
+                  syncTimezone: r.event.syncTimezone,
+                  displayGroups: r.event.displayGroups,
                 };
                 arrayOfData.push(data);
               });
@@ -282,6 +290,10 @@ export default {
                   sameDay: r.sameDay,
                   title: r.title,
                   id: r.id,
+                  isPriority: r.event.isPriority,
+                  displayOrder: r.event.displayOrder,
+                  syncTimezone: r.event.syncTimezone,
+                  displayGroups: r.event.displayGroups,
                 };
                 arrayOfData.push(data);
               });
@@ -305,6 +317,7 @@ export default {
       })
       .then((res) => {
         let arrayOfData = [];
+        console.log(res);
         res.data.result.map((r) => {
           let data = {
             displayStart: r.start,
@@ -312,6 +325,10 @@ export default {
             sameDay: r.sameDay,
             title: r.title,
             id: r.id,
+            isPriority: r.event.isPriority,
+            displayOrder: r.event.displayOrder,
+            syncTimezone: r.event.syncTimezone,
+            displayGroups: r.event.displayGroups,
           };
           arrayOfData.push(data);
         });
@@ -341,6 +358,10 @@ export default {
                   sameDay: r.sameDay,
                   title: r.title,
                   id: r.id,
+                  isPriority: r.event.isPriority,
+                  displayOrder: r.event.displayOrder,
+                  syncTimezone: r.event.syncTimezone,
+                  displayGroups: r.event.displayGroups,
                 };
                 arrayOfData.push(data);
               });
@@ -365,6 +386,10 @@ export default {
                   sameDay: r.sameDay,
                   title: r.title,
                   id: r.id,
+                  isPriority: r.event.isPriority,
+                  displayOrder: r.event.displayOrder,
+                  syncTimezone: r.event.syncTimezone,
+                  displayGroups: r.event.displayGroups,
                 };
                 arrayOfData.push(data);
               });
@@ -389,6 +414,10 @@ export default {
                   sameDay: r.sameDay,
                   title: r.title,
                   id: r.id,
+                  isPriority: r.event.isPriority,
+                  displayOrder: r.event.displayOrder,
+                  syncTimezone: r.event.syncTimezone,
+                  displayGroups: r.event.displayGroups,
                 };
                 arrayOfData.push(data);
               });
@@ -409,6 +438,7 @@ export default {
           let displayProperty = [];
           let dateInUnix = dayjs(`${year}-${month}-${index + 1}`);
           if (schedule.length > 0) {
+            console.log(schedule);
             schedule.map((s) => {
               if (
                 dateInUnix.isBetween(
@@ -509,6 +539,10 @@ export default {
               sameDay: r.sameDay,
               title: r.title,
               id: r.id,
+              isPriority: r.event.isPriority,
+              displayOrder: r.event.displayOrder,
+              syncTimezone: r.event.syncTimezone,
+              displayGroups: r.event.displayGroups,
             };
             arrayOfData.push(data);
           });
@@ -534,6 +568,10 @@ export default {
               sameDay: r.sameDay,
               title: r.title,
               id: r.id,
+              isPriority: r.event.isPriority,
+              displayOrder: r.event.displayOrder,
+              syncTimezone: r.event.syncTimezone,
+              displayGroups: r.event.displayGroups,
             };
             arrayOfData.push(data);
           });
@@ -559,6 +597,10 @@ export default {
               sameDay: r.sameDay,
               title: r.title,
               id: r.id,
+              isPriority: r.event.isPriority,
+              displayOrder: r.event.displayOrder,
+              syncTimezone: r.event.syncTimezone,
+              displayGroups: r.event.displayGroups,
             };
             arrayOfData.push(data);
           });

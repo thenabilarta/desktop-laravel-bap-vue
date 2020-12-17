@@ -71,7 +71,8 @@
   margin-bottom: 0 !important;
 }
 
-.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row .ui.selection.dropdown {
+.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row .ui.selection.dropdown,
+.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row .input-number {
   min-width: 400px !important;
 }
 
@@ -92,5 +93,18 @@
       -ms-flex-align: center;
           align-items: center;
   padding: 0 5rem;
+}
+
+[type='checkbox']:not(.filled-in) + label:after {
+  transform: scale(1) !important;
+  -webkit-transform: scale(1) !important;
+}
+
+.edit-display-modal
+.edit-display-modal-content
+.edit-display-modal-body
+.edit-display-modal-body-row
+input {
+  min-width: 0 !important;
 }
 /*# sourceMappingURL=AddEventModal.css.map */

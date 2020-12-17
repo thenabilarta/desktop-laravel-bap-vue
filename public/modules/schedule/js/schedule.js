@@ -14114,7 +14114,11 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
                 displayEnd: r.end,
                 sameDay: r.sameDay,
                 title: r.title,
-                id: r.id
+                id: r.id,
+                isPriority: r.event.isPriority,
+                displayOrder: r.event.displayOrder,
+                syncTimezone: r.event.syncTimezone,
+                displayGroups: r.event.displayGroups
               };
               arrayOfData.push(data);
             });
@@ -14136,7 +14140,11 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
                 displayEnd: r.end,
                 sameDay: r.sameDay,
                 title: r.title,
-                id: r.id
+                id: r.id,
+                isPriority: r.event.isPriority,
+                displayOrder: r.event.displayOrder,
+                syncTimezone: r.event.syncTimezone,
+                displayGroups: r.event.displayGroups
               };
               arrayOfData.push(data);
             });
@@ -14158,7 +14166,11 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
                 displayEnd: r.end,
                 sameDay: r.sameDay,
                 title: r.title,
-                id: r.id
+                id: r.id,
+                isPriority: r.event.isPriority,
+                displayOrder: r.event.displayOrder,
+                syncTimezone: r.event.syncTimezone,
+                displayGroups: r.event.displayGroups
               };
               arrayOfData.push(data);
             });
@@ -14182,13 +14194,18 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
       dateTo: endMonth
     }).then(function (res) {
       var arrayOfData = [];
+      console.log(res);
       res.data.result.map(function (r) {
         var data = {
           displayStart: r.start,
           displayEnd: r.end,
           sameDay: r.sameDay,
           title: r.title,
-          id: r.id
+          id: r.id,
+          isPriority: r.event.isPriority,
+          displayOrder: r.event.displayOrder,
+          syncTimezone: r.event.syncTimezone,
+          displayGroups: r.event.displayGroups
         };
         arrayOfData.push(data);
       });
@@ -14218,7 +14235,11 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
                 displayEnd: r.end,
                 sameDay: r.sameDay,
                 title: r.title,
-                id: r.id
+                id: r.id,
+                isPriority: r.event.isPriority,
+                displayOrder: r.event.displayOrder,
+                syncTimezone: r.event.syncTimezone,
+                displayGroups: r.event.displayGroups
               };
               arrayOfData.push(data);
             });
@@ -14240,7 +14261,11 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
                 displayEnd: r.end,
                 sameDay: r.sameDay,
                 title: r.title,
-                id: r.id
+                id: r.id,
+                isPriority: r.event.isPriority,
+                displayOrder: r.event.displayOrder,
+                syncTimezone: r.event.syncTimezone,
+                displayGroups: r.event.displayGroups
               };
               arrayOfData.push(data);
             });
@@ -14262,7 +14287,11 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
                 displayEnd: r.end,
                 sameDay: r.sameDay,
                 title: r.title,
-                id: r.id
+                id: r.id,
+                isPriority: r.event.isPriority,
+                displayOrder: r.event.displayOrder,
+                syncTimezone: r.event.syncTimezone,
+                displayGroups: r.event.displayGroups
               };
               arrayOfData.push(data);
             });
@@ -14282,6 +14311,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
         var displayProperty = [];
         var dateInUnix = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-" + (index + 1));
         if (schedule.length > 0) {
+          console.log(schedule);
           schedule.map(function (s) {
             if (dateInUnix.isBetween(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayStart), __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayEnd)) || __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayStart).date() === dateInUnix.date() || __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayEnd).date() === dateInUnix.date()) {
               displayProperty.push({
@@ -14347,7 +14377,11 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
             displayEnd: r.end,
             sameDay: r.sameDay,
             title: r.title,
-            id: r.id
+            id: r.id,
+            isPriority: r.event.isPriority,
+            displayOrder: r.event.displayOrder,
+            syncTimezone: r.event.syncTimezone,
+            displayGroups: r.event.displayGroups
           };
           arrayOfData.push(data);
         });
@@ -14372,7 +14406,11 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
             displayEnd: r.end,
             sameDay: r.sameDay,
             title: r.title,
-            id: r.id
+            id: r.id,
+            isPriority: r.event.isPriority,
+            displayOrder: r.event.displayOrder,
+            syncTimezone: r.event.syncTimezone,
+            displayGroups: r.event.displayGroups
           };
           arrayOfData.push(data);
         });
@@ -14397,7 +14435,11 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
             displayEnd: r.end,
             sameDay: r.sameDay,
             title: r.title,
-            id: r.id
+            id: r.id,
+            isPriority: r.event.isPriority,
+            displayOrder: r.event.displayOrder,
+            syncTimezone: r.event.syncTimezone,
+            displayGroups: r.event.displayGroups
           };
           arrayOfData.push(data);
         });
@@ -14742,6 +14784,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -14758,15 +14821,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       dateTo: "2020-12-25",
       timeFrom: "01:00",
       timeTo: "23:00",
+      isPriority: null,
+      displayOrder: null,
+      syncTimezone: false,
       eventTypeOption: [{
         text: "Campaign/Layout",
         value: 1
-      }, {
-        text: "Command",
-        value: 2
-      }, {
-        text: "Overlay Layout",
-        value: 3
       }],
       displayOption: [{
         text: "Display",
@@ -14817,7 +14877,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         dateFrom: this.dateFrom,
         dateTo: this.dateTo,
         timeFrom: this.computedTimeFrom,
-        timeTo: this.computedTimeTo
+        timeTo: this.computedTimeTo,
+        isPriority: this.isPriority,
+        displayOrder: this.displayOrder,
+        syncTimezone: this.syncTimezone === true ? "on" : "off"
       }).then(function (res) {
         return console.log(res.data);
       });
@@ -14879,7 +14942,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, ".edit-display-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.5);\n  z-index: 1100 !important;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content {\n  height: 80%;\n  width: 70%;\n  border-radius: 10px;\n  background-color: #f5f5f5;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header h1 {\n  font-weight: 400;\n  margin-left: 5rem;\n  font-size: 24px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body {\n  height: 70%;\n  border-top: 1px solid rgba(0, 0, 0, 0.2);\n  border-bottom: 1px solid rgba(0, 0, 0, 0.2);\n  padding: 2rem 5rem;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  margin: 0.4rem 0;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row input {\n  min-width: 400px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row label {\n  margin-bottom: 0 !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row .ui.selection.dropdown {\n  min-width: 400px !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .time input {\n  width: calc(200px - 0.1rem) !important;\n  min-width: calc(200px - 0.1rem) !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-actions {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 5rem;\n}", ""]);
+exports.push([module.i, ".edit-display-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.5);\n  z-index: 1100 !important;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content {\n  height: 80%;\n  width: 70%;\n  border-radius: 10px;\n  background-color: #f5f5f5;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header h1 {\n  font-weight: 400;\n  margin-left: 5rem;\n  font-size: 24px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body {\n  height: 70%;\n  border-top: 1px solid rgba(0, 0, 0, 0.2);\n  border-bottom: 1px solid rgba(0, 0, 0, 0.2);\n  padding: 2rem 5rem;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  margin: 0.4rem 0;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row input {\n  min-width: 400px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row label {\n  margin-bottom: 0 !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row .ui.selection.dropdown,\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row .input-number {\n  min-width: 400px !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .time input {\n  width: calc(200px - 0.1rem) !important;\n  min-width: calc(200px - 0.1rem) !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-actions {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 5rem;\n}\n\n[type='checkbox']:not(.filled-in) + label:after {\n  transform: scale(1) !important;\n  -webkit-transform: scale(1) !important;\n}\n\n.edit-display-modal\n.edit-display-modal-content\n.edit-display-modal-body\n.edit-display-modal-body-row\ninput {\n  min-width: 0 !important;\n}", ""]);
 
 // exports
 
@@ -14917,8 +14980,10 @@ var render = function() {
               _c("label", [_vm._v("Display / Display Group")]),
               _vm._v(" "),
               _c("sui-dropdown", {
+                staticClass: "input-multiple",
                 attrs: {
                   selection: "",
+                  multiple: "",
                   search: "",
                   options: _vm.displayOption
                 },
@@ -15038,7 +15103,67 @@ var render = function() {
               ],
               1
             )
-          ])
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "edit-display-modal-body-row" },
+            [
+              _c("label", [_vm._v("Display Order")]),
+              _vm._v(" "),
+              _c("sui-input", {
+                staticClass: "input-number",
+                attrs: { type: "number" },
+                model: {
+                  value: _vm.displayOrder,
+                  callback: function($$v) {
+                    _vm.displayOrder = $$v
+                  },
+                  expression: "displayOrder"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "edit-display-modal-body-row" },
+            [
+              _c("label", [_vm._v("Priority")]),
+              _vm._v(" "),
+              _c("sui-input", {
+                staticClass: "input-number",
+                attrs: { type: "number" },
+                model: {
+                  value: _vm.isPriority,
+                  callback: function($$v) {
+                    _vm.isPriority = $$v
+                  },
+                  expression: "isPriority"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "edit-display-modal-body-row" },
+            [
+              _c("sui-checkbox", {
+                attrs: { label: "Run at CMS Time?", toggle: "" },
+                model: {
+                  value: _vm.syncTimezone,
+                  callback: function($$v) {
+                    _vm.syncTimezone = $$v
+                  },
+                  expression: "syncTimezone"
+                }
+              })
+            ],
+            1
+          )
         ]),
         _vm._v(" "),
         _c(
@@ -15221,12 +15346,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       eventTypeOption: [{
         text: "Campaign/Layout",
         value: 1
-      }, {
-        text: "Command",
-        value: 2
-      }, {
-        text: "Overlay Layout",
-        value: 3
       }],
       displayOption: [{
         text: "Display",

@@ -84,14 +84,6 @@ export default {
           text: "Campaign/Layout",
           value: 1,
         },
-        {
-          text: "Command",
-          value: 2,
-        },
-        {
-          text: "Overlay Layout",
-          value: 3,
-        },
       ],
       displayOption: [
         {

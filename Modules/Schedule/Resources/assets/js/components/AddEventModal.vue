@@ -9,9 +9,11 @@
           <label>Display / Display Group</label>
           <sui-dropdown
             selection
+            multiple
             search
             :options="displayOption"
             v-model="display"
+            class="input-multiple"
           />
         </div>
         <div class="edit-display-modal-body-row">
@@ -45,6 +47,25 @@
             <sui-input type="time" v-model="timeTo" />
           </div>
         </div>
+        <div class="edit-display-modal-body-row">
+          <label>Display Order</label>
+          <sui-input
+            type="number"
+            class="input-number"
+            v-model="displayOrder"
+          />
+        </div>
+        <div class="edit-display-modal-body-row">
+          <label>Priority</label>
+          <sui-input type="number" class="input-number" v-model="isPriority" />
+        </div>
+        <div class="edit-display-modal-body-row">
+          <sui-checkbox
+            label="Run at CMS Time?"
+            toggle
+            v-model="syncTimezone"
+          />
+        </div>
       </div>
       <div class="edit-display-modal-actions">
         <sui-button>Cancel</sui-button>
@@ -72,18 +93,13 @@ export default {
       dateTo: "2020-12-25",
       timeFrom: "01:00",
       timeTo: "23:00",
+      isPriority: null,
+      displayOrder: null,
+      syncTimezone: false,
       eventTypeOption: [
         {
           text: "Campaign/Layout",
           value: 1,
-        },
-        {
-          text: "Command",
-          value: 2,
-        },
-        {
-          text: "Overlay Layout",
-          value: 3,
         },
       ],
       displayOption: [
@@ -142,6 +158,9 @@ export default {
           dateTo: this.dateTo,
           timeFrom: this.computedTimeFrom,
           timeTo: this.computedTimeTo,
+          isPriority: this.isPriority,
+          displayOrder: this.displayOrder,
+          syncTimezone: this.syncTimezone === true ? "on" : "off",
         })
         .then((res) => console.log(res.data));
     },

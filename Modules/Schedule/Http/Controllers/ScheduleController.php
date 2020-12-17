@@ -88,7 +88,25 @@ class ScheduleController extends AppBaseController
 
         $layout = $request->layout;
 
+        // For each array of Display
+
+        $newString = '';
+
+        $string = '&displayGroupIds%5B%5D=';
+
         $display = $request->display;
+
+        foreach ($display as $d) {
+            $newString = $newString . $string . $d;
+        }
+
+        // end of array
+
+        $isPriority = $request->isPriority;
+
+        $displayOrder = $request->displayOrder;
+
+        $syncTimezone = $request->syncTimezone;
 
         $curl = curl_init();
 
@@ -106,9 +124,12 @@ class ScheduleController extends AppBaseController
                 '%20' . $timeFrom .
                 '&toDt=' . $dateTo .
                 '%20' . $timeTo .
-                '&displayGroupIds%5B%5D=' . $display .
+                $newString .
                 '&eventTypeId=' . $eventType .
-                '&campaignId=' . $layout,
+                '&campaignId=' . $layout .
+                '&isPriority=' . $isPriority .
+                '&displayOrder=' . $displayOrder .
+                '&syncTimezone=' . $syncTimezone,
             CURLOPT_HTTPHEADER => array(
                 'Authorization: Bearer ' . $_SESSION["token"],
                 'Content-Type: application/x-www-form-urlencoded'
