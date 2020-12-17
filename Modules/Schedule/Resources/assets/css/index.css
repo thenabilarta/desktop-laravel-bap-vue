@@ -217,6 +217,11 @@ main .day .day-title {
   cursor: pointer;
 }
 
+main .day .day-title .display-time {
+  font-weight: bolder;
+  color: blue;
+}
+
 main ol,
 main li {
   padding: 0;

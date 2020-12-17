@@ -92,7 +92,8 @@
                   @mouseover="onShowPopUp(cal.date, index)"
                   @mouseleave="offShowPopUp"
                   @click="onClickMonthDisplayIcon(d.id)"
-                  class="fas fa-desktop"
+                  :class="d.isPriority > 0 ? 'fas fa-star' : 'fas fa-desktop'"
+                  :style="d.displayGroups.length > 1 ? 'color: red' : ''"
                 ></i>
                 <span
                   class="popup"
@@ -133,6 +134,9 @@
                   :key="index"
                   class="day-title"
                 >
+                  <span class="display-time"
+                    >[{{ e.timeStart }} : {{ e.timeEnd }}]</span
+                  >
                   {{ e.title }}
                 </p>
               </sui-table-cell>
@@ -438,7 +442,6 @@ export default {
           let displayProperty = [];
           let dateInUnix = dayjs(`${year}-${month}-${index + 1}`);
           if (schedule.length > 0) {
-            console.log(schedule);
             schedule.map((s) => {
               if (
                 dateInUnix.isBetween(
@@ -452,6 +455,10 @@ export default {
                   exist: true,
                   title: s.title,
                   id: s.id,
+                  isPriority: s.isPriority,
+                  displayOrder: s.displayOrder,
+                  syncTimezone: s.syncTimezone,
+                  displayGroups: s.displayGroups,
                 });
               }
             });
@@ -754,6 +761,8 @@ export default {
             d.displayEnd >= currentTime.valueOf()
           ) {
             eventArray.push({
+              timeStart: dayjs(d.displayStart).format("HH-mm"),
+              timeEnd: dayjs(d.displayEnd).format("HH-mm"),
               title: d.title,
               id: d.id,
             });

@@ -11,6 +11,7 @@
           <sui-dropdown
             selection
             search
+            multiple
             :options="displayOption"
             v-model="display"
           />
@@ -46,6 +47,25 @@
             <sui-input type="time" v-model="timeTo" />
           </div>
         </div>
+        <div class="edit-display-modal-body-row">
+          <label>Display Order</label>
+          <sui-input
+            type="number"
+            class="input-number"
+            v-model="displayOrder"
+          />
+        </div>
+        <div class="edit-display-modal-body-row">
+          <label>Priority</label>
+          <sui-input type="number" class="input-number" v-model="isPriority" />
+        </div>
+        <div class="edit-display-modal-body-row">
+          <sui-checkbox
+            label="Run at CMS Time?"
+            toggle
+            v-model="syncTimezone"
+          />
+        </div>
       </div>
       <div class="edit-display-modal-actions">
         <sui-button>Cancel</sui-button>
@@ -71,7 +91,7 @@ export default {
   data() {
     return {
       eventType: 1,
-      display: null,
+      display: [],
       layout: null,
       dateFrom: "",
       dateTo: "",
@@ -79,6 +99,9 @@ export default {
       timeTo: "",
       eventIdAsProps: null,
       loading: false,
+      isPriority: null,
+      displayOrder: null,
+      syncTimezone: false,
       eventTypeOption: [
         {
           text: "Campaign/Layout",
@@ -157,12 +180,18 @@ export default {
             if (r.id === this.idWhenEditEventModalIsOpen) {
               /* Display Group belom di debug buat edit event */
               console.log(r);
-              this.display = r.event.displayGroups[0].displayGroupId;
+              r.event.displayGroups.map((d) => {
+                this.display.push(d.displayGroupId);
+              });
+
               this.layout = r.event.campaignId;
               this.dateFrom = dayjs(r.start).format("YYYY-MM-DD");
               this.dateTo = dayjs(r.end).format("YYYY-MM-DD");
               this.timeFrom = dayjs(r.start).format("HH:mm");
               this.timeTo = dayjs(r.end).format("HH:mm");
+              this.isPriority = r.event.isPriority;
+              this.displayOrder = r.event.displayOrder;
+              this.syncTimezone = r.event.syncTimezone === 1 ? true : false;
             }
           });
         });
@@ -178,6 +207,9 @@ export default {
           timeFrom: this.computedTimeFrom,
           timeTo: this.computedTimeTo,
           id: this.idWhenEditEventModalIsOpen,
+          isPriority: this.isPriority,
+          displayOrder: this.displayOrder,
+          syncTimezone: this.syncTimezone === true ? "on" : "off",
         })
         .then((res) => console.log(res.data));
     },

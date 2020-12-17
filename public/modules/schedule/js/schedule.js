@@ -14042,6 +14042,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -14311,13 +14315,16 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
         var displayProperty = [];
         var dateInUnix = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-" + (index + 1));
         if (schedule.length > 0) {
-          console.log(schedule);
           schedule.map(function (s) {
             if (dateInUnix.isBetween(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayStart), __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayEnd)) || __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayStart).date() === dateInUnix.date() || __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayEnd).date() === dateInUnix.date()) {
               displayProperty.push({
                 exist: true,
                 title: s.title,
-                id: s.id
+                id: s.id,
+                isPriority: s.isPriority,
+                displayOrder: s.displayOrder,
+                syncTimezone: s.syncTimezone,
+                displayGroups: s.displayGroups
               });
             }
           });
@@ -14567,6 +14574,8 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
         _this7.displaySchedule.map(function (d) {
           if (d.displayStart <= currentTime.valueOf() && d.displayEnd >= currentTime.valueOf()) {
             eventArray.push({
+              timeStart: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(d.displayStart).format("HH-mm"),
+              timeEnd: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(d.displayEnd).format("HH-mm"),
               title: d.title,
               id: d.id
             });
@@ -15324,6 +15333,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -15335,7 +15364,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   data: function data() {
     return {
       eventType: 1,
-      display: null,
+      display: [],
       layout: null,
       dateFrom: "",
       dateTo: "",
@@ -15343,6 +15372,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       timeTo: "",
       eventIdAsProps: null,
       loading: false,
+      isPriority: null,
+      displayOrder: null,
+      syncTimezone: false,
       eventTypeOption: [{
         text: "Campaign/Layout",
         value: 1
@@ -15415,12 +15447,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
           if (r.id === _this2.idWhenEditEventModalIsOpen) {
             /* Display Group belom di debug buat edit event */
             console.log(r);
-            _this2.display = r.event.displayGroups[0].displayGroupId;
+            r.event.displayGroups.map(function (d) {
+              _this2.display.push(d.displayGroupId);
+            });
+
             _this2.layout = r.event.campaignId;
             _this2.dateFrom = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(r.start).format("YYYY-MM-DD");
             _this2.dateTo = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(r.end).format("YYYY-MM-DD");
             _this2.timeFrom = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(r.start).format("HH:mm");
             _this2.timeTo = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(r.end).format("HH:mm");
+            _this2.isPriority = r.event.isPriority;
+            _this2.displayOrder = r.event.displayOrder;
+            _this2.syncTimezone = r.event.syncTimezone === 1 ? true : false;
           }
         });
       });
@@ -15434,7 +15472,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         dateTo: this.dateTo,
         timeFrom: this.computedTimeFrom,
         timeTo: this.computedTimeTo,
-        id: this.idWhenEditEventModalIsOpen
+        id: this.idWhenEditEventModalIsOpen,
+        isPriority: this.isPriority,
+        displayOrder: this.displayOrder,
+        syncTimezone: this.syncTimezone === true ? "on" : "off"
       }).then(function (res) {
         return console.log(res.data);
       });
@@ -15503,7 +15544,7 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, ".edit-display-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.5);\n  z-index: 1100 !important;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content {\n  height: 80%;\n  width: 70%;\n  border-radius: 10px;\n  background-color: #f5f5f5;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header h1 {\n  font-weight: 400;\n  margin-left: 5rem;\n  font-size: 24px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body {\n  height: 70%;\n  border-top: 1px solid rgba(0, 0, 0, 0.2);\n  border-bottom: 1px solid rgba(0, 0, 0, 0.2);\n  padding: 2rem 5rem;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  margin: 0.4rem 0;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row input {\n  min-width: 400px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row label {\n  margin-bottom: 0 !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row .ui.selection.dropdown {\n  min-width: 400px !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .time input {\n  width: calc(200px - 0.1rem) !important;\n  min-width: calc(200px - 0.1rem) !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-actions {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 5rem;\n}", ""]);
+exports.push([module.i, ".edit-display-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.5);\n  z-index: 1100 !important;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content {\n  height: 80%;\n  width: 70%;\n  border-radius: 10px;\n  background-color: #f5f5f5;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-header h1 {\n  font-weight: 400;\n  margin-left: 5rem;\n  font-size: 24px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body {\n  height: 70%;\n  border-top: 1px solid rgba(0, 0, 0, 0.2);\n  border-bottom: 1px solid rgba(0, 0, 0, 0.2);\n  padding: 2rem 5rem;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  margin: 0.4rem 0;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row input {\n  min-width: 400px;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row label {\n  margin-bottom: 0 !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .edit-display-modal-body-row .ui.selection.dropdown {\n  min-width: 400px !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-body .time input {\n  width: calc(200px - 0.1rem) !important;\n  min-width: calc(200px - 0.1rem) !important;\n}\n\n.edit-display-modal .edit-display-modal-content .edit-display-modal-actions {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 5rem;\n}\n\n[type='checkbox']:not(.filled-in) + label:after {\n  transform: scale(1) !important;\n  -webkit-transform: scale(1) !important;\n}\n\n.edit-display-modal\n.edit-display-modal-content\n.edit-display-modal-body\n.edit-display-modal-body-row\ninput {\n  min-width: 0 !important;\n}", ""]);
 
 // exports
 
@@ -15551,6 +15592,7 @@ var render = function() {
                   attrs: {
                     selection: "",
                     search: "",
+                    multiple: "",
                     options: _vm.displayOption
                   },
                   model: {
@@ -15673,7 +15715,67 @@ var render = function() {
                 ],
                 1
               )
-            ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "edit-display-modal-body-row" },
+              [
+                _c("label", [_vm._v("Display Order")]),
+                _vm._v(" "),
+                _c("sui-input", {
+                  staticClass: "input-number",
+                  attrs: { type: "number" },
+                  model: {
+                    value: _vm.displayOrder,
+                    callback: function($$v) {
+                      _vm.displayOrder = $$v
+                    },
+                    expression: "displayOrder"
+                  }
+                })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "edit-display-modal-body-row" },
+              [
+                _c("label", [_vm._v("Priority")]),
+                _vm._v(" "),
+                _c("sui-input", {
+                  staticClass: "input-number",
+                  attrs: { type: "number" },
+                  model: {
+                    value: _vm.isPriority,
+                    callback: function($$v) {
+                      _vm.isPriority = $$v
+                    },
+                    expression: "isPriority"
+                  }
+                })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "edit-display-modal-body-row" },
+              [
+                _c("sui-checkbox", {
+                  attrs: { label: "Run at CMS Time?", toggle: "" },
+                  model: {
+                    value: _vm.syncTimezone,
+                    callback: function($$v) {
+                      _vm.syncTimezone = $$v
+                    },
+                    expression: "syncTimezone"
+                  }
+                })
+              ],
+              1
+            )
           ]),
           _vm._v(" "),
           _c(
@@ -15767,7 +15869,7 @@ exports = module.exports = __webpack_require__(2)(false);
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap);", ""]);
 
 // module
-exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n  --grey-100: #e4e9f0;\n  --grey-200: #cfd7e3;\n  --grey-300: #b5c0cd;\n  --grey-800: #3e4e63;\n  --grid-gap: 1px;\n  --day-label-size: 20px;\n}\n\n.navigation {\n  padding: 2rem;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.navigation > * {\n  margin-left: 2rem !important;\n}\n\n.navigation h2 {\n  margin: 0px !important;\n  font-weight: 400 !important;\n}\n\n.date-input {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 2rem 1rem 2rem;\n}\n\n.date-input > * {\n  margin-left: 2rem !important;\n}\n\n.date-input .ui.input {\n  margin-left: 0 !important;\n}\n\nmain {\n  padding: 0 2rem 2rem 2rem;\n}\n\nmain .year {\n  margin-top: 2rem;\n}\n\nmain .year .month-of-year {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[3];\n      grid-template-columns: repeat(3, 1fr);\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border: solid 1px rgba(0, 0, 0, 0.1);\n  background-color: #e2e2e2;\n}\n\nmain .year .month-list {\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  position: relative;\n}\n\nmain .year .month-list span {\n  cursor: pointer;\n}\n\nmain .year .month-list i {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  cursor: pointer;\n}\n\nmain #calendar-days {\n  border: 1px solid rgba(0, 0, 0, 0.1);\n}\n\nmain .days-grid {\n  height: 100%;\n  position: relative;\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border-top: solid 1px black;\n  background-color: #e2e2e2;\n}\n\nmain .day-of-week,\nmain .days-grid {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[7];\n      grid-template-columns: repeat(7, 1fr);\n}\n\nmain .day-of-week .calendar-day,\nmain .days-grid .calendar-day {\n  position: relative;\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: end;\n      -ms-flex-align: end;\n          align-items: flex-end;\n}\n\nmain .day-of-week .calendar-day .not-current span,\nmain .days-grid .calendar-day .not-current span {\n  opacity: 0.5;\n}\n\nmain .day-of-week .calendar-day .dayNumber,\nmain .days-grid .calendar-day .dayNumber {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  cursor: pointer;\n}\n\nmain .day-of-week .calendar-day .display-icon .icon-and-popup,\nmain .days-grid .calendar-day .display-icon .icon-and-popup {\n  position: relative;\n  cursor: pointer;\n}\n\nmain .day-of-week .calendar-day .display-icon .icon-and-popup .popup,\nmain .days-grid .calendar-day .display-icon .icon-and-popup .popup {\n  position: absolute;\n  bottom: 100%;\n  right: -200%;\n  font-size: 10px;\n  padding: 0.3rem;\n  border-radius: 3px;\n  z-index: 1300;\n  min-width: 100px;\n  background-color: black;\n  color: white;\n  text-align: center;\n}\n\nmain .day-of-week .not-current,\nmain .days-grid .not-current {\n  background-color: #eeeeee !important;\n}\n\nmain .day-of-week {\n  color: var(--grey-800);\n  font-size: 18px;\n  background-color: #fff;\n  padding-bottom: 5px;\n  padding-top: 10px;\n}\n\nmain .day-of-week .day-list {\n  text-align: center;\n}\n\nmain .day {\n  margin-top: 2rem;\n}\n\nmain .day .time {\n  width: 10% !important;\n  text-align: center !important;\n}\n\nmain .day .events {\n  text-align: center !important;\n}\n\nmain .day .day-title {\n  cursor: pointer;\n}\n\nmain ol,\nmain li {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n\n.ui.selection.dropdown {\n  min-width: 5em;\n}\n\n.button-active {\n  background-color: #babbbc !important;\n}\n\n.ui.selection.dropdown {\n  width: 150px !important;\n}", ""]);
+exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n  --grey-100: #e4e9f0;\n  --grey-200: #cfd7e3;\n  --grey-300: #b5c0cd;\n  --grey-800: #3e4e63;\n  --grid-gap: 1px;\n  --day-label-size: 20px;\n}\n\n.navigation {\n  padding: 2rem;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.navigation > * {\n  margin-left: 2rem !important;\n}\n\n.navigation h2 {\n  margin: 0px !important;\n  font-weight: 400 !important;\n}\n\n.date-input {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 2rem 1rem 2rem;\n}\n\n.date-input > * {\n  margin-left: 2rem !important;\n}\n\n.date-input .ui.input {\n  margin-left: 0 !important;\n}\n\nmain {\n  padding: 0 2rem 2rem 2rem;\n}\n\nmain .year {\n  margin-top: 2rem;\n}\n\nmain .year .month-of-year {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[3];\n      grid-template-columns: repeat(3, 1fr);\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border: solid 1px rgba(0, 0, 0, 0.1);\n  background-color: #e2e2e2;\n}\n\nmain .year .month-list {\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  position: relative;\n}\n\nmain .year .month-list span {\n  cursor: pointer;\n}\n\nmain .year .month-list i {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  cursor: pointer;\n}\n\nmain #calendar-days {\n  border: 1px solid rgba(0, 0, 0, 0.1);\n}\n\nmain .days-grid {\n  height: 100%;\n  position: relative;\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border-top: solid 1px black;\n  background-color: #e2e2e2;\n}\n\nmain .day-of-week,\nmain .days-grid {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[7];\n      grid-template-columns: repeat(7, 1fr);\n}\n\nmain .day-of-week .calendar-day,\nmain .days-grid .calendar-day {\n  position: relative;\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: end;\n      -ms-flex-align: end;\n          align-items: flex-end;\n}\n\nmain .day-of-week .calendar-day .not-current span,\nmain .days-grid .calendar-day .not-current span {\n  opacity: 0.5;\n}\n\nmain .day-of-week .calendar-day .dayNumber,\nmain .days-grid .calendar-day .dayNumber {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  cursor: pointer;\n}\n\nmain .day-of-week .calendar-day .display-icon .icon-and-popup,\nmain .days-grid .calendar-day .display-icon .icon-and-popup {\n  position: relative;\n  cursor: pointer;\n}\n\nmain .day-of-week .calendar-day .display-icon .icon-and-popup .popup,\nmain .days-grid .calendar-day .display-icon .icon-and-popup .popup {\n  position: absolute;\n  bottom: 100%;\n  right: -200%;\n  font-size: 10px;\n  padding: 0.3rem;\n  border-radius: 3px;\n  z-index: 1300;\n  min-width: 100px;\n  background-color: black;\n  color: white;\n  text-align: center;\n}\n\nmain .day-of-week .not-current,\nmain .days-grid .not-current {\n  background-color: #eeeeee !important;\n}\n\nmain .day-of-week {\n  color: var(--grey-800);\n  font-size: 18px;\n  background-color: #fff;\n  padding-bottom: 5px;\n  padding-top: 10px;\n}\n\nmain .day-of-week .day-list {\n  text-align: center;\n}\n\nmain .day {\n  margin-top: 2rem;\n}\n\nmain .day .time {\n  width: 10% !important;\n  text-align: center !important;\n}\n\nmain .day .events {\n  text-align: center !important;\n}\n\nmain .day .day-title {\n  cursor: pointer;\n}\n\nmain .day .day-title .display-time {\n  font-weight: bolder;\n  color: blue;\n}\n\nmain ol,\nmain li {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n\n.ui.selection.dropdown {\n  min-width: 5em;\n}\n\n.button-active {\n  background-color: #babbbc !important;\n}\n\n.ui.selection.dropdown {\n  width: 150px !important;\n}", ""]);
 
 // exports
 
@@ -15981,7 +16083,14 @@ var render = function() {
                           [
                             _c("div", { staticClass: "icon-and-popup" }, [
                               _c("i", {
-                                staticClass: "fas fa-desktop",
+                                class:
+                                  d.isPriority > 0
+                                    ? "fas fa-star"
+                                    : "fas fa-desktop",
+                                style:
+                                  d.displayGroups.length > 1
+                                    ? "color: red"
+                                    : "",
                                 on: {
                                   mouseover: function($event) {
                                     _vm.onShowPopUp(cal.date, index)
@@ -16088,6 +16197,19 @@ var render = function() {
                                     }
                                   },
                                   [
+                                    _c(
+                                      "span",
+                                      { staticClass: "display-time" },
+                                      [
+                                        _vm._v(
+                                          "[" +
+                                            _vm._s(e.timeStart) +
+                                            " : " +
+                                            _vm._s(e.timeEnd) +
+                                            "]"
+                                        )
+                                      ]
+                                    ),
                                     _vm._v(
                                       "\n                " +
                                         _vm._s(e.title) +

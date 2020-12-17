@@ -181,6 +181,11 @@ main {
 
     .day-title {
       cursor: pointer;
+
+      .display-time {
+        font-weight: bolder;
+        color: blue;
+      }
     }
   }
 
