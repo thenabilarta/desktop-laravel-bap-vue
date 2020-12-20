@@ -14082,6 +14082,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
 
 
 
@@ -14106,7 +14107,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
       displayForCurrentDay: false,
       showTable: "month",
       weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      current: 1,
+      current: [],
       buttonFilterActive: "month",
       displaySchedule: [],
       showPopUpNumber: null,
@@ -14116,22 +14117,19 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
       loading: false,
       monthsList: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       displayList: [{
-        text: "All Display",
-        value: 1
+        text: "All",
+        value: 0
       }, {
-        text: "Xiaomi",
-        value: 2
-      }, {
-        text: "Dell",
-        value: 3
-      }, {
-        text: "Samsung",
-        value: 4
+        text: "Display",
+        disabled: true
       }]
     };
   },
 
   watch: {
+    current: function current() {
+      console.log(this.current);
+    },
     currentDate: function currentDate() {
       var _this = this;
 
@@ -14229,13 +14227,12 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
     var startMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("month").valueOf();
     var endMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("month").valueOf();
     this.loading = true;
-    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule/data", {
+    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.all([__WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/schedule/data", {
       dateFrom: startMonth,
       dateTo: endMonth
-    }).then(function (res) {
+    }), __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/display/data"), __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/displaygroup/data")]).then(function (res) {
       var arrayOfData = [];
-      console.log(res);
-      res.data.result.map(function (r) {
+      res[0].data.result.map(function (r) {
         var data = {
           displayStart: r.start,
           displayEnd: r.end,
@@ -14252,6 +14249,25 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
       });
       _this2.displaySchedule = arrayOfData;
       _this2.loading = false;
+
+      res[1].data.map(function (d) {
+        _this2.displayList.push({
+          text: d.display,
+          value: d.displayId
+        });
+      });
+
+      _this2.displayList.push({
+        text: "Display Group",
+        disabled: true
+      });
+
+      res[2].data.map(function (d) {
+        _this2.displayList.push({
+          text: d.displayGroup,
+          value: d.displayGroupId
+        });
+      });
     });
   },
 
@@ -14351,22 +14367,33 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
       return __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(date).weekday();
     },
     createDaysForCurrentMonth: function createDaysForCurrentMonth(year, month, schedule) {
+      var _this4 = this;
+
       return [].concat(_toConsumableArray(Array(this.getNumberOfDaysInMonth(year, month)))).map(function (day, index) {
         var displayProperty = [];
         var dateInUnix = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-" + (index + 1));
         if (schedule.length > 0) {
           schedule.map(function (s) {
             if (dateInUnix.isBetween(__WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayStart), __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayEnd)) || __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayStart).date() === dateInUnix.date() || __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(s.displayEnd).date() === dateInUnix.date()) {
-              displayProperty.push({
-                exist: true,
-                title: s.title,
-                id: s.id,
-                isPriority: s.isPriority,
-                displayOrder: s.displayOrder,
-                syncTimezone: s.syncTimezone,
-                displayGroups: s.displayGroups,
-                recurrenceType: s.recurrenceType
-              });
+              // this.displayList.map((d) => {
+              //   s.displayGroups.map((dis) => {
+              //     if (d.text === dis.displayGroup && this.current.includes(d.vlaue)) {
+              //       console.log(d.text);
+              //     }
+              //   });
+              // });
+              if (_this4.current.includes(0)) {
+                displayProperty.push({
+                  exist: true,
+                  title: s.title,
+                  id: s.id,
+                  isPriority: s.isPriority,
+                  displayOrder: s.displayOrder,
+                  syncTimezone: s.syncTimezone,
+                  displayGroups: s.displayGroups,
+                  recurrenceType: s.recurrenceType
+                });
+              }
             }
           });
         }
@@ -14410,7 +14437,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
       return __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(year + "-" + month + "-01").daysInMonth();
     },
     changeToYear: function changeToYear() {
-      var _this4 = this;
+      var _this5 = this;
 
       var startYear = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("year").valueOf();
       var endYear = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("year").valueOf();
@@ -14434,13 +14461,13 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
           };
           arrayOfData.push(data);
         });
-        _this4.displaySchedule = arrayOfData;
+        _this5.displaySchedule = arrayOfData;
       });
       this.showTable = "year";
       this.buttonFilterActive = "year";
     },
     changeToMonth: function changeToMonth() {
-      var _this5 = this;
+      var _this6 = this;
 
       var startMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("month").valueOf();
       var endMonth = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("month").valueOf();
@@ -14464,13 +14491,13 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
           };
           arrayOfData.push(data);
         });
-        _this5.displaySchedule = arrayOfData;
+        _this6.displaySchedule = arrayOfData;
       });
       this.showTable = "month";
       this.buttonFilterActive = "month";
     },
     changeToDay: function changeToDay() {
-      var _this6 = this;
+      var _this7 = this;
 
       var startDay = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).startOf("day").valueOf();
       var endDay = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate).endOf("day").valueOf();
@@ -14494,7 +14521,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
           };
           arrayOfData.push(data);
         });
-        _this6.displaySchedule = arrayOfData;
+        _this7.displaySchedule = arrayOfData;
       });
       this.showTable = "day";
       this.buttonFilterActive = "day";
@@ -14607,7 +14634,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
       return this.INITIAL_YEAR;
     },
     hourAndEventOfTheDay: function hourAndEventOfTheDay() {
-      var _this7 = this;
+      var _this8 = this;
 
       var arrayOfTimeAndEvent = [];
       var currentTime = __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(this.currentDate);
@@ -14615,7 +14642,7 @@ __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.extend(__WEBPACK_IMPORTED_MODULE_4
       var _loop = function _loop() {
         var eventArray = [];
         var id = null;
-        _this7.displaySchedule.map(function (d) {
+        _this8.displaySchedule.map(function (d) {
           if (d.displayStart <= currentTime.valueOf() && d.displayEnd >= currentTime.valueOf()) {
             eventArray.push({
               timeStart: __WEBPACK_IMPORTED_MODULE_1_dayjs___default()(d.displayStart).format("HH-mm"),
@@ -16477,7 +16504,7 @@ exports = module.exports = __webpack_require__(3)(false);
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap);", ""]);
 
 // module
-exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n  --grey-100: #e4e9f0;\n  --grey-200: #cfd7e3;\n  --grey-300: #b5c0cd;\n  --grey-800: #3e4e63;\n  --grid-gap: 1px;\n  --day-label-size: 20px;\n}\n\n.navigation {\n  padding: 2rem;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.navigation > * {\n  margin-left: 2rem !important;\n}\n\n.navigation h2 {\n  margin: 0px !important;\n  font-weight: 400 !important;\n}\n\n.date-input {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 2rem 1rem 2rem;\n}\n\n.date-input > * {\n  margin-left: 2rem !important;\n}\n\n.date-input .ui.input {\n  margin-left: 0 !important;\n}\n\nmain {\n  padding: 0 2rem 2rem 2rem;\n}\n\nmain .year {\n  margin-top: 2rem;\n}\n\nmain .year .month-of-year {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[3];\n      grid-template-columns: repeat(3, 1fr);\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border: solid 1px rgba(0, 0, 0, 0.1);\n  background-color: #e2e2e2;\n}\n\nmain .year .month-list {\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  position: relative;\n}\n\nmain .year .month-list span {\n  cursor: pointer;\n}\n\nmain .year .month-list i {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  cursor: pointer;\n}\n\nmain #calendar-days {\n  border: 1px solid rgba(0, 0, 0, 0.1);\n}\n\nmain .days-grid {\n  height: 100%;\n  position: relative;\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border-top: solid 1px black;\n  background-color: #e2e2e2;\n}\n\nmain .day-of-week,\nmain .days-grid {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[7];\n      grid-template-columns: repeat(7, 1fr);\n}\n\nmain .day-of-week .calendar-day,\nmain .days-grid .calendar-day {\n  position: relative;\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: end;\n      -ms-flex-align: end;\n          align-items: flex-end;\n}\n\nmain .day-of-week .calendar-day .not-current span,\nmain .days-grid .calendar-day .not-current span {\n  opacity: 0.5;\n}\n\nmain .day-of-week .calendar-day .dayNumber,\nmain .days-grid .calendar-day .dayNumber {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  cursor: pointer;\n}\n\nmain .day-of-week .calendar-day .display-icon .icon-and-popup,\nmain .days-grid .calendar-day .display-icon .icon-and-popup {\n  position: relative;\n  cursor: pointer;\n}\n\nmain .day-of-week .calendar-day .display-icon .icon-and-popup .popup,\nmain .days-grid .calendar-day .display-icon .icon-and-popup .popup {\n  position: absolute;\n  bottom: 100%;\n  right: -200%;\n  font-size: 10px;\n  padding: 0.3rem;\n  border-radius: 3px;\n  z-index: 1300;\n  min-width: 100px;\n  background-color: black;\n  color: white;\n  text-align: center;\n}\n\nmain .day-of-week .not-current,\nmain .days-grid .not-current {\n  background-color: #eeeeee !important;\n}\n\nmain .day-of-week {\n  color: var(--grey-800);\n  font-size: 18px;\n  background-color: #fff;\n  padding-bottom: 5px;\n  padding-top: 10px;\n}\n\nmain .day-of-week .day-list {\n  text-align: center;\n}\n\nmain .day {\n  margin-top: 2rem;\n}\n\nmain .day .time {\n  width: 10% !important;\n  text-align: center !important;\n}\n\nmain .day .events {\n  text-align: center !important;\n}\n\nmain .day .day-title {\n  cursor: pointer;\n}\n\nmain .day .day-title .display-time {\n  font-weight: bolder;\n  color: blue;\n}\n\nmain ol,\nmain li {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n\nfooter {\n  padding: 0 2rem 2rem 2rem;\n  max-width: 30%;\n}\n\nfooter .content {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -ms-flex-item-align: center;\n      align-self: center;\n  margin: auto !important;\n}\n\nfooter td {\n  vertical-align: middle !important;\n}\n\n.ui.selection.dropdown {\n  min-width: 5em;\n}\n\n.button-active {\n  background-color: #babbbc !important;\n}\n\n.ui.selection.dropdown {\n  width: 150px !important;\n}\n\n.full-width-input {\n  min-width: 400px !important;\n}", ""]);
+exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n  --grey-100: #e4e9f0;\n  --grey-200: #cfd7e3;\n  --grey-300: #b5c0cd;\n  --grey-800: #3e4e63;\n  --grid-gap: 1px;\n  --day-label-size: 20px;\n}\n\n.navigation {\n  padding: 2rem;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.navigation > * {\n  margin-left: 2rem !important;\n}\n\n.navigation h2 {\n  margin: 0px !important;\n  font-weight: 400 !important;\n}\n\n.date-input {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 2rem 1rem 2rem;\n}\n\n.date-input > * {\n  margin-left: 2rem !important;\n}\n\n.date-input .ui.input {\n  margin-left: 0 !important;\n}\n\nmain {\n  padding: 0 2rem 2rem 2rem;\n}\n\nmain .year {\n  margin-top: 2rem;\n}\n\nmain .year .month-of-year {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[3];\n      grid-template-columns: repeat(3, 1fr);\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border: solid 1px rgba(0, 0, 0, 0.1);\n  background-color: #e2e2e2;\n}\n\nmain .year .month-list {\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  position: relative;\n}\n\nmain .year .month-list span {\n  cursor: pointer;\n}\n\nmain .year .month-list i {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  cursor: pointer;\n}\n\nmain #calendar-days {\n  border: 1px solid rgba(0, 0, 0, 0.1);\n}\n\nmain .days-grid {\n  height: 100%;\n  position: relative;\n  grid-column-gap: 1px;\n  grid-row-gap: 1px;\n  border-top: solid 1px black;\n  background-color: #e2e2e2;\n}\n\nmain .day-of-week,\nmain .days-grid {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: (1fr)[7];\n      grid-template-columns: repeat(7, 1fr);\n}\n\nmain .day-of-week .calendar-day,\nmain .days-grid .calendar-day {\n  position: relative;\n  min-height: 100px;\n  font-size: 16px;\n  background-color: #fff;\n  color: var(--grey-800);\n  padding: 5px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: end;\n      -ms-flex-align: end;\n          align-items: flex-end;\n}\n\nmain .day-of-week .calendar-day .not-current span,\nmain .days-grid .calendar-day .not-current span {\n  opacity: 0.5;\n}\n\nmain .day-of-week .calendar-day .dayNumber,\nmain .days-grid .calendar-day .dayNumber {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  cursor: pointer;\n}\n\nmain .day-of-week .calendar-day .display-icon .icon-and-popup,\nmain .days-grid .calendar-day .display-icon .icon-and-popup {\n  position: relative;\n  cursor: pointer;\n}\n\nmain .day-of-week .calendar-day .display-icon .icon-and-popup .popup,\nmain .days-grid .calendar-day .display-icon .icon-and-popup .popup {\n  position: absolute;\n  bottom: 100%;\n  right: -200%;\n  font-size: 10px;\n  padding: 0.3rem;\n  border-radius: 3px;\n  z-index: 1300;\n  min-width: 100px;\n  background-color: black;\n  color: white;\n  text-align: center;\n}\n\nmain .day-of-week .not-current,\nmain .days-grid .not-current {\n  background-color: #eeeeee !important;\n}\n\nmain .day-of-week {\n  color: var(--grey-800);\n  font-size: 18px;\n  background-color: #fff;\n  padding-bottom: 5px;\n  padding-top: 10px;\n}\n\nmain .day-of-week .day-list {\n  text-align: center;\n}\n\nmain .day {\n  margin-top: 2rem;\n}\n\nmain .day .time {\n  width: 10% !important;\n  text-align: center !important;\n}\n\nmain .day .events {\n  text-align: center !important;\n}\n\nmain .day .day-title {\n  cursor: pointer;\n}\n\nmain .day .day-title .display-time {\n  font-weight: bolder;\n  color: blue;\n}\n\nmain ol,\nmain li {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n\nfooter {\n  padding: 0 2rem 2rem 2rem;\n  max-width: 30%;\n}\n\nfooter .content {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -ms-flex-item-align: center;\n      align-self: center;\n  margin: auto !important;\n}\n\nfooter td {\n  vertical-align: middle !important;\n}\n\n.ui.selection.dropdown {\n  min-width: 5em;\n}\n\n.button-active {\n  background-color: #babbbc !important;\n}\n\n.ui.selection.dropdown {\n  width: 300px !important;\n}\n\n.full-width-input {\n  min-width: 400px !important;\n}", ""]);
 
 // exports
 
@@ -16537,6 +16564,7 @@ var render = function() {
             attrs: {
               placeholder: "Select Display",
               selection: "",
+              multiple: "",
               options: _vm.displayList
             },
             model: {

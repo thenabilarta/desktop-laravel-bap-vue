@@ -18,6 +18,7 @@
       <sui-dropdown
         placeholder="Select Display"
         selection
+        multiple
         :options="displayList"
         v-model="current"
       />
@@ -205,7 +206,7 @@ export default {
       displayForCurrentDay: false,
       showTable: "month",
       weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      current: 1,
+      current: [],
       buttonFilterActive: "month",
       displaySchedule: [],
       showPopUpNumber: null,
@@ -229,25 +230,20 @@ export default {
       ],
       displayList: [
         {
-          text: "All Display",
-          value: 1,
+          text: "All",
+          value: 0,
         },
         {
-          text: "Xiaomi",
-          value: 2,
-        },
-        {
-          text: "Dell",
-          value: 3,
-        },
-        {
-          text: "Samsung",
-          value: 4,
+          text: "Display",
+          disabled: true,
         },
       ],
     };
   },
   watch: {
+    current: function () {
+      console.log(this.current);
+    },
     currentDate: function () {
       this.loading = true;
       switch (this.showTable) {
@@ -348,14 +344,17 @@ export default {
     let endMonth = dayjs(this.currentDate).endOf("month").valueOf();
     this.loading = true;
     axios
-      .post("http://127.0.0.1:8000/schedule/data", {
-        dateFrom: startMonth,
-        dateTo: endMonth,
-      })
+      .all([
+        axios.post("http://127.0.0.1:8000/schedule/data", {
+          dateFrom: startMonth,
+          dateTo: endMonth,
+        }),
+        axios.get("http://127.0.0.1:8000/display/data"),
+        axios.get("http://127.0.0.1:8000/displaygroup/data"),
+      ])
       .then((res) => {
         let arrayOfData = [];
-        console.log(res);
-        res.data.result.map((r) => {
+        res[0].data.result.map((r) => {
           let data = {
             displayStart: r.start,
             displayEnd: r.end,
@@ -372,6 +371,25 @@ export default {
         });
         this.displaySchedule = arrayOfData;
         this.loading = false;
+
+        res[1].data.map((d) => {
+          this.displayList.push({
+            text: d.display,
+            value: d.displayId,
+          });
+        });
+
+        this.displayList.push({
+          text: "Display Group",
+          disabled: true,
+        });
+
+        res[2].data.map((d) => {
+          this.displayList.push({
+            text: d.displayGroup,
+            value: d.displayGroupId,
+          });
+        });
       });
   },
   methods: {
@@ -488,16 +506,25 @@ export default {
                 dayjs(s.displayStart).date() === dateInUnix.date() ||
                 dayjs(s.displayEnd).date() === dateInUnix.date()
               ) {
-                displayProperty.push({
-                  exist: true,
-                  title: s.title,
-                  id: s.id,
-                  isPriority: s.isPriority,
-                  displayOrder: s.displayOrder,
-                  syncTimezone: s.syncTimezone,
-                  displayGroups: s.displayGroups,
-                  recurrenceType: s.recurrenceType,
-                });
+                // this.displayList.map((d) => {
+                //   s.displayGroups.map((dis) => {
+                //     if (d.text === dis.displayGroup && this.current.includes(d.vlaue)) {
+                //       console.log(d.text);
+                //     }
+                //   });
+                // });
+                if (this.current.includes(0)) {
+                  displayProperty.push({
+                    exist: true,
+                    title: s.title,
+                    id: s.id,
+                    isPriority: s.isPriority,
+                    displayOrder: s.displayOrder,
+                    syncTimezone: s.syncTimezone,
+                    displayGroups: s.displayGroups,
+                    recurrenceType: s.recurrenceType,
+                  });
+                }
               }
             });
           }
