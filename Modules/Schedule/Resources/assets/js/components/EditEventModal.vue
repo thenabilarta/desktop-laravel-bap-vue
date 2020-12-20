@@ -83,9 +83,7 @@
 <script>
 import axios from "axios";
 import dayjs from "dayjs";
-
 import "../../css/EditEventModal.css";
-
 export default {
   name: "EditEventModal",
   data() {
@@ -143,20 +141,41 @@ export default {
       .all([
         axios.get("http://127.0.0.1:8000/display/data"),
         axios.get("http://127.0.0.1:8000/layout/data"),
+        axios.get("http://127.0.0.1:8000/displaygroup/data"),
+        axios.get("http://127.0.0.1:8000/campaign/data"),
       ])
       .then((res) => {
-        console.log(res[0].data);
+        console.log(res);
         res[0].data.map((d) => {
           this.displayOption.push({
             text: d.display,
             value: d.displayId,
           });
         });
-
         res[1].data.map((l) => {
           this.layoutOption.push({
             text: l.layout,
             value: l.layoutId,
+          });
+        });
+        this.displayOption.push({
+          text: "Display Group",
+          disabled: true,
+        });
+        res[2].data.map((d) => {
+          this.displayOption.push({
+            text: d.displayGroup,
+            value: d.displayGroupId,
+          });
+        });
+        this.layoutOption.push({
+          text: "Campaign",
+          disabled: true,
+        });
+        res[3].data.map((c) => {
+          this.layoutOption.push({
+            text: c.campaign,
+            value: c.campaignId,
           });
         });
       })
@@ -183,7 +202,6 @@ export default {
               r.event.displayGroups.map((d) => {
                 this.display.push(d.displayGroupId);
               });
-
               this.layout = r.event.campaignId;
               this.dateFrom = dayjs(r.start).format("YYYY-MM-DD");
               this.dateTo = dayjs(r.end).format("YYYY-MM-DD");
@@ -225,13 +243,11 @@ export default {
     computedTimeFrom() {
       let newTimeFrom = this.timeFrom.split(":");
       let tFrom = newTimeFrom.join("%3A") + "%3A00";
-
       return tFrom;
     },
     computedTimeTo() {
       let newTimeFrom = this.timeTo.split(":");
       let tTo = newTimeFrom.join("%3A") + "%3A00";
-
       return tTo;
     },
   },

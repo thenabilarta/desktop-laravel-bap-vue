@@ -1,6 +1,7 @@
 <template>
   <div class="edit-display-modal" @click.self="closeAddEventModal">
     <div class="edit-display-modal-content">
+      <sui-loader v-if="loading" active size="massive" />
       <div class="edit-display-modal-header">
         <h1>Add Event</h1>
       </div>
@@ -33,14 +34,26 @@
             v-model="layout"
           />
         </div>
-        <div class="edit-display-modal-body-row time">
+        <div class="edit-display-modal-body-row">
+          <label>Dayparting</label>
+          <sui-dropdown
+            selection
+            :options="daypartingOption"
+            v-model="dayparting"
+          />
+        </div>
+        <div class="edit-display-modal-body-row time" v-if="dayparting !== 2">
           <label>From</label>
           <div class="time-input">
-            <sui-input type="date" v-model="dateFrom" />
-            <sui-input type="time" v-model="timeFrom" />
+            <sui-input
+              type="date"
+              v-model="dateFrom"
+              :class="dayparting > 2 && 'full-width-input'"
+            />
+            <sui-input type="time" v-model="timeFrom" v-if="dayparting === 1" />
           </div>
         </div>
-        <div class="edit-display-modal-body-row time">
+        <div class="edit-display-modal-body-row time" v-if="dayparting === 1">
           <label>To</label>
           <div class="time-input">
             <sui-input type="date" v-model="dateTo" />
@@ -66,6 +79,29 @@
             v-model="syncTimezone"
           />
         </div>
+        <div class="edit-display-modal-body-row">
+          <label>Repeats</label>
+          <sui-dropdown selection :options="repeatOption" v-model="repeat" />
+        </div>
+        <div class="edit-display-modal-body-row" v-if="repeat !== 1">
+          <label>Repeat Every</label>
+          <sui-input type="number" class="input-number" v-model="repeatEvery" />
+        </div>
+        <div class="edit-display-modal-body-row" v-if="repeat === 5">
+          <label>Day</label>
+          <sui-dropdown
+            selection
+            :options="repeatDayOption"
+            v-model="repeatDay"
+          />
+        </div>
+        <div class="edit-display-modal-body-row time" v-if="repeat !== 1">
+          <label>Until</label>
+          <div class="time-input">
+            <sui-input type="date" v-model="dateFromUntil" />
+            <sui-input type="time" v-model="timeFromUntil" />
+          </div>
+        </div>
       </div>
       <div class="edit-display-modal-actions">
         <sui-button>Cancel</sui-button>
@@ -79,9 +115,7 @@
 
 <script>
 import axios from "axios";
-
 import "../../css/AddEventModal.css";
-
 export default {
   name: "AddEventModal",
   data() {
@@ -89,6 +123,8 @@ export default {
       eventType: 1,
       display: null,
       layout: null,
+      dayparting: 1,
+      repeat: 0,
       dateFrom: "2020-12-18",
       dateTo: "2020-12-25",
       timeFrom: "01:00",
@@ -96,6 +132,12 @@ export default {
       isPriority: null,
       displayOrder: null,
       syncTimezone: false,
+      loading: false,
+      dateFromUntil: null,
+      timeFromUntil: null,
+      repeat: 1,
+      repeatDay: 1,
+      repeatEvery: null,
       eventTypeOption: [
         {
           text: "Campaign/Layout",
@@ -114,6 +156,76 @@ export default {
           disabled: true,
         },
       ],
+      daypartingOption: [
+        {
+          text: "Custom",
+          value: 1,
+        },
+        {
+          text: "Always",
+          value: 2,
+        },
+      ],
+      repeatOption: [
+        {
+          text: "None",
+          value: 1,
+        },
+        {
+          text: "Per Minute",
+          value: 2,
+        },
+        {
+          text: "Hourly",
+          value: 3,
+        },
+        {
+          text: "Daily",
+          value: 4,
+        },
+        {
+          text: "Weekly",
+          value: 5,
+        },
+        {
+          text: "Monthly",
+          value: 6,
+        },
+        {
+          text: "Yearly",
+          value: 7,
+        },
+      ],
+      repeatDayOption: [
+        {
+          text: "Monday",
+          value: 1,
+        },
+        {
+          text: "Tuesday",
+          value: 2,
+        },
+        {
+          text: "Wednesday",
+          value: 3,
+        },
+        {
+          text: "Thursday",
+          value: 4,
+        },
+        {
+          text: "Friday",
+          value: 5,
+        },
+        {
+          text: "Saturday",
+          value: 6,
+        },
+        {
+          text: "Sunday",
+          value: 7,
+        },
+      ],
     };
   },
   watch: {
@@ -122,27 +234,59 @@ export default {
     },
   },
   mounted() {
+    this.loading = true;
     axios
       .all([
         axios.get("http://127.0.0.1:8000/display/data"),
         axios.get("http://127.0.0.1:8000/layout/data"),
+        axios.get("http://127.0.0.1:8000/displaygroup/data"),
+        axios.get("http://127.0.0.1:8000/campaign/data"),
+        axios.get("http://127.0.0.1:8000/dayparting/data"),
       ])
       .then((res) => {
-        console.log(res[0].data);
+        console.log(res);
         res[0].data.map((d) => {
           this.displayOption.push({
             text: d.display,
             value: d.displayId,
           });
         });
-        console.log(res[1].data);
         res[1].data.map((l) => {
           this.layoutOption.push({
             text: l.layout,
             value: l.layoutId,
           });
         });
-      });
+        this.displayOption.push({
+          text: "Display Group",
+          disabled: true,
+        });
+        res[2].data.map((d) => {
+          this.displayOption.push({
+            text: d.displayGroup,
+            value: d.displayGroupId,
+          });
+        });
+        this.layoutOption.push({
+          text: "Campaign",
+          disabled: true,
+        });
+        res[3].data.map((c) => {
+          this.layoutOption.push({
+            text: c.campaign,
+            value: c.campaignId,
+          });
+        });
+        res[4].data.map((daypart) => {
+          if (daypart.dayPartId > 2) {
+            this.daypartingOption.push({
+              text: daypart.name,
+              value: daypart.dayPartId,
+            });
+          }
+        });
+      })
+      .then(() => (this.loading = false));
   },
   methods: {
     closeAddEventModal() {
@@ -161,6 +305,11 @@ export default {
           isPriority: this.isPriority,
           displayOrder: this.displayOrder,
           syncTimezone: this.syncTimezone === true ? "on" : "off",
+          repeat: this.repeat,
+          repeatEvery: this.repeatEvery,
+          repeatDay: this.repeatDay,
+          dateFromUntil: this.dateFromUntil,
+          timeFromUntil: this.timeFromUntil,
         })
         .then((res) => console.log(res.data));
     },
@@ -169,13 +318,11 @@ export default {
     computedTimeFrom() {
       let newTimeFrom = this.timeFrom.split(":");
       let tFrom = newTimeFrom.join("%3A") + "%3A00";
-
       return tFrom;
     },
     computedTimeTo() {
       let newTimeFrom = this.timeTo.split(":");
       let tTo = newTimeFrom.join("%3A") + "%3A00";
-
       return tTo;
     },
   },

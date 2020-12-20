@@ -16,7 +16,6 @@ class ScheduleController extends AppBaseController
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            // CURLOPT_URL => 'http://192.168.44.127/xibo-cms/web/api/authorize/access_token',
             CURLOPT_URL => 'http://192.168.1.5/xibo-cms/web/api/authorize/access_token',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',

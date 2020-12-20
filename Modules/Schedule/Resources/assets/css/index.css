@@ -229,6 +229,27 @@ main li {
   list-style: none;
 }
 
+footer {
+  padding: 0 2rem 2rem 2rem;
+  max-width: 30%;
+}
+
+footer .content {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -ms-flex-item-align: center;
+      align-self: center;
+  margin: auto !important;
+}
+
+footer td {
+  vertical-align: middle !important;
+}
+
 .ui.selection.dropdown {
   min-width: 5em;
 }
@@ -239,5 +260,9 @@ main li {
 
 .ui.selection.dropdown {
   width: 150px !important;
+}
+
+.full-width-input {
+  min-width: 400px !important;
 }
 /*# sourceMappingURL=index.css.map */

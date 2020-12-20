@@ -1,0 +1,16 @@
+{
+    "name": "Dayparting",
+    "alias": "dayparting",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\Dayparting\\Providers\\DaypartingServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

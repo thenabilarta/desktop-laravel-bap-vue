@@ -30,3 +30,15 @@ mix.js(
   'modules/schedule/resources/assets/js/schedule.js',
   'public/modules/schedule/js'
 );
+mix.js(
+  'modules/campaign/resources/assets/js/campaign.js',
+  'public/modules/campaign/js'
+);
+mix.js(
+  'modules/displaygroup/resources/assets/js/displayGroup.js',
+  'public/modules/displayGroup/js'
+);
+mix.js(
+  'modules/dayparting/resources/assets/js/dayparting.js',
+  'public/modules/dayparting/js'
+);

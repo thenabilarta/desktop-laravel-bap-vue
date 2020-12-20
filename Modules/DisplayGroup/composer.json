@@ -1,0 +1,25 @@
+{
+    "name": "Laravel BAP/displaygroup",
+    "description": "",
+    "authors": [
+        {
+            "name": "Laravel BAP - Business Application Platform",
+            "email": "code@laravel-bap.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\DisplayGroup\\Providers\\DisplayGroupServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\DisplayGroup\\": ""
+        }
+    }
+}

@@ -92,7 +92,10 @@
                   @mouseover="onShowPopUp(cal.date, index)"
                   @mouseleave="offShowPopUp"
                   @click="onClickMonthDisplayIcon(d.id)"
-                  :class="d.isPriority > 0 ? 'fas fa-star' : 'fas fa-desktop'"
+                  :class="[
+                    d.isPriority > 0 ? 'fas fa-star' : 'fas fa-desktop',
+                    d.recurrenceType === null ? '' : 'fa-spin',
+                  ]"
                   :style="d.displayGroups.length > 1 ? 'color: red' : ''"
                 ></i>
                 <span
@@ -145,6 +148,36 @@
         </sui-table>
       </div>
     </main>
+    <footer>
+      <sui-table celled>
+        <sui-table-body>
+          <sui-table-row>
+            <sui-table-cell>
+              <sui-header-content>
+                <i class="fas fa-square-full" style="color: red"></i>
+              </sui-header-content>
+            </sui-table-cell>
+            <sui-table-cell> Multiple </sui-table-cell>
+          </sui-table-row>
+          <sui-table-row>
+            <sui-table-cell>
+              <sui-header-content>
+                <i class="fas fa-star"></i>
+              </sui-header-content>
+            </sui-table-cell>
+            <sui-table-cell> Priority </sui-table-cell>
+          </sui-table-row>
+          <sui-table-row>
+            <sui-table-cell>
+              <sui-header-content>
+                <i class="fas fa-sync fa-spin"></i>
+              </sui-header-content>
+            </sui-table-cell>
+            <sui-table-cell> Repeat On </sui-table-cell>
+          </sui-table-row>
+        </sui-table-body>
+      </sui-table>
+    </footer>
   </div>
 </template>
 
@@ -154,15 +187,12 @@ import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
 import weekOfYear from "dayjs/plugin/weekOfYear";
 import isBetween from "dayjs/plugin/isBetween";
-
 import AddEventModal from "./components/AddEventModal";
 import EditEventModal from "./components/EditEventModal";
 import "../css/index.css";
-
 dayjs.extend(weekday);
 dayjs.extend(weekOfYear);
 dayjs.extend(isBetween);
-
 export default {
   name: "App",
   components: {
@@ -242,6 +272,7 @@ export default {
                   displayOrder: r.event.displayOrder,
                   syncTimezone: r.event.syncTimezone,
                   displayGroups: r.event.displayGroups,
+                  recurrenceType: r.event.recurrenceType,
                 };
                 arrayOfData.push(data);
               });
@@ -270,6 +301,7 @@ export default {
                   displayOrder: r.event.displayOrder,
                   syncTimezone: r.event.syncTimezone,
                   displayGroups: r.event.displayGroups,
+                  recurrenceType: r.event.recurrenceType,
                 };
                 arrayOfData.push(data);
               });
@@ -298,6 +330,7 @@ export default {
                   displayOrder: r.event.displayOrder,
                   syncTimezone: r.event.syncTimezone,
                   displayGroups: r.event.displayGroups,
+                  recurrenceType: r.event.recurrenceType,
                 };
                 arrayOfData.push(data);
               });
@@ -333,6 +366,7 @@ export default {
             displayOrder: r.event.displayOrder,
             syncTimezone: r.event.syncTimezone,
             displayGroups: r.event.displayGroups,
+            recurrenceType: r.event.recurrenceType,
           };
           arrayOfData.push(data);
         });
@@ -366,6 +400,7 @@ export default {
                   displayOrder: r.event.displayOrder,
                   syncTimezone: r.event.syncTimezone,
                   displayGroups: r.event.displayGroups,
+                  recurrenceType: r.event.recurrenceType,
                 };
                 arrayOfData.push(data);
               });
@@ -394,6 +429,7 @@ export default {
                   displayOrder: r.event.displayOrder,
                   syncTimezone: r.event.syncTimezone,
                   displayGroups: r.event.displayGroups,
+                  recurrenceType: r.event.recurrenceType,
                 };
                 arrayOfData.push(data);
               });
@@ -422,6 +458,7 @@ export default {
                   displayOrder: r.event.displayOrder,
                   syncTimezone: r.event.syncTimezone,
                   displayGroups: r.event.displayGroups,
+                  recurrenceType: r.event.recurrenceType,
                 };
                 arrayOfData.push(data);
               });
@@ -459,6 +496,7 @@ export default {
                   displayOrder: s.displayOrder,
                   syncTimezone: s.syncTimezone,
                   displayGroups: s.displayGroups,
+                  recurrenceType: s.recurrenceType,
                 });
               }
             });
@@ -550,6 +588,7 @@ export default {
               displayOrder: r.event.displayOrder,
               syncTimezone: r.event.syncTimezone,
               displayGroups: r.event.displayGroups,
+              recurrenceType: r.event.recurrenceType,
             };
             arrayOfData.push(data);
           });
@@ -579,6 +618,7 @@ export default {
               displayOrder: r.event.displayOrder,
               syncTimezone: r.event.syncTimezone,
               displayGroups: r.event.displayGroups,
+              recurrenceType: r.event.recurrenceType,
             };
             arrayOfData.push(data);
           });
@@ -608,6 +648,7 @@ export default {
               displayOrder: r.event.displayOrder,
               syncTimezone: r.event.syncTimezone,
               displayGroups: r.event.displayGroups,
+              recurrenceType: r.event.recurrenceType,
             };
             arrayOfData.push(data);
           });
