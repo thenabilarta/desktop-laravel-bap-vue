@@ -33,14 +33,26 @@
             v-model="layout"
           />
         </div>
-        <div class="edit-display-modal-body-row time">
+        <div class="edit-display-modal-body-row">
+          <label>Dayparting</label>
+          <sui-dropdown
+            selection
+            :options="daypartingOption"
+            v-model="dayparting"
+          />
+        </div>
+        <div class="edit-display-modal-body-row time" v-if="dayparting !== 2">
           <label>From</label>
           <div class="time-input">
-            <sui-input type="date" v-model="dateFrom" />
-            <sui-input type="time" v-model="timeFrom" />
+            <sui-input
+              type="date"
+              v-model="dateFrom"
+              :class="dayparting > 2 && 'full-width-input'"
+            />
+            <sui-input type="time" v-model="timeFrom" v-if="dayparting === 1" />
           </div>
         </div>
-        <div class="edit-display-modal-body-row time">
+        <div class="edit-display-modal-body-row time" v-if="dayparting === 1">
           <label>To</label>
           <div class="time-input">
             <sui-input type="date" v-model="dateTo" />
@@ -65,6 +77,29 @@
             toggle
             v-model="syncTimezone"
           />
+        </div>
+        <div class="edit-display-modal-body-row">
+          <label>Repeats</label>
+          <sui-dropdown selection :options="repeatOption" v-model="repeat" />
+        </div>
+        <div class="edit-display-modal-body-row" v-if="repeat !== 0">
+          <label>Repeat Every</label>
+          <sui-input type="number" class="input-number" v-model="repeatEvery" />
+        </div>
+        <div class="edit-display-modal-body-row" v-if="repeat === 4">
+          <label>Day</label>
+          <sui-dropdown
+            selection
+            :options="repeatDayOption"
+            v-model="repeatDay"
+          />
+        </div>
+        <div class="edit-display-modal-body-row time" v-if="repeat !== 0">
+          <label>Until</label>
+          <div class="time-input">
+            <sui-input type="date" v-model="dateFromUntil" />
+            <sui-input type="time" v-model="timeFromUntil" />
+          </div>
         </div>
       </div>
       <div class="edit-display-modal-actions">
@@ -100,6 +135,12 @@ export default {
       isPriority: null,
       displayOrder: null,
       syncTimezone: false,
+      dateFromUntil: null,
+      timeFromUntil: null,
+      repeat: 0,
+      repeatDay: 1,
+      repeatEvery: null,
+      dayparting: 1,
       eventTypeOption: [
         {
           text: "Campaign/Layout",
@@ -116,6 +157,76 @@ export default {
         {
           text: "Layouts",
           disabled: true,
+        },
+      ],
+      daypartingOption: [
+        {
+          text: "Custom",
+          value: 1,
+        },
+        {
+          text: "Always",
+          value: 2,
+        },
+      ],
+      repeatOption: [
+        {
+          text: "None",
+          value: 0,
+        },
+        {
+          text: "Per Minute",
+          value: 1,
+        },
+        {
+          text: "Hourly",
+          value: 2,
+        },
+        {
+          text: "Daily",
+          value: 3,
+        },
+        {
+          text: "Weekly",
+          value: 4,
+        },
+        {
+          text: "Monthly",
+          value: 5,
+        },
+        {
+          text: "Yearly",
+          value: 6,
+        },
+      ],
+      repeatDayOption: [
+        {
+          text: "Monday",
+          value: 1,
+        },
+        {
+          text: "Tuesday",
+          value: 2,
+        },
+        {
+          text: "Wednesday",
+          value: 3,
+        },
+        {
+          text: "Thursday",
+          value: 4,
+        },
+        {
+          text: "Friday",
+          value: 5,
+        },
+        {
+          text: "Saturday",
+          value: 6,
+        },
+        {
+          text: "Sunday",
+          value: 7,
         },
       ],
     };
@@ -143,6 +254,7 @@ export default {
         axios.get("http://127.0.0.1:8000/layout/data"),
         axios.get("http://127.0.0.1:8000/displaygroup/data"),
         axios.get("http://127.0.0.1:8000/campaign/data"),
+        axios.get("http://127.0.0.1:8000/dayparting/data"),
       ])
       .then((res) => {
         console.log(res);
@@ -178,6 +290,14 @@ export default {
             value: c.campaignId,
           });
         });
+        res[4].data.map((daypart) => {
+          if (daypart.dayPartId > 2) {
+            this.daypartingOption.push({
+              text: daypart.name,
+              value: daypart.dayPartId,
+            });
+          }
+        });
       })
       .then(() => (this.loading = false));
     this.getStartOfTheMonthUnix();
@@ -195,10 +315,10 @@ export default {
           dateTo: getEndOfMonth,
         })
         .then((res) => {
+          console.log(res);
           res.data.result.map((r) => {
             if (r.id === this.idWhenEditEventModalIsOpen) {
               /* Display Group belom di debug buat edit event */
-              console.log(r);
               r.event.displayGroups.map((d) => {
                 this.display.push(d.displayGroupId);
               });
@@ -210,6 +330,45 @@ export default {
               this.isPriority = r.event.isPriority;
               this.displayOrder = r.event.displayOrder;
               this.syncTimezone = r.event.syncTimezone === 1 ? true : false;
+
+              switch (r.event.recurrenceType) {
+                case "Year":
+                  this.repeat = 6;
+                  break;
+
+                case "Month":
+                  this.repeat = 5;
+                  break;
+
+                case "Week":
+                  this.repeat = 4;
+                  break;
+
+                case "Day":
+                  this.repeat = 3;
+                  break;
+
+                case "Hour":
+                  this.repeat = 2;
+                  break;
+
+                case "Minute":
+                  this.repeat = 1;
+                  break;
+
+                default:
+                  null;
+              }
+
+              this.repeatEvery = r.event.recurrenceDetail;
+              this.dateFromUntil = dayjs
+                .unix(r.event.recurrenceRange)
+                .format("YYYY-MM-DD");
+              this.timeFromUntil = dayjs
+                .unix(r.event.recurrenceRange)
+                .format("HH:mm");
+              this.repeatDay = r.event.recurrenceRepeatsOn;
+              this.dayparting = r.event.dayPartId;
             }
           });
         });
@@ -228,6 +387,12 @@ export default {
           isPriority: this.isPriority,
           displayOrder: this.displayOrder,
           syncTimezone: this.syncTimezone === true ? "on" : "off",
+          repeat: this.repeat,
+          repeatEvery: this.repeatEvery,
+          repeatDay: this.repeatDay,
+          dateFromUntil: this.dateFromUntil,
+          timeFromUntil: this.repeatUntil,
+          dayparting: this.dayparting,
         })
         .then((res) => console.log(res.data));
     },
@@ -249,6 +414,11 @@ export default {
       let newTimeFrom = this.timeTo.split(":");
       let tTo = newTimeFrom.join("%3A") + "%3A00";
       return tTo;
+    },
+    repeatUntil() {
+      let newRepeatUntil = this.timeFromUntil.split(":");
+      let repeatTo = newRepeatUntil.join("%3A") + "%3A00";
+      return repeatTo;
     },
   },
 };

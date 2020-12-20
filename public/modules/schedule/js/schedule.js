@@ -14779,8 +14779,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_AddEventModal_css__ = __webpack_require__(117);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_AddEventModal_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__css_AddEventModal_css__);
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 //
 //
 //
@@ -14902,14 +14900,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "AddEventModal",
   data: function data() {
-    var _ref;
-
-    return _ref = {
+    return {
       eventType: 1,
       display: null,
       layout: null,
       dayparting: 1,
-      repeat: 0,
       dateFrom: "2020-12-18",
       dateTo: "2020-12-25",
       timeFrom: "01:00",
@@ -14919,70 +14914,82 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       syncTimezone: false,
       loading: false,
       dateFromUntil: null,
-      timeFromUntil: null
-    }, _defineProperty(_ref, "repeat", 1), _defineProperty(_ref, "repeatDay", 1), _defineProperty(_ref, "repeatEvery", null), _defineProperty(_ref, "eventTypeOption", [{
-      text: "Campaign/Layout",
-      value: 1
-    }]), _defineProperty(_ref, "displayOption", [{
-      text: "Display",
-      disabled: true
-    }]), _defineProperty(_ref, "layoutOption", [{
-      text: "Layouts",
-      disabled: true
-    }]), _defineProperty(_ref, "daypartingOption", [{
-      text: "Custom",
-      value: 1
-    }, {
-      text: "Always",
-      value: 2
-    }]), _defineProperty(_ref, "repeatOption", [{
-      text: "None",
-      value: 1
-    }, {
-      text: "Per Minute",
-      value: 2
-    }, {
-      text: "Hourly",
-      value: 3
-    }, {
-      text: "Daily",
-      value: 4
-    }, {
-      text: "Weekly",
-      value: 5
-    }, {
-      text: "Monthly",
-      value: 6
-    }, {
-      text: "Yearly",
-      value: 7
-    }]), _defineProperty(_ref, "repeatDayOption", [{
-      text: "Monday",
-      value: 1
-    }, {
-      text: "Tuesday",
-      value: 2
-    }, {
-      text: "Wednesday",
-      value: 3
-    }, {
-      text: "Thursday",
-      value: 4
-    }, {
-      text: "Friday",
-      value: 5
-    }, {
-      text: "Saturday",
-      value: 6
-    }, {
-      text: "Sunday",
-      value: 7
-    }]), _ref;
+      timeFromUntil: null,
+      repeat: 0,
+      repeatDay: 1,
+      repeatEvery: null,
+      eventTypeOption: [{
+        text: "Campaign/Layout",
+        value: 1
+      }],
+      displayOption: [{
+        text: "Display",
+        disabled: true
+      }],
+      layoutOption: [{
+        text: "Layouts",
+        disabled: true
+      }],
+      daypartingOption: [{
+        text: "Custom",
+        value: 1
+      }, {
+        text: "Always",
+        value: 2
+      }],
+      repeatOption: [{
+        text: "None",
+        value: 0
+      }, {
+        text: "Per Minute",
+        value: 1
+      }, {
+        text: "Hourly",
+        value: 2
+      }, {
+        text: "Daily",
+        value: 3
+      }, {
+        text: "Weekly",
+        value: 4
+      }, {
+        text: "Monthly",
+        value: 5
+      }, {
+        text: "Yearly",
+        value: 6
+      }],
+      repeatDayOption: [{
+        text: "Monday",
+        value: 1
+      }, {
+        text: "Tuesday",
+        value: 2
+      }, {
+        text: "Wednesday",
+        value: 3
+      }, {
+        text: "Thursday",
+        value: 4
+      }, {
+        text: "Friday",
+        value: 5
+      }, {
+        text: "Saturday",
+        value: 6
+      }, {
+        text: "Sunday",
+        value: 7
+      }]
+    };
   },
 
   watch: {
     timeFrom: function timeFrom() {
       console.log(this.timeFrom);
+    },
+    dayparting: function dayparting() {
+      console.log(this.dayparting);
     }
   },
   mounted: function mounted() {
@@ -15056,7 +15063,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         repeatEvery: this.repeatEvery,
         repeatDay: this.repeatDay,
         dateFromUntil: this.dateFromUntil,
-        timeFromUntil: this.timeFromUntil
+        timeFromUntil: this.repeatUntil,
+        dayparting: this.dayparting
       }).then(function (res) {
         return console.log(res.data);
       });
@@ -15072,6 +15080,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var newTimeFrom = this.timeTo.split(":");
       var tTo = newTimeFrom.join("%3A") + "%3A00";
       return tTo;
+    },
+    repeatUntil: function repeatUntil() {
+      var newRepeatUntil = this.timeFromUntil.split(":");
+      var repeatTo = newRepeatUntil.join("%3A") + "%3A00";
+      return repeatTo;
     }
   }
 });
@@ -15397,7 +15410,7 @@ var render = function() {
               1
             ),
             _vm._v(" "),
-            _vm.repeat !== 1
+            _vm.repeat !== 0
               ? _c(
                   "div",
                   { staticClass: "edit-display-modal-body-row" },
@@ -15420,7 +15433,7 @@ var render = function() {
                 )
               : _vm._e(),
             _vm._v(" "),
-            _vm.repeat === 5
+            _vm.repeat === 4
               ? _c(
                   "div",
                   { staticClass: "edit-display-modal-body-row" },
@@ -15442,7 +15455,7 @@ var render = function() {
                 )
               : _vm._e(),
             _vm._v(" "),
-            _vm.repeat !== 1
+            _vm.repeat !== 0
               ? _c("div", { staticClass: "edit-display-modal-body-row time" }, [
                   _c("label", [_vm._v("Until")]),
                   _vm._v(" "),
@@ -15661,6 +15674,41 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -15681,6 +15729,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       isPriority: null,
       displayOrder: null,
       syncTimezone: false,
+      dateFromUntil: null,
+      timeFromUntil: null,
+      repeat: 0,
+      repeatDay: 1,
+      repeatEvery: null,
+      dayparting: 1,
       eventTypeOption: [{
         text: "Campaign/Layout",
         value: 1
@@ -15692,6 +15746,57 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       layoutOption: [{
         text: "Layouts",
         disabled: true
+      }],
+      daypartingOption: [{
+        text: "Custom",
+        value: 1
+      }, {
+        text: "Always",
+        value: 2
+      }],
+      repeatOption: [{
+        text: "None",
+        value: 0
+      }, {
+        text: "Per Minute",
+        value: 1
+      }, {
+        text: "Hourly",
+        value: 2
+      }, {
+        text: "Daily",
+        value: 3
+      }, {
+        text: "Weekly",
+        value: 4
+      }, {
+        text: "Monthly",
+        value: 5
+      }, {
+        text: "Yearly",
+        value: 6
+      }],
+      repeatDayOption: [{
+        text: "Monday",
+        value: 1
+      }, {
+        text: "Tuesday",
+        value: 2
+      }, {
+        text: "Wednesday",
+        value: 3
+      }, {
+        text: "Thursday",
+        value: 4
+      }, {
+        text: "Friday",
+        value: 5
+      }, {
+        text: "Saturday",
+        value: 6
+      }, {
+        text: "Sunday",
+        value: 7
       }]
     };
   },
@@ -15715,7 +15820,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     console.log(this.idWhenEditEventModalIsOpen);
     console.log(this.showTable);
     this.loading = true;
-    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.all([__WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/display/data"), __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/layout/data"), __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/displaygroup/data"), __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/campaign/data")]).then(function (res) {
+    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.all([__WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/display/data"), __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/layout/data"), __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/displaygroup/data"), __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/campaign/data"), __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/dayparting/data")]).then(function (res) {
       console.log(res);
       res[0].data.map(function (d) {
         _this.displayOption.push({
@@ -15749,6 +15854,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
           value: c.campaignId
         });
       });
+      res[4].data.map(function (daypart) {
+        if (daypart.dayPartId > 2) {
+          _this.daypartingOption.push({
+            text: daypart.name,
+            value: daypart.dayPartId
+          });
+        }
+      });
     }).then(function () {
       return _this.loading = false;
     });
@@ -15768,10 +15881,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         dateFrom: getStartOfMonth,
         dateTo: getEndOfMonth
       }).then(function (res) {
+        console.log(res);
         res.data.result.map(function (r) {
           if (r.id === _this2.idWhenEditEventModalIsOpen) {
             /* Display Group belom di debug buat edit event */
-            console.log(r);
             r.event.displayGroups.map(function (d) {
               _this2.display.push(d.displayGroupId);
             });
@@ -15783,6 +15896,41 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             _this2.isPriority = r.event.isPriority;
             _this2.displayOrder = r.event.displayOrder;
             _this2.syncTimezone = r.event.syncTimezone === 1 ? true : false;
+
+            switch (r.event.recurrenceType) {
+              case "Year":
+                _this2.repeat = 6;
+                break;
+
+              case "Month":
+                _this2.repeat = 5;
+                break;
+
+              case "Week":
+                _this2.repeat = 4;
+                break;
+
+              case "Day":
+                _this2.repeat = 3;
+                break;
+
+              case "Hour":
+                _this2.repeat = 2;
+                break;
+
+              case "Minute":
+                _this2.repeat = 1;
+                break;
+
+              default:
+                null;
+            }
+
+            _this2.repeatEvery = r.event.recurrenceDetail;
+            _this2.dateFromUntil = __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.unix(r.event.recurrenceRange).format("YYYY-MM-DD");
+            _this2.timeFromUntil = __WEBPACK_IMPORTED_MODULE_1_dayjs___default.a.unix(r.event.recurrenceRange).format("HH:mm");
+            _this2.repeatDay = r.event.recurrenceRepeatsOn;
+            _this2.dayparting = r.event.dayPartId;
           }
         });
       });
@@ -15799,7 +15947,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         id: this.idWhenEditEventModalIsOpen,
         isPriority: this.isPriority,
         displayOrder: this.displayOrder,
-        syncTimezone: this.syncTimezone === true ? "on" : "off"
+        syncTimezone: this.syncTimezone === true ? "on" : "off",
+        repeat: this.repeat,
+        repeatEvery: this.repeatEvery,
+        repeatDay: this.repeatDay,
+        dateFromUntil: this.dateFromUntil,
+        timeFromUntil: this.repeatUntil,
+        dayparting: this.dayparting
       }).then(function (res) {
         return console.log(res.data);
       });
@@ -15822,6 +15976,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       var newTimeFrom = this.timeTo.split(":");
       var tTo = newTimeFrom.join("%3A") + "%3A00";
       return tTo;
+    },
+    repeatUntil: function repeatUntil() {
+      var newRepeatUntil = this.timeFromUntil.split(":");
+      var repeatTo = newRepeatUntil.join("%3A") + "%3A00";
+      return repeatTo;
     }
   }
 });
@@ -15973,71 +16132,98 @@ var render = function() {
               1
             ),
             _vm._v(" "),
-            _c("div", { staticClass: "edit-display-modal-body-row time" }, [
-              _c("label", [_vm._v("From")]),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "time-input" },
-                [
-                  _c("sui-input", {
-                    attrs: { type: "date" },
-                    model: {
-                      value: _vm.dateFrom,
-                      callback: function($$v) {
-                        _vm.dateFrom = $$v
-                      },
-                      expression: "dateFrom"
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("sui-input", {
-                    attrs: { type: "time" },
-                    model: {
-                      value: _vm.timeFrom,
-                      callback: function($$v) {
-                        _vm.timeFrom = $$v
-                      },
-                      expression: "timeFrom"
-                    }
-                  })
-                ],
-                1
-              )
-            ]),
+            _c(
+              "div",
+              { staticClass: "edit-display-modal-body-row" },
+              [
+                _c("label", [_vm._v("Dayparting")]),
+                _vm._v(" "),
+                _c("sui-dropdown", {
+                  attrs: { selection: "", options: _vm.daypartingOption },
+                  model: {
+                    value: _vm.dayparting,
+                    callback: function($$v) {
+                      _vm.dayparting = $$v
+                    },
+                    expression: "dayparting"
+                  }
+                })
+              ],
+              1
+            ),
             _vm._v(" "),
-            _c("div", { staticClass: "edit-display-modal-body-row time" }, [
-              _c("label", [_vm._v("To")]),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "time-input" },
-                [
-                  _c("sui-input", {
-                    attrs: { type: "date" },
-                    model: {
-                      value: _vm.dateTo,
-                      callback: function($$v) {
-                        _vm.dateTo = $$v
-                      },
-                      expression: "dateTo"
-                    }
-                  }),
+            _vm.dayparting !== 2
+              ? _c("div", { staticClass: "edit-display-modal-body-row time" }, [
+                  _c("label", [_vm._v("From")]),
                   _vm._v(" "),
-                  _c("sui-input", {
-                    attrs: { type: "time" },
-                    model: {
-                      value: _vm.timeTo,
-                      callback: function($$v) {
-                        _vm.timeTo = $$v
-                      },
-                      expression: "timeTo"
-                    }
-                  })
-                ],
-                1
-              )
-            ]),
+                  _c(
+                    "div",
+                    { staticClass: "time-input" },
+                    [
+                      _c("sui-input", {
+                        class: _vm.dayparting > 2 && "full-width-input",
+                        attrs: { type: "date" },
+                        model: {
+                          value: _vm.dateFrom,
+                          callback: function($$v) {
+                            _vm.dateFrom = $$v
+                          },
+                          expression: "dateFrom"
+                        }
+                      }),
+                      _vm._v(" "),
+                      _vm.dayparting === 1
+                        ? _c("sui-input", {
+                            attrs: { type: "time" },
+                            model: {
+                              value: _vm.timeFrom,
+                              callback: function($$v) {
+                                _vm.timeFrom = $$v
+                              },
+                              expression: "timeFrom"
+                            }
+                          })
+                        : _vm._e()
+                    ],
+                    1
+                  )
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.dayparting === 1
+              ? _c("div", { staticClass: "edit-display-modal-body-row time" }, [
+                  _c("label", [_vm._v("To")]),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    { staticClass: "time-input" },
+                    [
+                      _c("sui-input", {
+                        attrs: { type: "date" },
+                        model: {
+                          value: _vm.dateTo,
+                          callback: function($$v) {
+                            _vm.dateTo = $$v
+                          },
+                          expression: "dateTo"
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("sui-input", {
+                        attrs: { type: "time" },
+                        model: {
+                          value: _vm.timeTo,
+                          callback: function($$v) {
+                            _vm.timeTo = $$v
+                          },
+                          expression: "timeTo"
+                        }
+                      })
+                    ],
+                    1
+                  )
+                ])
+              : _vm._e(),
             _vm._v(" "),
             _c(
               "div",
@@ -16097,7 +16283,107 @@ var render = function() {
                 })
               ],
               1
-            )
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "edit-display-modal-body-row" },
+              [
+                _c("label", [_vm._v("Repeats")]),
+                _vm._v(" "),
+                _c("sui-dropdown", {
+                  attrs: { selection: "", options: _vm.repeatOption },
+                  model: {
+                    value: _vm.repeat,
+                    callback: function($$v) {
+                      _vm.repeat = $$v
+                    },
+                    expression: "repeat"
+                  }
+                })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _vm.repeat !== 0
+              ? _c(
+                  "div",
+                  { staticClass: "edit-display-modal-body-row" },
+                  [
+                    _c("label", [_vm._v("Repeat Every")]),
+                    _vm._v(" "),
+                    _c("sui-input", {
+                      staticClass: "input-number",
+                      attrs: { type: "number" },
+                      model: {
+                        value: _vm.repeatEvery,
+                        callback: function($$v) {
+                          _vm.repeatEvery = $$v
+                        },
+                        expression: "repeatEvery"
+                      }
+                    })
+                  ],
+                  1
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.repeat === 4
+              ? _c(
+                  "div",
+                  { staticClass: "edit-display-modal-body-row" },
+                  [
+                    _c("label", [_vm._v("Day")]),
+                    _vm._v(" "),
+                    _c("sui-dropdown", {
+                      attrs: { selection: "", options: _vm.repeatDayOption },
+                      model: {
+                        value: _vm.repeatDay,
+                        callback: function($$v) {
+                          _vm.repeatDay = $$v
+                        },
+                        expression: "repeatDay"
+                      }
+                    })
+                  ],
+                  1
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.repeat !== 0
+              ? _c("div", { staticClass: "edit-display-modal-body-row time" }, [
+                  _c("label", [_vm._v("Until")]),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    { staticClass: "time-input" },
+                    [
+                      _c("sui-input", {
+                        attrs: { type: "date" },
+                        model: {
+                          value: _vm.dateFromUntil,
+                          callback: function($$v) {
+                            _vm.dateFromUntil = $$v
+                          },
+                          expression: "dateFromUntil"
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("sui-input", {
+                        attrs: { type: "time" },
+                        model: {
+                          value: _vm.timeFromUntil,
+                          callback: function($$v) {
+                            _vm.timeFromUntil = $$v
+                          },
+                          expression: "timeFromUntil"
+                        }
+                      })
+                    ],
+                    1
+                  )
+                ])
+              : _vm._e()
           ]),
           _vm._v(" "),
           _c(

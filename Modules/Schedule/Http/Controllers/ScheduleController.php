@@ -107,6 +107,18 @@ class ScheduleController extends AppBaseController
 
         $syncTimezone = $request->syncTimezone;
 
+        $recurrenceType = $request->repeat;
+
+        $recurrenceDetail = $request->repeatEvery;
+
+        $recurrenceRepeatsOn = $request->repeatDay;
+
+        $recurrenceRangeDate = $request->dateFromUntil;
+
+        $recurrenceRangeTime = $request->timeFromUntil;
+
+        $dayPartId = $request->dayparting;
+
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -128,7 +140,13 @@ class ScheduleController extends AppBaseController
                 '&campaignId=' . $layout .
                 '&isPriority=' . $isPriority .
                 '&displayOrder=' . $displayOrder .
-                '&syncTimezone=' . $syncTimezone,
+                '&syncTimezone=' . $syncTimezone .
+                '&recurrenceType=' . $recurrenceType .
+                '&recurrenceDetail=' . $recurrenceDetail .
+                '&recurrenceRange=' . $recurrenceRangeDate .
+                '%20' . $recurrenceRangeTime .
+                '&recurrenceRepeatsOn=' . $recurrenceRepeatsOn .
+                '&dayPartId=' . $dayPartId,
             CURLOPT_HTTPHEADER => array(
                 'Authorization: Bearer ' . $_SESSION["token"],
                 'Content-Type: application/x-www-form-urlencoded'
@@ -179,6 +197,18 @@ class ScheduleController extends AppBaseController
 
         $syncTimezone = $request->syncTimezone;
 
+        $recurrenceType = $request->repeat;
+
+        $recurrenceDetail = $request->repeatEvery;
+
+        $recurrenceRepeatsOn = $request->repeatDay;
+
+        $recurrenceRangeDate = $request->dateFromUntil;
+
+        $recurrenceRangeTime = $request->timeFromUntil;
+
+        $dayPartId = $request->dayparting;
+
         $eventId = $request->id;
 
         $curl = curl_init();
@@ -202,7 +232,13 @@ class ScheduleController extends AppBaseController
                 '&campaignId=' . $layout .
                 '&isPriority=' . $isPriority .
                 '&displayOrder=' . $displayOrder .
-                '&syncTimezone=' . $syncTimezone,
+                '&syncTimezone=' . $syncTimezone .
+                '&recurrenceType=' . $recurrenceType .
+                '&recurrenceDetail=' . $recurrenceDetail .
+                '&recurrenceRange=' . $recurrenceRangeDate .
+                '%20' . $recurrenceRangeTime .
+                '&recurrenceRepeatsOn=' . $recurrenceRepeatsOn .
+                '&dayPartId=' . $dayPartId,
             CURLOPT_HTTPHEADER => array(
                 'Authorization: Bearer ' . $_SESSION["token"],
                 'Content-Type: application/x-www-form-urlencoded'
