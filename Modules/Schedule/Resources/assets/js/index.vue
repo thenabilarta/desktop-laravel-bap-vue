@@ -95,7 +95,7 @@
                   @click="onClickMonthDisplayIcon(d.id)"
                   :class="[
                     d.isPriority > 0 ? 'fas fa-star' : 'fas fa-desktop',
-                    d.recurrenceType === null ? '' : 'fa-spin',
+                    d.recurrenceType === null ? '' : 'fa-border',
                   ]"
                   :style="d.displayGroups.length > 1 ? 'color: red' : ''"
                 ></i>
@@ -171,7 +171,7 @@
           <sui-table-row>
             <sui-table-cell>
               <sui-header-content>
-                <i class="fas fa-sync fa-spin"></i>
+                <i class="far fa-square"></i>
               </sui-header-content>
             </sui-table-cell>
             <sui-table-cell> Repeat On </sui-table-cell>
@@ -184,6 +184,7 @@
 
 <script>
 import axios from "axios";
+import _ from "lodash";
 import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
 import weekOfYear from "dayjs/plugin/weekOfYear";
@@ -366,24 +367,22 @@ export default {
             syncTimezone: r.event.syncTimezone,
             displayGroups: r.event.displayGroups,
             recurrenceType: r.event.recurrenceType,
+            campaign: r.event.campaign,
           };
           arrayOfData.push(data);
         });
         this.displaySchedule = arrayOfData;
         this.loading = false;
-
         res[1].data.map((d) => {
           this.displayList.push({
             text: d.display,
             value: d.displayId,
           });
         });
-
         this.displayList.push({
           text: "Display Group",
           disabled: true,
         });
-
         res[2].data.map((d) => {
           this.displayList.push({
             text: d.displayGroup,
@@ -506,25 +505,39 @@ export default {
                 dayjs(s.displayStart).date() === dateInUnix.date() ||
                 dayjs(s.displayEnd).date() === dateInUnix.date()
               ) {
-                // this.displayList.map((d) => {
-                //   s.displayGroups.map((dis) => {
-                //     if (d.text === dis.displayGroup && this.current.includes(d.vlaue)) {
-                //       console.log(d.text);
-                //     }
-                //   });
-                // });
-                if (this.current.includes(0)) {
-                  displayProperty.push({
-                    exist: true,
-                    title: s.title,
-                    id: s.id,
-                    isPriority: s.isPriority,
-                    displayOrder: s.displayOrder,
-                    syncTimezone: s.syncTimezone,
-                    displayGroups: s.displayGroups,
-                    recurrenceType: s.recurrenceType,
-                  });
-                }
+                s.displayGroups.map((disp) => {
+                  if (this.current.includes(disp.displayGroupId)) {
+                    if (_.find(displayProperty, ["id", s.id]) === undefined) {
+                      displayProperty.push({
+                        exist: true,
+                        title: s.title,
+                        id: s.id,
+                        isPriority: s.isPriority,
+                        displayOrder: s.displayOrder,
+                        syncTimezone: s.syncTimezone,
+                        displayGroups: s.displayGroups,
+                        recurrenceType: s.recurrenceType,
+                        recurrenceRepeatsOn: s.recurrenceRepeatsOn,
+                        campaign: s.campaign,
+                      });
+                    }
+                  } else if (this.current.includes(0)) {
+                    if (_.find(displayProperty, ["id", s.id]) === undefined) {
+                      displayProperty.push({
+                        exist: true,
+                        title: s.title,
+                        id: s.id,
+                        isPriority: s.isPriority,
+                        displayOrder: s.displayOrder,
+                        syncTimezone: s.syncTimezone,
+                        displayGroups: s.displayGroups,
+                        recurrenceType: s.recurrenceType,
+                        recurrenceRepeatsOn: s.recurrenceRepeatsOn,
+                        campaign: s.campaign,
+                      });
+                    }
+                  }
+                });
               }
             });
           }

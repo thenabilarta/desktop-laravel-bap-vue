@@ -330,36 +330,28 @@ export default {
               this.isPriority = r.event.isPriority;
               this.displayOrder = r.event.displayOrder;
               this.syncTimezone = r.event.syncTimezone === 1 ? true : false;
-
               switch (r.event.recurrenceType) {
                 case "Year":
                   this.repeat = 6;
                   break;
-
                 case "Month":
                   this.repeat = 5;
                   break;
-
                 case "Week":
                   this.repeat = 4;
                   break;
-
                 case "Day":
                   this.repeat = 3;
                   break;
-
                 case "Hour":
                   this.repeat = 2;
                   break;
-
                 case "Minute":
                   this.repeat = 1;
                   break;
-
                 default:
                   null;
               }
-
               this.repeatEvery = r.event.recurrenceDetail;
               this.dateFromUntil = dayjs
                 .unix(r.event.recurrenceRange)
@@ -406,19 +398,31 @@ export default {
   },
   computed: {
     computedTimeFrom() {
-      let newTimeFrom = this.timeFrom.split(":");
-      let tFrom = newTimeFrom.join("%3A") + "%3A00";
-      return tFrom;
+      if (this.timeFrom) {
+        let newTimeFrom = this.timeFrom.split(":");
+        let tFrom = newTimeFrom.join("%3A") + "%3A00";
+        return tFrom;
+      } else {
+        return this.timeFrom;
+      }
     },
     computedTimeTo() {
-      let newTimeFrom = this.timeTo.split(":");
-      let tTo = newTimeFrom.join("%3A") + "%3A00";
-      return tTo;
+      if (this.timeTo) {
+        let newTimeFrom = this.timeTo.split(":");
+        let tTo = newTimeFrom.join("%3A") + "%3A00";
+        return tTo;
+      } else {
+        return this.timeTo;
+      }
     },
     repeatUntil() {
-      let newRepeatUntil = this.timeFromUntil.split(":");
-      let repeatTo = newRepeatUntil.join("%3A") + "%3A00";
-      return repeatTo;
+      if (this.timeFromUntil) {
+        let newRepeatUntil = this.timeFromUntil.split(":");
+        let repeatTo = newRepeatUntil.join("%3A") + "%3A00";
+        return repeatTo;
+      } else {
+        return this.timeFromUntil;
+      }
     },
   },
 };

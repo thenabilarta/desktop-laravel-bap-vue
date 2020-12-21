@@ -265,4 +265,8 @@ footer td {
 .full-width-input {
   min-width: 400px !important;
 }
+
+.fa-border {
+  border-color: #000 !important;
+}
 /*# sourceMappingURL=index.css.map */

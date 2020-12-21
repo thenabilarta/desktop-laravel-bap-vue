@@ -104,7 +104,7 @@
         </div>
       </div>
       <div class="edit-display-modal-actions">
-        <sui-button>Cancel</sui-button>
+        <sui-button @click="closeAddEventModal">Cancel</sui-button>
         <sui-button color="green" @click="onAddEventClick"
           >Add Event</sui-button
         >
@@ -115,6 +115,7 @@
 
 <script>
 import axios from "axios";
+import swal from "sweetalert";
 import "../../css/AddEventModal.css";
 export default {
   name: "AddEventModal",
@@ -124,10 +125,10 @@ export default {
       display: null,
       layout: null,
       dayparting: 1,
-      dateFrom: "2020-12-18",
-      dateTo: "2020-12-25",
-      timeFrom: "01:00",
-      timeTo: "23:00",
+      dateFrom: null,
+      dateTo: "",
+      timeFrom: null,
+      timeTo: "",
       isPriority: null,
       displayOrder: null,
       syncTimezone: false,
@@ -135,7 +136,7 @@ export default {
       dateFromUntil: null,
       timeFromUntil: null,
       repeat: 0,
-      repeatDay: 1,
+      repeatDay: null,
       repeatEvery: null,
       eventTypeOption: [
         {
@@ -314,24 +315,41 @@ export default {
           timeFromUntil: this.repeatUntil,
           dayparting: this.dayparting,
         })
-        .then((res) => console.log(res.data));
+        .then((res) => {
+          console.log(res);
+          swal({
+            text: "Telah ditambahkan",
+          });
+        });
     },
   },
   computed: {
     computedTimeFrom() {
-      let newTimeFrom = this.timeFrom.split(":");
-      let tFrom = newTimeFrom.join("%3A") + "%3A00";
-      return tFrom;
+      if (this.timeFrom) {
+        let newTimeFrom = this.timeFrom.split(":");
+        let tFrom = newTimeFrom.join("%3A") + "%3A00";
+        return tFrom;
+      } else {
+        return this.timeFrom;
+      }
     },
     computedTimeTo() {
-      let newTimeFrom = this.timeTo.split(":");
-      let tTo = newTimeFrom.join("%3A") + "%3A00";
-      return tTo;
+      if (this.timeTo) {
+        let newTimeFrom = this.timeTo.split(":");
+        let tTo = newTimeFrom.join("%3A") + "%3A00";
+        return tTo;
+      } else {
+        return this.timeTo;
+      }
     },
     repeatUntil() {
-      let newRepeatUntil = this.timeFromUntil.split(":");
-      let repeatTo = newRepeatUntil.join("%3A") + "%3A00";
-      return repeatTo;
+      if (this.timeFromUntil) {
+        let newRepeatUntil = this.timeFromUntil.split(":");
+        let repeatTo = newRepeatUntil.join("%3A") + "%3A00";
+        return repeatTo;
+      } else {
+        return this.timeFromUntil;
+      }
     },
   },
 };

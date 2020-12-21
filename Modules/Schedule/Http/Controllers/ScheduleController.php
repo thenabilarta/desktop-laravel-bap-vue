@@ -75,49 +75,139 @@ class ScheduleController extends AppBaseController
 
     public function addSchedule(Request $request)
     {
-        $dateFrom = $request->dateFrom;
+        $dateFromPostField = null;
 
-        $dateTo = $request->dateTo;
+        $dateToPostField = null;
+
+        $arrayOfDisplayPostField = null;
+
+        $eventTypePostField = null;
+
+        $campaignIdPostField = null;
+
+        $isPriorityPostField = null;
+
+        $displayOrderPostField = null;
+
+        $snycTimezonePostField = null;
+
+        $recurrenceTypePostField = null;
+
+        $recurrenceDetailPostField = null;
+
+        $recurrenceRangePostField = null;
+
+        $recurrenceRepeatsOnPostField = null;
+
+        $dayPartIdPostField = null;
+
+
+        //////////////////////////////////
+
+
+        $dateFrom = $request->dateFrom;
 
         $timeFrom = $request->timeFrom;
 
+        if ($dateFrom && $timeFrom) {
+            $dateFromPostField = 'fromDt=' . $dateFrom . '%20' . $timeFrom;
+        }
+
+
+        $dateTo = $request->dateTo;
+
         $timeTo = $request->timeTo;
+
+        if ($dateTo && $timeTo) {
+            $dateToPostField = '&toDt=' . $dateTo . '%20' . $timeTo;
+        }
+
 
         $eventType = $request->eventType;
 
+        if ($eventType) {
+            $eventTypePostField = '&eventTypeId=' . $eventType;
+        }
+
+
         $layout = $request->layout;
 
-        // For each array of Display
+        if ($layout) {
+            $campaignIdPostField = '&campaignId=' . $layout;
+        }
 
-        $newString = '';
-
-        $string = '&displayGroupIds%5B%5D=';
 
         $display = $request->display;
 
+        $arrayOfDisplayPostField = '';
+
+        $string = '&displayGroupIds%5B%5D=';
+
         foreach ($display as $d) {
-            $newString = $newString . $string . $d;
+            $arrayOfDisplayPostField = $arrayOfDisplayPostField . $string . $d;
         }
 
-        // end of array
 
         $isPriority = $request->isPriority;
 
+        if ($isPriority) {
+            $isPriorityPostField = '&isPriority=' . $isPriority;
+        }
+
+
         $displayOrder = $request->displayOrder;
+
+        if ($displayOrder) {
+            $displayOrderPostField = '&displayOrder=' . $displayOrder;
+        }
+
 
         $syncTimezone = $request->syncTimezone;
 
+        if ($syncTimezone) {
+            $snycTimezonePostField = '&syncTimezone=' . $syncTimezone;
+        }
+
+
         $recurrenceType = $request->repeat;
+
+        if ($recurrenceType) {
+            $recurrenceTypePostField = '&recurrenceType=' . $recurrenceType;
+        }
+
 
         $recurrenceDetail = $request->repeatEvery;
 
+        if ($recurrenceDetail) {
+            $recurrenceDetailPostField = '&recurrenceDetail=' . $recurrenceDetail;
+        }
+
+
         $recurrenceRepeatsOn = $request->repeatDay;
+
+        if ($recurrenceRepeatsOn) {
+            $recurrenceRepeatsOnPostField = '&recurrenceRepeatsOn=' . $recurrenceRepeatsOn;
+        }
+
 
         $recurrenceRangeDate = $request->dateFromUntil;
 
         $recurrenceRangeTime = $request->timeFromUntil;
 
+        if ($recurrenceRangeDate && $recurrenceRangeTime) {
+            $recurrenceRangePostField = '&recurrenceRange=' . $recurrenceRangeDate . '%20' . $recurrenceRangeTime;
+        }
+
+
         $dayPartId = $request->dayparting;
+
+        if ($dayPartId) {
+            $dayPartIdPostField = '&dayPartId=' . $dayPartId;
+        }
+
+
+        /////////////////////////////////////
+
 
         $curl = curl_init();
 
@@ -131,22 +221,7 @@ class ScheduleController extends AppBaseController
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS =>
-            'fromDt=' . $dateFrom .
-                '%20' . $timeFrom .
-                '&toDt=' . $dateTo .
-                '%20' . $timeTo .
-                $newString .
-                '&eventTypeId=' . $eventType .
-                '&campaignId=' . $layout .
-                '&isPriority=' . $isPriority .
-                '&displayOrder=' . $displayOrder .
-                '&syncTimezone=' . $syncTimezone .
-                '&recurrenceType=' . $recurrenceType .
-                '&recurrenceDetail=' . $recurrenceDetail .
-                '&recurrenceRange=' . $recurrenceRangeDate .
-                '%20' . $recurrenceRangeTime .
-                '&recurrenceRepeatsOn=' . $recurrenceRepeatsOn .
-                '&dayPartId=' . $dayPartId,
+            $dateFromPostField . $dateToPostField . $arrayOfDisplayPostField . $eventTypePostField . $campaignIdPostField . $isPriorityPostField . $displayOrderPostField . $snycTimezonePostField . $recurrenceTypePostField . $recurrenceDetailPostField . $recurrenceRangePostField . $recurrenceRepeatsOnPostField . $dayPartIdPostField,
             CURLOPT_HTTPHEADER => array(
                 'Authorization: Bearer ' . $_SESSION["token"],
                 'Content-Type: application/x-www-form-urlencoded'
@@ -165,51 +240,141 @@ class ScheduleController extends AppBaseController
 
     public function editSchedule(Request $request)
     {
-        $dateFrom = $request->dateFrom;
+        $dateFromPostField = null;
 
-        $dateTo = $request->dateTo;
+        $dateToPostField = null;
+
+        $arrayOfDisplayPostField = null;
+
+        $eventTypePostField = null;
+
+        $campaignIdPostField = null;
+
+        $isPriorityPostField = null;
+
+        $displayOrderPostField = null;
+
+        $snycTimezonePostField = null;
+
+        $recurrenceTypePostField = null;
+
+        $recurrenceDetailPostField = null;
+
+        $recurrenceRangePostField = null;
+
+        $recurrenceRepeatsOnPostField = null;
+
+        $dayPartIdPostField = null;
+
+
+        //////////////////////////////////
+
+
+        $dateFrom = $request->dateFrom;
 
         $timeFrom = $request->timeFrom;
 
+        if ($dateFrom && $timeFrom) {
+            $dateFromPostField = 'fromDt=' . $dateFrom . '%20' . $timeFrom;
+        }
+
+
+        $dateTo = $request->dateTo;
+
         $timeTo = $request->timeTo;
+
+        if ($dateTo && $timeTo) {
+            $dateToPostField = '&toDt=' . $dateTo . '%20' . $timeTo;
+        }
+
 
         $eventType = $request->eventType;
 
+        if ($eventType) {
+            $eventTypePostField = '&eventTypeId=' . $eventType;
+        }
+
+
         $layout = $request->layout;
 
-        //
+        if ($layout) {
+            $campaignIdPostField = '&campaignId=' . $layout;
+        }
 
-        $newString = '';
-
-        $string = '&displayGroupIds%5B%5D=';
 
         $display = $request->display;
 
+        $arrayOfDisplayPostField = '';
+
+        $string = '&displayGroupIds%5B%5D=';
+
         foreach ($display as $d) {
-            $newString = $newString . $string . $d;
+            $arrayOfDisplayPostField = $arrayOfDisplayPostField . $string . $d;
         }
 
-        //
 
         $isPriority = $request->isPriority;
 
+        if ($isPriority) {
+            $isPriorityPostField = '&isPriority=' . $isPriority;
+        }
+
+
         $displayOrder = $request->displayOrder;
+
+        if ($displayOrder) {
+            $displayOrderPostField = '&displayOrder=' . $displayOrder;
+        }
+
 
         $syncTimezone = $request->syncTimezone;
 
+        if ($syncTimezone) {
+            $snycTimezonePostField = '&syncTimezone=' . $syncTimezone;
+        }
+
+
         $recurrenceType = $request->repeat;
+
+        if ($recurrenceType) {
+            $recurrenceTypePostField = '&recurrenceType=' . $recurrenceType;
+        }
+
 
         $recurrenceDetail = $request->repeatEvery;
 
+        if ($recurrenceDetail) {
+            $recurrenceDetailPostField = '&recurrenceDetail=' . $recurrenceDetail;
+        }
+
+
         $recurrenceRepeatsOn = $request->repeatDay;
+
+        if ($recurrenceRepeatsOn) {
+            $recurrenceRepeatsOnPostField = '&recurrenceRepeatsOn=' . $recurrenceRepeatsOn;
+        }
+
 
         $recurrenceRangeDate = $request->dateFromUntil;
 
         $recurrenceRangeTime = $request->timeFromUntil;
 
+        if ($recurrenceRangeDate && $recurrenceRangeTime) {
+            $recurrenceRangePostField = '&recurrenceRange=' . $recurrenceRangeDate . '%20' . $recurrenceRangeTime;
+        }
+
+
         $dayPartId = $request->dayparting;
 
+        if ($dayPartId) {
+            $dayPartIdPostField = '&dayPartId=' . $dayPartId;
+        }
+
         $eventId = $request->id;
+
+
+        /////////////////////////////////////
+
 
         $curl = curl_init();
 
@@ -223,22 +388,7 @@ class ScheduleController extends AppBaseController
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'PUT',
             CURLOPT_POSTFIELDS =>
-            'fromDt=' . $dateFrom .
-                '%20' . $timeFrom .
-                '&toDt=' . $dateTo .
-                '%20' . $timeTo .
-                $newString .
-                '&eventTypeId=' . $eventType .
-                '&campaignId=' . $layout .
-                '&isPriority=' . $isPriority .
-                '&displayOrder=' . $displayOrder .
-                '&syncTimezone=' . $syncTimezone .
-                '&recurrenceType=' . $recurrenceType .
-                '&recurrenceDetail=' . $recurrenceDetail .
-                '&recurrenceRange=' . $recurrenceRangeDate .
-                '%20' . $recurrenceRangeTime .
-                '&recurrenceRepeatsOn=' . $recurrenceRepeatsOn .
-                '&dayPartId=' . $dayPartId,
+            $dateFromPostField . $dateToPostField . $arrayOfDisplayPostField . $eventTypePostField . $campaignIdPostField . $isPriorityPostField . $displayOrderPostField . $snycTimezonePostField . $recurrenceTypePostField . $recurrenceDetailPostField . $recurrenceRangePostField . $recurrenceRepeatsOnPostField . $dayPartIdPostField,
             CURLOPT_HTTPHEADER => array(
                 'Authorization: Bearer ' . $_SESSION["token"],
                 'Content-Type: application/x-www-form-urlencoded'
