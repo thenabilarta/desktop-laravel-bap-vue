@@ -4,7 +4,7 @@
   </div>
   <div v-else>
     <Modal v-if="modal" v-on:closeModal="onCloseModal"></Modal>
-    <div class="header">
+    <div class="header" @click.self="onClickHeader">
       <div class="header-navigation">
         <sui-button primary @click="toggleModal">Add Media</sui-button>
       </div>
@@ -27,7 +27,14 @@
             <sui-dropdown-item>False</sui-dropdown-item>
           </sui-dropdown-menu>
         </sui-dropdown>
-        <sui-input placeholder="Tags" />
+        <sui-dropdown text="Show Entries" floating>
+          <sui-dropdown-menu>
+            <sui-dropdown-item>10</sui-dropdown-item>
+            <sui-dropdown-item>25</sui-dropdown-item>
+            <sui-dropdown-item>50</sui-dropdown-item>
+            <sui-dropdown-item>100</sui-dropdown-item>
+          </sui-dropdown-menu>
+        </sui-dropdown>
       </div>
       <div class="header-icon">
         <sui-dropdown icon="eye" floating multiple>
@@ -125,7 +132,7 @@
         <i class="fas fa-print"></i>
       </div>
     </div>
-    <div class="body">
+    <div class="body" @click.self="onClickBody">
       <sui-table selectable celled>
         <sui-table-header>
           <sui-table-row>
@@ -218,7 +225,7 @@
         ></TableRow>
       </sui-table>
     </div>
-    <div class="footer">
+    <div class="footer" @click.self="onClickFooter">
       <sui-button color="green" @click="onClickWithSelected"
         >With Selected</sui-button
       >
@@ -280,6 +287,10 @@ export default {
 
       // table Row
       isActiveTableRow: [],
+      isActive: false,
+
+      // pagination
+      pageNumber: 0,
     };
   },
   computed: {
@@ -287,6 +298,24 @@ export default {
       return this.tableList.filter((t) => {
         return t.name.match(this.inputFilterName);
       });
+    },
+    pageCount() {
+      let l = this.tableList.length;
+      let s = 10;
+      return Math.ceil(l / s);
+    },
+    paginatedData() {
+      const start = this.pageNumber * 10;
+      const end = start + 10;
+
+      return this.tableList.slice(start, end);
+    },
+  },
+  watch: {
+    tableList: function () {
+      console.log(this.tableList);
+      console.log(this.tableList.length);
+      console.log(this.tableList.slice(0, 10));
     },
   },
   methods: {
@@ -322,6 +351,15 @@ export default {
     },
     showUpdatedTableColumn() {
       this.updatedTableColumn = !this.updatedTableColumn;
+    },
+    onClickFooter() {
+      console.log("Footer");
+    },
+    onClickHeader() {
+      console.log("Header");
+    },
+    onClickBody() {
+      console.log("Body");
     },
     onClickWithSelected() {
       console.log(this.isActiveTableRow);

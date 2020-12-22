@@ -111,6 +111,11 @@ export default {
         }
       });
     },
+    toRemoveSelectedRow() {
+      console.log("To remove selected Row");
+      // this.isActive = false;
+      // this.isActiveTableRow = [];
+    },
     toEdit() {
       this.isEditing = true;
     },
@@ -122,6 +127,7 @@ export default {
       this.isEditing = false;
     },
     onClickSingleTableRow(id) {
+      console.log(id);
       this.isActive = !this.isActive;
       if (this.isActive === true) {
         this.isActiveTableRow.push(id);

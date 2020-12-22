@@ -31508,6 +31508,13 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -31565,7 +31572,11 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       inputFilterName: "",
 
       // table Row
-      isActiveTableRow: []
+      isActiveTableRow: [],
+      isActive: false,
+
+      // pagination
+      pageNumber: 0
     };
   },
 
@@ -31576,6 +31587,24 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       return this.tableList.filter(function (t) {
         return t.name.match(_this2.inputFilterName);
       });
+    },
+    pageCount: function pageCount() {
+      var l = this.tableList.length;
+      var s = 10;
+      return Math.ceil(l / s);
+    },
+    paginatedData: function paginatedData() {
+      var start = this.pageNumber * 10;
+      var end = start + 10;
+
+      return this.tableList.slice(start, end);
+    }
+  },
+  watch: {
+    tableList: function tableList() {
+      console.log(this.tableList);
+      console.log(this.tableList.length);
+      console.log(this.tableList.slice(0, 10));
     }
   },
   methods: {
@@ -31611,6 +31640,15 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     },
     showUpdatedTableColumn: function showUpdatedTableColumn() {
       this.updatedTableColumn = !this.updatedTableColumn;
+    },
+    onClickFooter: function onClickFooter() {
+      console.log("Footer");
+    },
+    onClickHeader: function onClickHeader() {
+      console.log("Header");
+    },
+    onClickBody: function onClickBody() {
+      console.log("Body");
     },
     onClickWithSelected: function onClickWithSelected() {
       var _this3 = this;
@@ -33233,6 +33271,11 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         };
       }());
     },
+    toRemoveSelectedRow: function toRemoveSelectedRow() {
+      console.log("To remove selected Row");
+      // this.isActive = false;
+      // this.isActiveTableRow = [];
+    },
     toEdit: function toEdit() {
       this.isEditing = true;
     },
@@ -33244,6 +33287,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
       this.isEditing = false;
     },
     onClickSingleTableRow: function onClickSingleTableRow(id) {
+      console.log(id);
       this.isActive = !this.isActive;
       if (this.isActive === true) {
         this.isActiveTableRow.push(id);
@@ -33888,257 +33932,300 @@ var render = function() {
             ? _c("Modal", { on: { closeModal: _vm.onCloseModal } })
             : _vm._e(),
           _vm._v(" "),
-          _c("div", { staticClass: "header" }, [
-            _c(
-              "div",
-              { staticClass: "header-navigation" },
-              [
-                _c(
-                  "sui-button",
-                  { attrs: { primary: "" }, on: { click: _vm.toggleModal } },
-                  [_vm._v("Add Media")]
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "header-filter" },
-              [
-                _c("sui-input", {
-                  attrs: { placeholder: "Name" },
-                  on: { keyup: _vm.onInputFilterName },
-                  model: {
-                    value: _vm.inputFilterName,
-                    callback: function($$v) {
-                      _vm.inputFilterName = $$v
-                    },
-                    expression: "inputFilterName"
+          _c(
+            "div",
+            {
+              staticClass: "header",
+              on: {
+                click: function($event) {
+                  if ($event.target !== $event.currentTarget) {
+                    return null
                   }
-                }),
-                _vm._v(" "),
-                _c(
-                  "sui-dropdown",
-                  { attrs: { text: "Type", floating: "" } },
-                  [
-                    _c(
-                      "sui-dropdown-menu",
-                      [
-                        _c("sui-dropdown-item", [_vm._v("Image")]),
-                        _vm._v(" "),
-                        _c("sui-dropdown-item", [_vm._v("PDF")]),
-                        _vm._v(" "),
-                        _c("sui-dropdown-item", [_vm._v("Video")])
-                      ],
-                      1
-                    )
-                  ],
-                  1
-                ),
-                _vm._v(" "),
-                _c(
-                  "sui-dropdown",
-                  { attrs: { text: "Retired", floating: "" } },
-                  [
-                    _c(
-                      "sui-dropdown-menu",
-                      [
-                        _c("sui-dropdown-item", [_vm._v("True")]),
-                        _vm._v(" "),
-                        _c("sui-dropdown-item", [_vm._v("False")])
-                      ],
-                      1
-                    )
-                  ],
-                  1
-                ),
-                _vm._v(" "),
-                _c("sui-input", { attrs: { placeholder: "Tags" } })
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "header-icon" },
-              [
-                _c(
-                  "sui-dropdown",
-                  { attrs: { icon: "eye", floating: "", multiple: "" } },
-                  [
-                    _c(
-                      "sui-dropdown-menu",
-                      [
-                        _c(
-                          "sui-dropdown-item",
-                          { on: { click: _vm.showIdTableColumn } },
-                          [
-                            _vm._v("ID\n            "),
-                            _vm.idTableColumn
-                              ? _c("i", {
-                                  staticClass: "fa fa-check",
-                                  staticStyle: { "font-size": "14px" }
-                                })
-                              : _vm._e()
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "sui-dropdown-item",
-                          { on: { click: _vm.showNameTableColumn } },
-                          [
-                            _vm._v("Name\n            "),
-                            _vm.nameTableColumn
-                              ? _c("i", {
-                                  staticClass: "fa fa-check",
-                                  staticStyle: { "font-size": "14px" }
-                                })
-                              : _vm._e()
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "sui-dropdown-item",
-                          { on: { click: _vm.showTypeTableColumn } },
-                          [
-                            _vm._v("Type\n            "),
-                            _vm.typeTableColumn
-                              ? _c("i", {
-                                  staticClass: "fa fa-check",
-                                  staticStyle: { "font-size": "14px" }
-                                })
-                              : _vm._e()
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "sui-dropdown-item",
-                          { on: { click: _vm.showThumbnailTableColumn } },
-                          [
-                            _vm._v("Thumbnail\n            "),
-                            _vm.thumbnailTableColumn
-                              ? _c("i", {
-                                  staticClass: "fa fa-check",
-                                  staticStyle: { "font-size": "14px" }
-                                })
-                              : _vm._e()
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "sui-dropdown-item",
-                          { on: { click: _vm.showDurationTableColumn } },
-                          [
-                            _vm._v("Duration\n            "),
-                            _vm.durationTableColumn
-                              ? _c("i", {
-                                  staticClass: "fa fa-check",
-                                  staticStyle: { "font-size": "14px" }
-                                })
-                              : _vm._e()
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "sui-dropdown-item",
-                          { on: { click: _vm.showSizeTableColumn } },
-                          [
-                            _vm._v("Size\n            "),
-                            _vm.sizeTableColumn
-                              ? _c("i", {
-                                  staticClass: "fa fa-check",
-                                  staticStyle: { "font-size": "14px" }
-                                })
-                              : _vm._e()
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "sui-dropdown-item",
-                          { on: { click: _vm.showOwnerTableColumn } },
-                          [
-                            _vm._v("Owner\n            "),
-                            _vm.ownerTableColumn
-                              ? _c("i", {
-                                  staticClass: "fa fa-check",
-                                  staticStyle: { "font-size": "14px" }
-                                })
-                              : _vm._e()
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "sui-dropdown-item",
-                          { on: { click: _vm.showPermissionTableColumn } },
-                          [
-                            _vm._v("Permission\n            "),
-                            _vm.permissionTableColumn
-                              ? _c("i", {
-                                  staticClass: "fa fa-check",
-                                  staticStyle: { "font-size": "14px" }
-                                })
-                              : _vm._e()
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "sui-dropdown-item",
-                          { on: { click: _vm.showFileNameTableColumn } },
-                          [
-                            _vm._v("File Name\n            "),
-                            _vm.fileNameTableColumn
-                              ? _c("i", {
-                                  staticClass: "fa fa-check",
-                                  staticStyle: { "font-size": "14px" }
-                                })
-                              : _vm._e()
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "sui-dropdown-item",
-                          { on: { click: _vm.showCreatedTableColumn } },
-                          [
-                            _vm._v("Created\n            "),
-                            _vm.createdTableColumn
-                              ? _c("i", {
-                                  staticClass: "fa fa-check",
-                                  staticStyle: { "font-size": "14px" }
-                                })
-                              : _vm._e()
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "sui-dropdown-item",
-                          { on: { click: _vm.showUpdatedTableColumn } },
-                          [
-                            _vm._v("Modified\n            "),
-                            _vm.updatedTableColumn
-                              ? _c("i", {
-                                  staticClass: "fa fa-check",
-                                  staticStyle: { "font-size": "14px" }
-                                })
-                              : _vm._e()
-                          ]
-                        )
-                      ],
-                      1
-                    )
-                  ],
-                  1
-                ),
-                _vm._v(" "),
-                _c("i", { staticClass: "fas fa-print" })
-              ],
-              1
-            )
-          ]),
+                  return _vm.onClickHeader($event)
+                }
+              }
+            },
+            [
+              _c(
+                "div",
+                { staticClass: "header-navigation" },
+                [
+                  _c(
+                    "sui-button",
+                    { attrs: { primary: "" }, on: { click: _vm.toggleModal } },
+                    [_vm._v("Add Media")]
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "header-filter" },
+                [
+                  _c("sui-input", {
+                    attrs: { placeholder: "Name" },
+                    on: { keyup: _vm.onInputFilterName },
+                    model: {
+                      value: _vm.inputFilterName,
+                      callback: function($$v) {
+                        _vm.inputFilterName = $$v
+                      },
+                      expression: "inputFilterName"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "sui-dropdown",
+                    { attrs: { text: "Type", floating: "" } },
+                    [
+                      _c(
+                        "sui-dropdown-menu",
+                        [
+                          _c("sui-dropdown-item", [_vm._v("Image")]),
+                          _vm._v(" "),
+                          _c("sui-dropdown-item", [_vm._v("PDF")]),
+                          _vm._v(" "),
+                          _c("sui-dropdown-item", [_vm._v("Video")])
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "sui-dropdown",
+                    { attrs: { text: "Retired", floating: "" } },
+                    [
+                      _c(
+                        "sui-dropdown-menu",
+                        [
+                          _c("sui-dropdown-item", [_vm._v("True")]),
+                          _vm._v(" "),
+                          _c("sui-dropdown-item", [_vm._v("False")])
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "sui-dropdown",
+                    { attrs: { text: "Show Entries", floating: "" } },
+                    [
+                      _c(
+                        "sui-dropdown-menu",
+                        [
+                          _c("sui-dropdown-item", [_vm._v("10")]),
+                          _vm._v(" "),
+                          _c("sui-dropdown-item", [_vm._v("25")]),
+                          _vm._v(" "),
+                          _c("sui-dropdown-item", [_vm._v("50")]),
+                          _vm._v(" "),
+                          _c("sui-dropdown-item", [_vm._v("100")])
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "header-icon" },
+                [
+                  _c(
+                    "sui-dropdown",
+                    { attrs: { icon: "eye", floating: "", multiple: "" } },
+                    [
+                      _c(
+                        "sui-dropdown-menu",
+                        [
+                          _c(
+                            "sui-dropdown-item",
+                            { on: { click: _vm.showIdTableColumn } },
+                            [
+                              _vm._v("ID\n            "),
+                              _vm.idTableColumn
+                                ? _c("i", {
+                                    staticClass: "fa fa-check",
+                                    staticStyle: { "font-size": "14px" }
+                                  })
+                                : _vm._e()
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "sui-dropdown-item",
+                            { on: { click: _vm.showNameTableColumn } },
+                            [
+                              _vm._v("Name\n            "),
+                              _vm.nameTableColumn
+                                ? _c("i", {
+                                    staticClass: "fa fa-check",
+                                    staticStyle: { "font-size": "14px" }
+                                  })
+                                : _vm._e()
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "sui-dropdown-item",
+                            { on: { click: _vm.showTypeTableColumn } },
+                            [
+                              _vm._v("Type\n            "),
+                              _vm.typeTableColumn
+                                ? _c("i", {
+                                    staticClass: "fa fa-check",
+                                    staticStyle: { "font-size": "14px" }
+                                  })
+                                : _vm._e()
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "sui-dropdown-item",
+                            { on: { click: _vm.showThumbnailTableColumn } },
+                            [
+                              _vm._v("Thumbnail\n            "),
+                              _vm.thumbnailTableColumn
+                                ? _c("i", {
+                                    staticClass: "fa fa-check",
+                                    staticStyle: { "font-size": "14px" }
+                                  })
+                                : _vm._e()
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "sui-dropdown-item",
+                            { on: { click: _vm.showDurationTableColumn } },
+                            [
+                              _vm._v("Duration\n            "),
+                              _vm.durationTableColumn
+                                ? _c("i", {
+                                    staticClass: "fa fa-check",
+                                    staticStyle: { "font-size": "14px" }
+                                  })
+                                : _vm._e()
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "sui-dropdown-item",
+                            { on: { click: _vm.showSizeTableColumn } },
+                            [
+                              _vm._v("Size\n            "),
+                              _vm.sizeTableColumn
+                                ? _c("i", {
+                                    staticClass: "fa fa-check",
+                                    staticStyle: { "font-size": "14px" }
+                                  })
+                                : _vm._e()
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "sui-dropdown-item",
+                            { on: { click: _vm.showOwnerTableColumn } },
+                            [
+                              _vm._v("Owner\n            "),
+                              _vm.ownerTableColumn
+                                ? _c("i", {
+                                    staticClass: "fa fa-check",
+                                    staticStyle: { "font-size": "14px" }
+                                  })
+                                : _vm._e()
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "sui-dropdown-item",
+                            { on: { click: _vm.showPermissionTableColumn } },
+                            [
+                              _vm._v("Permission\n            "),
+                              _vm.permissionTableColumn
+                                ? _c("i", {
+                                    staticClass: "fa fa-check",
+                                    staticStyle: { "font-size": "14px" }
+                                  })
+                                : _vm._e()
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "sui-dropdown-item",
+                            { on: { click: _vm.showFileNameTableColumn } },
+                            [
+                              _vm._v("File Name\n            "),
+                              _vm.fileNameTableColumn
+                                ? _c("i", {
+                                    staticClass: "fa fa-check",
+                                    staticStyle: { "font-size": "14px" }
+                                  })
+                                : _vm._e()
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "sui-dropdown-item",
+                            { on: { click: _vm.showCreatedTableColumn } },
+                            [
+                              _vm._v("Created\n            "),
+                              _vm.createdTableColumn
+                                ? _c("i", {
+                                    staticClass: "fa fa-check",
+                                    staticStyle: { "font-size": "14px" }
+                                  })
+                                : _vm._e()
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "sui-dropdown-item",
+                            { on: { click: _vm.showUpdatedTableColumn } },
+                            [
+                              _vm._v("Modified\n            "),
+                              _vm.updatedTableColumn
+                                ? _c("i", {
+                                    staticClass: "fa fa-check",
+                                    staticStyle: { "font-size": "14px" }
+                                  })
+                                : _vm._e()
+                            ]
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("i", { staticClass: "fas fa-print" })
+                ],
+                1
+              )
+            ]
+          ),
           _vm._v(" "),
           _c(
             "div",
-            { staticClass: "body" },
+            {
+              staticClass: "body",
+              on: {
+                click: function($event) {
+                  if ($event.target !== $event.currentTarget) {
+                    return null
+                  }
+                  return _vm.onClickBody($event)
+                }
+              }
+            },
             [
               _c(
                 "sui-table",
@@ -34305,7 +34392,17 @@ var render = function() {
           _vm._v(" "),
           _c(
             "div",
-            { staticClass: "footer" },
+            {
+              staticClass: "footer",
+              on: {
+                click: function($event) {
+                  if ($event.target !== $event.currentTarget) {
+                    return null
+                  }
+                  return _vm.onClickFooter($event)
+                }
+              }
+            },
             [
               _c(
                 "sui-button",
