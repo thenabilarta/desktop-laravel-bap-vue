@@ -213,18 +213,22 @@
           v-bind:fileNameTableColumn="fileNameTableColumn"
           v-bind:createdTableColumn="createdTableColumn"
           v-bind:updatedTableColumn="updatedTableColumn"
-          v-on:refreshTable="onUpdate"
+          v-bind:isActiveTableRow="isActiveTableRow"
+          v-on:onUpdate="onUpdate"
         ></TableRow>
       </sui-table>
     </div>
     <div class="footer">
-      <sui-button color="green">With Selected</sui-button>
+      <sui-button color="green" @click="onClickWithSelected"
+        >With Selected</sui-button
+      >
     </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import swal from "sweetalert";
 import _ from "lodash";
 
 import Modal from "./components/Modal";
@@ -273,10 +277,13 @@ export default {
 
       // filter
       inputFilterName: "",
+
+      // table Row
+      isActiveTableRow: [],
     };
   },
   computed: {
-    filteredTable: function() {
+    filteredTable: function () {
       return this.tableList.filter((t) => {
         return t.name.match(this.inputFilterName);
       });
@@ -315,6 +322,36 @@ export default {
     },
     showUpdatedTableColumn() {
       this.updatedTableColumn = !this.updatedTableColumn;
+    },
+    onClickWithSelected() {
+      console.log(this.isActiveTableRow);
+      swal(
+        "Do you want to delete media with ID " +
+          [...this.isActiveTableRow].join(", ") +
+          " ?",
+        {
+          buttons: {
+            Cancel: true,
+            Delete: {
+              value: "delete",
+            },
+          },
+        }
+      ).then(async (value) => {
+        switch (value) {
+          case "delete":
+            console.log("DELETED GAN");
+            await this.isActiveTableRow.map((a) => {
+              axios
+                .get("http://127.0.0.1:8000/media/delete/" + a)
+                .then((res) => console.log(res));
+            });
+            await this.onUpdate();
+            break;
+          default:
+            console.log("Cancelled");
+        }
+      });
     },
     toggleModal() {
       this.modal = !this.modal;

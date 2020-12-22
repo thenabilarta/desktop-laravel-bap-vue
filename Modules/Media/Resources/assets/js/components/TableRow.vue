@@ -1,6 +1,10 @@
 <template>
   <sui-table-body>
-    <sui-table-row v-if="list">
+    <sui-table-row
+      v-if="list"
+      @click="onClickSingleTableRow(list.media_id)"
+      :active="isActive"
+    >
       <sui-table-cell v-if="idTableColumn">{{ list.media_id }}</sui-table-cell>
       <sui-table-cell v-if="nameTableColumn">{{ list.name }}</sui-table-cell>
       <sui-table-cell v-if="typeTableColumn">{{ list.type }}</sui-table-cell>
@@ -46,6 +50,7 @@
 
 <script>
 import axios from "axios";
+import _ from "lodash";
 import swal from "sweetalert";
 
 import EditTableRow from "./EditTableRow";
@@ -56,7 +61,7 @@ export default {
     EditTableRow: EditTableRow,
   },
   watch: {
-    list: function() {
+    list: function () {
       console.log("Changed");
     },
   },
@@ -75,10 +80,12 @@ export default {
     fileNameTableColumn: Boolean,
     createdTableColumn: Boolean,
     updatedTableColumn: Boolean,
+    isActiveTableRow: Array,
   },
   data() {
     return {
       isEditing: false,
+      isActive: false,
     };
   },
   methods: {
@@ -91,10 +98,10 @@ export default {
             value: "delete",
           },
         },
-      }).then((value) => {
+      }).then(async (value) => {
         switch (value) {
           case "delete":
-            axios
+            await axios
               .get("http://127.0.0.1:8000/media/delete/" + this.list.media_id)
               .then((res) => console.log(res))
               .then(() => this.refreshTable());
@@ -113,6 +120,16 @@ export default {
     refreshTable() {
       this.$emit("refreshTable");
       this.isEditing = false;
+    },
+    onClickSingleTableRow(id) {
+      this.isActive = !this.isActive;
+      if (this.isActive === true) {
+        this.isActiveTableRow.push(id);
+      } else if (this.isActive === false) {
+        _.remove(this.isActiveTableRow, function (n) {
+          return n === id;
+        });
+      }
     },
   },
 };
