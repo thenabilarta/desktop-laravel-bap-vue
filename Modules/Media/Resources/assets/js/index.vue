@@ -221,6 +221,7 @@
           v-bind:createdTableColumn="createdTableColumn"
           v-bind:updatedTableColumn="updatedTableColumn"
           v-bind:isActiveTableRow="isActiveTableRow"
+          v-bind:isActiveProp="isActiveProp"
           v-on:onUpdate="onUpdate"
         ></TableRow>
       </sui-table>
@@ -287,7 +288,7 @@ export default {
 
       // table Row
       isActiveTableRow: [],
-      isActive: false,
+      isActiveProp: false,
 
       // pagination
       pageNumber: 0,
@@ -354,12 +355,18 @@ export default {
     },
     onClickFooter() {
       console.log("Footer");
+      this.isActiveProp = !this.isActiveProp;
+      this.isActiveTableRow = [];
     },
     onClickHeader() {
       console.log("Header");
+      this.isActiveProp = !this.isActiveProp;
+      this.isActiveTableRow = [];
     },
     onClickBody() {
       console.log("Body");
+      this.isActiveProp = !this.isActiveProp;
+      this.isActiveTableRow = [];
     },
     onClickWithSelected() {
       console.log(this.isActiveTableRow);

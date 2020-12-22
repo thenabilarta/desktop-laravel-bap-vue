@@ -64,6 +64,9 @@ export default {
     list: function () {
       console.log("Changed");
     },
+    isActiveProp: function () {
+      this.isActive = false;
+    },
   },
   name: "TableRow",
   props: {
@@ -81,6 +84,7 @@ export default {
     createdTableColumn: Boolean,
     updatedTableColumn: Boolean,
     isActiveTableRow: Array,
+    isActiveProp: Boolean,
   },
   data() {
     return {
