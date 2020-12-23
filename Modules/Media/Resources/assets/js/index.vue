@@ -27,13 +27,7 @@
             <sui-dropdown-item>False</sui-dropdown-item>
           </sui-dropdown-menu>
         </sui-dropdown>
-        <sui-dropdown text="Show Entries" floating>
-          <sui-dropdown-menu>
-            <sui-dropdown-item>10</sui-dropdown-item>
-            <sui-dropdown-item>25</sui-dropdown-item>
-            <sui-dropdown-item>50</sui-dropdown-item>
-            <sui-dropdown-item>100</sui-dropdown-item>
-          </sui-dropdown-menu>
+        <sui-dropdown floating v-model="pageSize" :options="pageOption">
         </sui-dropdown>
       </div>
       <div class="header-icon">
@@ -304,6 +298,21 @@ export default {
 
       // pagination
       pageNumber: 0,
+      pageSize: 5,
+      pageOption: [
+        {
+          text: "5",
+          value: 5,
+        },
+        {
+          text: "10",
+          value: 10,
+        },
+        {
+          text: "25",
+          value: 25,
+        },
+      ],
     };
   },
   computed: {
@@ -313,8 +322,8 @@ export default {
       });
     },
     paginationTableList: function () {
-      const start = this.pageNumber * 5,
-        end = start + 5;
+      const start = this.pageNumber * this.pageSize,
+        end = start + this.pageSize;
 
       let newTableList = this.tableList.slice(start, end);
 
@@ -322,8 +331,7 @@ export default {
     },
     pageCount() {
       let l = this.tableList.length;
-      let s = 5;
-      let pageCount = Math.ceil(l / s);
+      let pageCount = Math.ceil(l / this.pageSize);
       let pageNumber = [];
       for (let i = 1; pageCount - i >= 0; i++) {
         pageNumber.push(i);

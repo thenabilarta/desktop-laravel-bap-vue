@@ -31529,12 +31529,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
-//
-//
-//
-//
-//
-//
 
 
 
@@ -31596,7 +31590,18 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       isActiveProp: false,
 
       // pagination
-      pageNumber: 0
+      pageNumber: 0,
+      pageSize: 5,
+      pageOption: [{
+        text: "5",
+        value: 5
+      }, {
+        text: "10",
+        value: 10
+      }, {
+        text: "25",
+        value: 25
+      }]
     };
   },
 
@@ -31609,8 +31614,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       });
     },
     paginationTableList: function paginationTableList() {
-      var start = this.pageNumber * 5,
-          end = start + 5;
+      var start = this.pageNumber * this.pageSize,
+          end = start + this.pageSize;
 
       var newTableList = this.tableList.slice(start, end);
 
@@ -31618,8 +31623,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     },
     pageCount: function pageCount() {
       var l = this.tableList.length;
-      var s = 5;
-      var pageCount = Math.ceil(l / s);
+      var pageCount = Math.ceil(l / this.pageSize);
       var pageNumber = [];
       for (var i = 1; pageCount - i >= 0; i++) {
         pageNumber.push(i);
@@ -34045,26 +34049,16 @@ var render = function() {
                     1
                   ),
                   _vm._v(" "),
-                  _c(
-                    "sui-dropdown",
-                    { attrs: { text: "Show Entries", floating: "" } },
-                    [
-                      _c(
-                        "sui-dropdown-menu",
-                        [
-                          _c("sui-dropdown-item", [_vm._v("10")]),
-                          _vm._v(" "),
-                          _c("sui-dropdown-item", [_vm._v("25")]),
-                          _vm._v(" "),
-                          _c("sui-dropdown-item", [_vm._v("50")]),
-                          _vm._v(" "),
-                          _c("sui-dropdown-item", [_vm._v("100")])
-                        ],
-                        1
-                      )
-                    ],
-                    1
-                  )
+                  _c("sui-dropdown", {
+                    attrs: { floating: "", options: _vm.pageOption },
+                    model: {
+                      value: _vm.pageSize,
+                      callback: function($$v) {
+                        _vm.pageSize = $$v
+                      },
+                      expression: "pageSize"
+                    }
+                  })
                 ],
                 1
               ),
