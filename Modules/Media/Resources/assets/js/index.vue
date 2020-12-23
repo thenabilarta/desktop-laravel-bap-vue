@@ -206,7 +206,7 @@
           </sui-table-row>
         </sui-table-header>
         <TableRow
-          v-for="list in filteredTable ? filteredTable : tableList"
+          v-for="list in inputFilterName ? filteredTable : paginationTableList"
           v-bind:key="list.id"
           v-bind:list="list"
           v-bind:idTableColumn="idTableColumn"
@@ -230,6 +230,9 @@
       <sui-button color="green" @click="onClickWithSelected"
         >With Selected</sui-button
       >
+      <sui-button @click="onClickIconLeftArrow" icon="left arrow" />
+      <span v-for="p in pageCount" :key="p">{{ p }}</span>
+      <sui-button @click="onClickIconRightArrow" icon="right arrow" />
     </div>
   </div>
 </template>
@@ -300,26 +303,37 @@ export default {
         return t.name.match(this.inputFilterName);
       });
     },
+    paginationTableList: function () {
+      const start = this.pageNumber * 5,
+        end = start + 5;
+
+      let newTableList = this.tableList.slice(start, end);
+
+      return newTableList;
+    },
     pageCount() {
       let l = this.tableList.length;
-      let s = 10;
-      return Math.ceil(l / s);
-    },
-    paginatedData() {
-      const start = this.pageNumber * 10;
-      const end = start + 10;
-
-      return this.tableList.slice(start, end);
-    },
-  },
-  watch: {
-    tableList: function () {
-      console.log(this.tableList);
-      console.log(this.tableList.length);
-      console.log(this.tableList.slice(0, 10));
+      let s = 5;
+      let pageCount = Math.ceil(l / s);
+      let pageNumber = [];
+      for (let i = 1; pageCount - i >= 0; i++) {
+        pageNumber.push(i);
+      }
+      return pageNumber;
     },
   },
   methods: {
+    onClickIconLeftArrow() {
+      this.pageNumber--;
+      console.log(this.pageNumber);
+    },
+    onClickIconRightArrow() {
+      this.pageNumber++;
+      console.log(this.pageNumber);
+    },
+    tableListPagination() {
+      this.tableList = this.tableList.slice(10, 13);
+    },
     showIdTableColumn() {
       this.idTableColumn = !this.idTableColumn;
     },

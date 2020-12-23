@@ -54,6 +54,12 @@ body {
   margin: 0 1rem;
 }
 
+.body {
+  overflow-x: scroll;
+  margin: 20px;
+  padding: 0px !important;
+}
+
 .td-table-image {
   display: -webkit-box;
   display: -ms-flexbox;

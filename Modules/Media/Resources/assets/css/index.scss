@@ -55,6 +55,12 @@ body {
   }
 }
 
+.body {
+  overflow-x: scroll;
+  margin: 20px;
+  padding: 0px !important;
+}
+
 .td-table-image {
   display: flex;
   justify-content: center;

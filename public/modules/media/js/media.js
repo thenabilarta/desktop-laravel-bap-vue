@@ -31523,6 +31523,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
 
 
 
@@ -31596,26 +31599,37 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         return t.name.match(_this2.inputFilterName);
       });
     },
+    paginationTableList: function paginationTableList() {
+      var start = this.pageNumber * 5,
+          end = start + 5;
+
+      var newTableList = this.tableList.slice(start, end);
+
+      return newTableList;
+    },
     pageCount: function pageCount() {
       var l = this.tableList.length;
-      var s = 10;
-      return Math.ceil(l / s);
-    },
-    paginatedData: function paginatedData() {
-      var start = this.pageNumber * 10;
-      var end = start + 10;
-
-      return this.tableList.slice(start, end);
-    }
-  },
-  watch: {
-    tableList: function tableList() {
-      console.log(this.tableList);
-      console.log(this.tableList.length);
-      console.log(this.tableList.slice(0, 10));
+      var s = 5;
+      var pageCount = Math.ceil(l / s);
+      var pageNumber = [];
+      for (var i = 1; pageCount - i >= 0; i++) {
+        pageNumber.push(i);
+      }
+      return pageNumber;
     }
   },
   methods: {
+    onClickIconLeftArrow: function onClickIconLeftArrow() {
+      this.pageNumber--;
+      console.log(this.pageNumber);
+    },
+    onClickIconRightArrow: function onClickIconRightArrow() {
+      this.pageNumber++;
+      console.log(this.pageNumber);
+    },
+    tableListPagination: function tableListPagination() {
+      this.tableList = this.tableList.slice(10, 13);
+    },
     showIdTableColumn: function showIdTableColumn() {
       this.idTableColumn = !this.idTableColumn;
     },
@@ -33912,7 +33926,7 @@ exports = module.exports = __webpack_require__(3)(false);
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap);", ""]);
 
 // module
-exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n}\n\n.header {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.header .header-filter {\n  width: 50%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -ms-flex-pack: distribute;\n      justify-content: space-around;\n}\n\n.header .header-filter .ui.input > input {\n  max-width: 120px;\n}\n\n.header .header-icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n\n.header .header-icon i {\n  font-size: 2rem;\n  margin: 0 1rem;\n}\n\n.td-table-image {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.table-image {\n  height: 30px;\n  margin: 0;\n  padding: 0;\n}\n\n.footer {\n  min-height: 50px;\n  padding: 20px;\n}\n\n.footer button {\n  background-color: #0e6eb8;\n  padding: 0.8rem 1.6rem;\n  outline: none;\n  border-radius: 0.5rem;\n  border: none;\n  color: white;\n}\n\n.footer button:hover {\n  background-color: #2185d0;\n}\n\ni,\nth {\n  cursor: pointer !important;\n}\n\n.loading {\n  height: 70vh;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}", ""]);
+exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n}\n\n.header {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.header .header-filter {\n  width: 50%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -ms-flex-pack: distribute;\n      justify-content: space-around;\n}\n\n.header .header-filter .ui.input > input {\n  max-width: 120px;\n}\n\n.header .header-icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n\n.header .header-icon i {\n  font-size: 2rem;\n  margin: 0 1rem;\n}\n\n.body {\n  overflow-x: scroll;\n  margin: 20px;\n  padding: 0px !important;\n}\n\n.td-table-image {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.table-image {\n  height: 30px;\n  margin: 0;\n  padding: 0;\n}\n\n.footer {\n  min-height: 50px;\n  padding: 20px;\n}\n\n.footer button {\n  background-color: #0e6eb8;\n  padding: 0.8rem 1.6rem;\n  outline: none;\n  border-radius: 0.5rem;\n  border: none;\n  color: white;\n}\n\n.footer button:hover {\n  background-color: #2185d0;\n}\n\ni,\nth {\n  cursor: pointer !important;\n}\n\n.loading {\n  height: 70vh;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}", ""]);
 
 // exports
 
@@ -34371,7 +34385,9 @@ var render = function() {
                   ),
                   _vm._v(" "),
                   _vm._l(
-                    _vm.filteredTable ? _vm.filteredTable : _vm.tableList,
+                    _vm.inputFilterName
+                      ? _vm.filteredTable
+                      : _vm.paginationTableList,
                     function(list) {
                       return _c("TableRow", {
                         key: list.id,
@@ -34423,9 +34439,23 @@ var render = function() {
                   on: { click: _vm.onClickWithSelected }
                 },
                 [_vm._v("With Selected")]
-              )
+              ),
+              _vm._v(" "),
+              _c("sui-button", {
+                attrs: { icon: "left arrow" },
+                on: { click: _vm.onClickIconLeftArrow }
+              }),
+              _vm._v(" "),
+              _vm._l(_vm.pageCount, function(p) {
+                return _c("span", { key: p }, [_vm._v(_vm._s(p))])
+              }),
+              _vm._v(" "),
+              _c("sui-button", {
+                attrs: { icon: "right arrow" },
+                on: { click: _vm.onClickIconRightArrow }
+              })
             ],
-            1
+            2
           )
         ],
         1
