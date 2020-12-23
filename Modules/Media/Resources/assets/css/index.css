@@ -81,19 +81,20 @@ body {
 .footer {
   min-height: 50px;
   padding: 20px;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
-.footer button {
-  background-color: #0e6eb8;
-  padding: 0.8rem 1.6rem;
-  outline: none;
-  border-radius: 0.5rem;
-  border: none;
-  color: white;
-}
-
-.footer button:hover {
-  background-color: #2185d0;
+.footer span {
+  font-size: 1rem;
+  padding: 0 1rem;
 }
 
 i,

@@ -76,18 +76,13 @@ body {
 .footer {
   min-height: 50px;
   padding: 20px;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
 
-  button {
-    background-color: $blue;
-    padding: 0.8rem 1.6rem;
-    outline: none;
-    border-radius: 0.5rem;
-    border: none;
-    color: white;
-
-    &:hover {
-      background-color: $blue-hover;
-    }
+  span {
+    font-size: 1rem;
+    padding: 0 1rem;
   }
 }
 

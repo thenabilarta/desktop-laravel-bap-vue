@@ -230,9 +230,18 @@
       <sui-button color="green" @click="onClickWithSelected"
         >With Selected</sui-button
       >
-      <sui-button @click="onClickIconLeftArrow" icon="left arrow" />
-      <span v-for="p in pageCount" :key="p">{{ p }}</span>
-      <sui-button @click="onClickIconRightArrow" icon="right arrow" />
+      <div class="pagination">
+        <sui-button @click="onClickIconLeftArrow" icon="left arrow" />
+        <span
+          v-for="p in pageCount"
+          :key="p"
+          :style="
+            p === pageNumber + 1 ? 'font-weight:bold; font-size: 15px' : ''
+          "
+          >{{ p }}</span
+        >
+        <sui-button @click="onClickIconRightArrow" icon="right arrow" />
+      </div>
     </div>
   </div>
 </template>
