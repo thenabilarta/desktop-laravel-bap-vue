@@ -18,7 +18,7 @@ class MediaController extends AppBaseController
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'http://192.168.1.5/xibo-cms/web/api/authorize/access_token',
+            CURLOPT_URL => 'http://192.168.1.7/xibo-cms/web/api/authorize/access_token',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -74,7 +74,7 @@ class MediaController extends AppBaseController
             'name' => $fileName
         );
 
-        $target_url = "http://192.168.1.5/xibo-cms/web/api/library";
+        $target_url = "http://192.168.1.7/xibo-cms/web/api/library";
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $target_url);
@@ -153,7 +153,7 @@ class MediaController extends AppBaseController
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'http://192.168.1.5/xibo-cms/web/api/library/' . $media_id,
+            CURLOPT_URL => 'http://192.168.1.7/xibo-cms/web/api/library/' . $media_id,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -199,7 +199,7 @@ class MediaController extends AppBaseController
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'http://192.168.1.5/xibo-cms/web/api/library/' . $id,
+            CURLOPT_URL => 'http://192.168.1.7/xibo-cms/web/api/library/' . $id,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,

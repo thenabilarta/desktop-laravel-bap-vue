@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 96);
+/******/ 	return __webpack_require__(__webpack_require__.s = 97);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1042,6 +1042,76 @@ module.exports = Cancel;
 
 /***/ }),
 /* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
+            (typeof self !== "undefined" && self) ||
+            window;
+var apply = Function.prototype.apply;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
+};
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(scope, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(33);
+// On some exotic environments, it's not clear which object `setimmediate` was
+// able to install onto.  Search each possibility in the same order as the
+// `setimmediate` library.
+exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
+                       (typeof global !== "undefined" && global.setImmediate) ||
+                       (this && this.setImmediate);
+exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
+                         (typeof global !== "undefined" && global.clearImmediate) ||
+                         (this && this.clearImmediate);
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -1150,80 +1220,10 @@ module.exports = function normalizeComponent (
 
 
 /***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(15);
-
-/***/ }),
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
-            (typeof self !== "undefined" && self) ||
-            window;
-var apply = Function.prototype.apply;
-
-// DOM APIs, for completeness
-
-exports.setTimeout = function() {
-  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
-};
-exports.setInterval = function() {
-  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
-};
-exports.clearTimeout =
-exports.clearInterval = function(timeout) {
-  if (timeout) {
-    timeout.close();
-  }
-};
-
-function Timeout(id, clearFn) {
-  this._id = id;
-  this._clearFn = clearFn;
-}
-Timeout.prototype.unref = Timeout.prototype.ref = function() {};
-Timeout.prototype.close = function() {
-  this._clearFn.call(scope, this._id);
-};
-
-// Does not start the time, just sets up the members needed.
-exports.enroll = function(item, msecs) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = msecs;
-};
-
-exports.unenroll = function(item) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = -1;
-};
-
-exports._unrefActive = exports.active = function(item) {
-  clearTimeout(item._idleTimeoutId);
-
-  var msecs = item._idleTimeout;
-  if (msecs >= 0) {
-    item._idleTimeoutId = setTimeout(function onTimeout() {
-      if (item._onTimeout)
-        item._onTimeout();
-    }, msecs);
-  }
-};
-
-// setimmediate attaches itself to the global object
-__webpack_require__(33);
-// On some exotic environments, it's not clear which object `setimmediate` was
-// able to install onto.  Search each possibility in the same order as the
-// `setimmediate` library.
-exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
-                       (typeof global !== "undefined" && global.setImmediate) ||
-                       (this && this.setImmediate);
-exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
-                         (typeof global !== "undefined" && global.clearImmediate) ||
-                         (this && this.clearImmediate);
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+module.exports = __webpack_require__(15);
 
 /***/ }),
 /* 13 */
@@ -12548,7 +12548,7 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(12).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(10).setImmediate))
 
 /***/ }),
 /* 15 */
@@ -13718,353 +13718,7 @@ module.exports=function(e){var t={};function i(n){if(t[n])return t[n].exports;va
 /* 38 */,
 /* 39 */,
 /* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(10)
-/* script */
-var __vue_script__ = __webpack_require__(98)
-/* template */
-var __vue_template__ = __webpack_require__(102)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "modules\\displayProfile\\resources\\assets\\js\\index.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-28dfffaf", Component.options)
-  } else {
-    hotAPI.reload("data-v-28dfffaf", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 44 */,
-/* 45 */,
-/* 46 */,
-/* 47 */,
-/* 48 */,
-/* 49 */,
-/* 50 */,
-/* 51 */,
-/* 52 */,
-/* 53 */,
-/* 54 */,
-/* 55 */,
-/* 56 */,
-/* 57 */,
-/* 58 */,
-/* 59 */,
-/* 60 */,
-/* 61 */,
-/* 62 */,
-/* 63 */,
-/* 64 */,
-/* 65 */,
-/* 66 */,
-/* 67 */,
-/* 68 */,
-/* 69 */,
-/* 70 */,
-/* 71 */,
-/* 72 */,
-/* 73 */,
-/* 74 */,
-/* 75 */,
-/* 76 */,
-/* 77 */,
-/* 78 */,
-/* 79 */,
-/* 80 */,
-/* 81 */,
-/* 82 */,
-/* 83 */,
-/* 84 */,
-/* 85 */,
-/* 86 */,
-/* 87 */,
-/* 88 */,
-/* 89 */,
-/* 90 */,
-/* 91 */,
-/* 92 */,
-/* 93 */,
-/* 94 */,
-/* 95 */,
-/* 96 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(97);
-
-
-/***/ }),
-/* 97 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_vue__ = __webpack_require__(43);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue__ = __webpack_require__(35);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue__);
-
-
-window.Vue = __webpack_require__(14);
-
-
-
-Vue.component("index", __webpack_require__(43).default);
-
-Vue.use(__WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue___default.a);
-
-var app = new Vue({
-  el: "#app",
-  components: {
-    Index: __WEBPACK_IMPORTED_MODULE_0__index_vue___default.a
-  }
-});
-
-/***/ }),
-/* 98 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_index_css__ = __webpack_require__(99);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_index_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__css_index_css__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_pdfmake__ = __webpack_require__(101);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_pdfmake___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_pdfmake__);
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  data: function data() {
-    return {
-      tableList: null
-    };
-  },
-  mounted: function mounted() {
-    var _this = this;
-
-    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/displayprofile/data").then(function (res) {
-      console.log(res.data);
-      _this.tableList = res.data;
-    });
-  },
-
-  computed: {
-    csvData: function csvData() {
-      return this.tableList.map(function (item) {
-        return {
-          Name: item.name,
-          Type: item.type,
-          Default: item.isDefault === 1 ? "true" : "false"
-        };
-      });
-    }
-  },
-  methods: {
-    createPDF: function createPDF() {
-      var docDefinition = {
-        content: [{ text: "Display Profile Report", style: "header" }, { text: "List of Display Profile", style: "normalText" }, { text: "Date : ", style: "normalText" }, {
-          style: "tableExample",
-          table: {
-            widths: ["*", "*", "*"],
-            body: [[{ text: "Name", style: "tableHeader" }, { text: "Type", style: "tableHeader" }, { text: "Default", style: "tableHeader" }]]
-          }
-        }],
-        styles: {
-          header: {
-            fontSize: 20,
-            bold: true,
-            margin: [0, 0, 0, 20]
-          },
-          subheader: {
-            fontSize: 16,
-            bold: true,
-            margin: [0, 10, 0, 5]
-          },
-          normalText: {
-            fontSize: 14,
-            margin: [0, 0, 0, 10]
-          },
-          tableText: {
-            fontSize: 14,
-            margin: [0, 2, 0, 2]
-          },
-          tableExample: {
-            margin: [0, 15, 0, 15]
-          },
-          tableHeader: {
-            bold: true,
-            fontSize: 16,
-            color: "black",
-            margin: [0, 2, 0, 2]
-          }
-        }
-      };
-      for (var i = 0; i < this.tableList.length; i++) {
-        docDefinition.content[3].table.body.push(
-        // Object.values(this.tableList[i])
-        [{ text: Object.values(this.tableList[i].name), style: "tableText" }, { text: Object.values(this.tableList[i].type), style: "tableText" }, {
-          text: Object.values(this.tableList[i].isDefault === 1 ? "true" : "false"),
-          style: "tableText",
-          italics: true
-        }]);
-      }
-      __WEBPACK_IMPORTED_MODULE_2_pdfmake___default.a.createPdf(docDefinition).open();
-    },
-    createCSV: function createCSV(arrData) {
-      var csvContent = "data:text/csv;charset=utf-8,";
-      csvContent += [Object.keys(arrData[0]).join(";")].concat(_toConsumableArray(arrData.map(function (item) {
-        return Object.values(item).join(";");
-      }))).join("\n").replace(/(^\[)|(\]$)/gm, "");
-
-      var data = encodeURI(csvContent);
-      var link = document.createElement("a");
-      link.setAttribute("href", data);
-      link.setAttribute("download", Math.floor(Math.random() * 1000) + ".csv");
-      link.click();
-    }
-  }
-});
-
-/***/ }),
-/* 99 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(100);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(13)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../../../../node_modules/css-loader/index.js!./index.css", function() {
-			var newContent = require("!!../../../../../node_modules/css-loader/index.js!./index.css");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 100 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(3)(false);
-// imports
-exports.push([module.i, "@import url(https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap);", ""]);
-
-// module
-exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: \"Lato\", sans-serif;\n}\n\n.header {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n\n.header .header-icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  padding: 0 2rem;\n}\n\n.header .header-icon .ui.multiple.dropdown {\n  padding: 0 !important;\n}\n\n.header .header-icon i {\n  font-size: 2rem;\n  margin: 0 1rem;\n}\n\n.td-table-image {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.table-image {\n  height: 30px;\n  margin: 0;\n  padding: 0;\n}\n\n.footer {\n  min-height: 50px;\n  padding: 20px;\n}\n\n.footer button {\n  background-color: #0e6eb8;\n  padding: 0.8rem 1.6rem;\n  outline: none;\n  border-radius: 0.5rem;\n  border: none;\n  color: white;\n}\n\n.footer button:hover {\n  background-color: #2185d0;\n}\n\ni,\nth {\n  cursor: pointer !important;\n}\n\n.dropdown-table-cell {\n  max-width: 1px !important;\n}\n\n.dropdown-table-cell .right {\n  float: none !important;\n}\n\n.loading {\n  height: 50vh;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.authorized-table-cell {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n[type=\"checkbox\"]:not(.filled-in) + label:after {\n  transform: none !important;\n  -webkit-transform: none !important;\n}", ""]);
-
-// exports
-
-
-/***/ }),
-/* 101 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(setImmediate) {/*! pdfmake v0.1.68, @license MIT, @link http://pdfmake.org */
@@ -90151,7 +89805,353 @@ module.exports = function () {
 /******/ ]);
 });
 //# sourceMappingURL=pdfmake.js.map
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10).setImmediate))
+
+/***/ }),
+/* 42 */,
+/* 43 */,
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(11)
+/* script */
+var __vue_script__ = __webpack_require__(99)
+/* template */
+var __vue_template__ = __webpack_require__(102)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "modules\\displayProfile\\resources\\assets\\js\\index.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-28dfffaf", Component.options)
+  } else {
+    hotAPI.reload("data-v-28dfffaf", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */,
+/* 57 */,
+/* 58 */,
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */,
+/* 65 */,
+/* 66 */,
+/* 67 */,
+/* 68 */,
+/* 69 */,
+/* 70 */,
+/* 71 */,
+/* 72 */,
+/* 73 */,
+/* 74 */,
+/* 75 */,
+/* 76 */,
+/* 77 */,
+/* 78 */,
+/* 79 */,
+/* 80 */,
+/* 81 */,
+/* 82 */,
+/* 83 */,
+/* 84 */,
+/* 85 */,
+/* 86 */,
+/* 87 */,
+/* 88 */,
+/* 89 */,
+/* 90 */,
+/* 91 */,
+/* 92 */,
+/* 93 */,
+/* 94 */,
+/* 95 */,
+/* 96 */,
+/* 97 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(98);
+
+
+/***/ }),
+/* 98 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_vue__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue__);
+
+
+window.Vue = __webpack_require__(14);
+
+
+
+Vue.component("index", __webpack_require__(44).default);
+
+Vue.use(__WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue___default.a);
+
+var app = new Vue({
+  el: "#app",
+  components: {
+    Index: __WEBPACK_IMPORTED_MODULE_0__index_vue___default.a
+  }
+});
+
+/***/ }),
+/* 99 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_index_css__ = __webpack_require__(100);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_index_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__css_index_css__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_pdfmake__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_pdfmake___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_pdfmake__);
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      tableList: null
+    };
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://127.0.0.1:8000/displayprofile/data").then(function (res) {
+      console.log(res.data);
+      _this.tableList = res.data;
+    });
+  },
+
+  computed: {
+    csvData: function csvData() {
+      return this.tableList.map(function (item) {
+        return {
+          Name: item.name,
+          Type: item.type,
+          Default: item.isDefault === 1 ? "true" : "false"
+        };
+      });
+    }
+  },
+  methods: {
+    createPDF: function createPDF() {
+      var docDefinition = {
+        content: [{ text: "Display Profile Report", style: "header" }, { text: "List of Display Profile", style: "normalText" }, { text: "Date : ", style: "normalText" }, {
+          style: "tableExample",
+          table: {
+            widths: ["*", "*", "*"],
+            body: [[{ text: "Name", style: "tableHeader" }, { text: "Type", style: "tableHeader" }, { text: "Default", style: "tableHeader" }]]
+          }
+        }],
+        styles: {
+          header: {
+            fontSize: 20,
+            bold: true,
+            margin: [0, 0, 0, 20]
+          },
+          subheader: {
+            fontSize: 16,
+            bold: true,
+            margin: [0, 10, 0, 5]
+          },
+          normalText: {
+            fontSize: 14,
+            margin: [0, 0, 0, 10]
+          },
+          tableText: {
+            fontSize: 14,
+            margin: [0, 2, 0, 2]
+          },
+          tableExample: {
+            margin: [0, 15, 0, 15]
+          },
+          tableHeader: {
+            bold: true,
+            fontSize: 16,
+            color: "black",
+            margin: [0, 2, 0, 2]
+          }
+        }
+      };
+      for (var i = 0; i < this.tableList.length; i++) {
+        docDefinition.content[3].table.body.push(
+        // Object.values(this.tableList[i])
+        [{ text: Object.values(this.tableList[i].name), style: "tableText" }, { text: Object.values(this.tableList[i].type), style: "tableText" }, {
+          text: Object.values(this.tableList[i].isDefault === 1 ? "true" : "false"),
+          style: "tableText",
+          italics: true
+        }]);
+      }
+      __WEBPACK_IMPORTED_MODULE_2_pdfmake___default.a.createPdf(docDefinition).open();
+    },
+    createCSV: function createCSV(arrData) {
+      var csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += [Object.keys(arrData[0]).join(";")].concat(_toConsumableArray(arrData.map(function (item) {
+        return Object.values(item).join(";");
+      }))).join("\n").replace(/(^\[)|(\]$)/gm, "");
+
+      var data = encodeURI(csvContent);
+      var link = document.createElement("a");
+      link.setAttribute("href", data);
+      link.setAttribute("download", Math.floor(Math.random() * 1000) + ".csv");
+      link.click();
+    }
+  }
+});
+
+/***/ }),
+/* 100 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(101);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(13)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../../node_modules/css-loader/index.js!./index.css", function() {
+			var newContent = require("!!../../../../../node_modules/css-loader/index.js!./index.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 101 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(3)(false);
+// imports
+exports.push([module.i, "@import url(https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap);", ""]);
+
+// module
+exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: \"Lato\", sans-serif;\n}\n\n.header {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n\n.header .header-icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  padding: 0 2rem;\n}\n\n.header .header-icon .ui.multiple.dropdown {\n  padding: 0 !important;\n}\n\n.header .header-icon i {\n  font-size: 2rem;\n  margin: 0 1rem;\n}\n\n.td-table-image {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.table-image {\n  height: 30px;\n  margin: 0;\n  padding: 0;\n}\n\n.footer {\n  min-height: 50px;\n  padding: 20px;\n}\n\n.footer button {\n  background-color: #0e6eb8;\n  padding: 0.8rem 1.6rem;\n  outline: none;\n  border-radius: 0.5rem;\n  border: none;\n  color: white;\n}\n\n.footer button:hover {\n  background-color: #2185d0;\n}\n\ni,\nth {\n  cursor: pointer !important;\n}\n\n.dropdown-table-cell {\n  max-width: 1px !important;\n}\n\n.dropdown-table-cell .right {\n  float: none !important;\n}\n\n.loading {\n  height: 50vh;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.authorized-table-cell {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n[type=\"checkbox\"]:not(.filled-in) + label:after {\n  transform: none !important;\n  -webkit-transform: none !important;\n}", ""]);
+
+// exports
+
 
 /***/ }),
 /* 102 */

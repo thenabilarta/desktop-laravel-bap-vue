@@ -92,7 +92,7 @@ body {
           align-items: center;
 }
 
-.footer span {
+.footer #pageNumberFooter {
   font-size: 1rem;
   padding: 0 1rem;
 }
