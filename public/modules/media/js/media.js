@@ -107640,8 +107640,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
-//
-//
 
 
 
@@ -107693,6 +107691,20 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       tableListSizeASC: true,
       // filter
       inputFilterName: "",
+      mediaType: "all",
+      mediaTypeOption: [{
+        text: "All",
+        value: "all"
+      }, {
+        text: "Image",
+        value: "image"
+      }, {
+        text: "PDF",
+        value: "pdf"
+      }, {
+        text: "Video",
+        value: "video"
+      }],
       // table Row
       isActiveTableRow: [],
       isActiveProp: false,
@@ -107718,12 +107730,51 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     };
   },
 
-  computed: {
-    filteredTable: function filteredTable() {
+  watch: {
+    pageSize: function pageSize() {
+      console.log(this.pageSize);
+      this.pageNumber = 0;
+    },
+    mediaType: function mediaType() {
       var _this2 = this;
 
+      console.log(this.mediaType);
+
+      switch (this.mediaType) {
+        case "image":
+          __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
+            return _this2.tableList = res.data;
+          }).then(function () {
+            _this2.tableList = _this2.tableList.filter(function (t) {
+              return t.type === "jpg";
+            });
+          });
+          break;
+        case "video":
+          __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
+            return _this2.tableList = res.data;
+          }).then(function () {
+            _this2.tableList = _this2.tableList.filter(function (t) {
+              return t.type === "mp4";
+            });
+          });
+
+          break;
+        default:
+          __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
+            return _this2.tableList = res.data;
+          }).then(function () {
+            return _this2.orderByTableListId();
+          });
+      }
+    }
+  },
+  computed: {
+    filteredTable: function filteredTable() {
+      var _this3 = this;
+
       return this.tableList.filter(function (t) {
-        return t.name.match(_this2.inputFilterName);
+        return t.name.match(_this3.inputFilterName);
       });
     },
     paginationTableList: function paginationTableList() {
@@ -107740,19 +107791,23 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         pageNumber.push(i);
       }
       return pageNumber;
+    },
+    pageCountNumber: function pageCountNumber() {
+      var l = this.tableList.length;
+      var pageCount = Math.ceil(l / this.pageSize);
+      return pageCount;
     }
   },
   methods: {
     onClickIconLeftArrow: function onClickIconLeftArrow() {
       this.pageNumber--;
       console.log(this.pageNumber);
+      console.log(this.pageCountNumber);
     },
     onClickIconRightArrow: function onClickIconRightArrow() {
       this.pageNumber++;
       console.log(this.pageNumber);
-    },
-    tableListPagination: function tableListPagination() {
-      this.tableList = this.tableList.slice(10, 13);
+      console.log(this.pageCountNumber);
     },
     showIdTableColumn: function showIdTableColumn() {
       this.idTableColumn = !this.idTableColumn;
@@ -107803,7 +107858,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       this.isActiveTableRow = [];
     },
     onClickWithSelected: function onClickWithSelected() {
-      var _this3 = this;
+      var _this4 = this;
 
       console.log(this.isActiveTableRow);
       __WEBPACK_IMPORTED_MODULE_2_sweetalert___default()("Do you want to delete media with ID " + [].concat(_toConsumableArray(this.isActiveTableRow)).join(", ") + " ?", {
@@ -107826,7 +107881,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 case 3:
                   console.log("DELETED GAN");
                   _context.next = 6;
-                  return _this3.isActiveTableRow.map(function (a) {
+                  return _this4.isActiveTableRow.map(function (a) {
                     __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/delete/" + a).then(function (res) {
                       return console.log(res);
                     });
@@ -107834,7 +107889,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
                 case 6:
                   _context.next = 8;
-                  return _this3.onUpdate();
+                  return _this4.onUpdate();
 
                 case 8:
                   return _context.abrupt("break", 10);
@@ -107847,7 +107902,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                   return _context.stop();
               }
             }
-          }, _callee, _this3);
+          }, _callee, _this4);
         }));
 
         return function (_x) {
@@ -107859,22 +107914,22 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       this.modal = !this.modal;
     },
     onCloseModal: function onCloseModal() {
-      var _this4 = this;
-
-      this.modal = false;
-      __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
-        return _this4.tableList = res.data;
-      }).then(function () {
-        _this4.tableListIdASC = false;
-        _this4.orderByTableListId();
-      });
-    },
-    onUpdate: function onUpdate() {
       var _this5 = this;
 
       this.modal = false;
       __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
         return _this5.tableList = res.data;
+      }).then(function () {
+        _this5.tableListIdASC = false;
+        _this5.orderByTableListId();
+      });
+    },
+    onUpdate: function onUpdate() {
+      var _this6 = this;
+
+      this.modal = false;
+      __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
+        return _this6.tableList = res.data;
       });
     },
     onInputFilterName: function onInputFilterName() {
@@ -107949,7 +108004,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       }
     },
     createPDF: function createPDF() {
-      var _this6 = this;
+      var _this7 = this;
 
       var docDefinition = {
         pageOrientation: "landscape",
@@ -108002,9 +108057,14 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           xhr.send();
         }
 
-        toDataURL("/storage/uploads/" + _this6.tableList[i].file_name, function (dataUrl) {
-          docDefinition.content[4].table.body.push([{ text: _this6.tableList[i].media_id }, { text: Object.values(_this6.tableList[i].name) }, { text: Object.values(_this6.tableList[i].type) }, { image: dataUrl, fit: [25, 25] }, { text: Object.values(_this6.tableList[i].duration) }, { text: Object.values(_this6.tableList[i].size) }, { text: Object.values(_this6.tableList[i].file_name) }]);
-          if (i === _this6.tableList.length - 1) {
+        toDataURL("/storage/uploads/" + _this7.tableList[i].file_name, function (dataUrl) {
+          if (_this7.tableList[i].type === "jpg") {
+            docDefinition.content[4].table.body.push([{ text: _this7.tableList[i].media_id }, { text: Object.values(_this7.tableList[i].name) }, { text: Object.values(_this7.tableList[i].type) }, { image: dataUrl, fit: [25, 25] }, { text: Object.values(_this7.tableList[i].duration) }, { text: Object.values(_this7.tableList[i].size) }, { text: Object.values(_this7.tableList[i].file_name) }]);
+          } else {
+            docDefinition.content[4].table.body.push([{ text: _this7.tableList[i].media_id }, { text: Object.values(_this7.tableList[i].name) }, { text: Object.values(_this7.tableList[i].type) }, { text: "" }, { text: Object.values(_this7.tableList[i].duration) }, { text: Object.values(_this7.tableList[i].size) }, { text: Object.values(_this7.tableList[i].file_name) }]);
+          }
+
+          if (i === _this7.tableList.length - 1) {
             __WEBPACK_IMPORTED_MODULE_4_pdfmake___default.a.createPdf(docDefinition).open();
           }
         });
@@ -110116,7 +110176,7 @@ exports = module.exports = __webpack_require__(3)(false);
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap);", ""]);
 
 // module
-exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n}\n\n.header {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.header .header-filter {\n  width: 50%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -ms-flex-pack: distribute;\n      justify-content: space-around;\n}\n\n.header .header-filter .ui.input > input {\n  max-width: 120px;\n}\n\n.header .header-icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n\n.header .header-icon i {\n  font-size: 2rem;\n  margin: 0 1rem;\n}\n\n.body {\n  overflow-x: scroll;\n  margin: 20px;\n  padding: 0px !important;\n}\n\n.td-table-image {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.table-image {\n  height: 30px;\n  margin: 0;\n  padding: 0;\n}\n\n.footer {\n  min-height: 50px;\n  padding: 20px;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.footer #pageNumberFooter {\n  font-size: 1rem;\n  padding: 0 1rem;\n}\n\ni,\nth {\n  cursor: pointer !important;\n}\n\n.loading {\n  height: 70vh;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}", ""]);
+exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n}\n\n.header {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.header .header-filter {\n  width: 50%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -ms-flex-pack: distribute;\n      justify-content: space-around;\n}\n\n.header .header-filter .ui.input > input {\n  max-width: 120px;\n}\n\n.header .header-filter i {\n  margin: 0 1rem;\n}\n\n.header .header-icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n\n.header .header-icon i {\n  font-size: 2rem;\n  margin: 0 1rem;\n}\n\n.body {\n  overflow-x: scroll;\n  margin: 20px;\n  padding: 0px !important;\n}\n\n.td-table-image {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.table-image {\n  height: 30px;\n  margin: 0;\n  padding: 0;\n}\n\n.footer {\n  min-height: 50px;\n  padding: 20px;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.footer #pageNumberFooter {\n  font-size: 1rem;\n  padding: 0 1rem;\n}\n\ni,\nth {\n  cursor: pointer !important;\n}\n\n.loading {\n  height: 70vh;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}", ""]);
 
 // exports
 
@@ -110190,24 +110250,20 @@ var render = function() {
                     }
                   }),
                   _vm._v(" "),
-                  _c(
-                    "sui-dropdown",
-                    { attrs: { text: "Type", floating: "" } },
-                    [
-                      _c(
-                        "sui-dropdown-menu",
-                        [
-                          _c("sui-dropdown-item", [_vm._v("Image")]),
-                          _vm._v(" "),
-                          _c("sui-dropdown-item", [_vm._v("PDF")]),
-                          _vm._v(" "),
-                          _c("sui-dropdown-item", [_vm._v("Video")])
-                        ],
-                        1
-                      )
-                    ],
-                    1
-                  ),
+                  _c("sui-dropdown", {
+                    attrs: {
+                      text: "Type",
+                      floating: "",
+                      options: _vm.mediaTypeOption
+                    },
+                    model: {
+                      value: _vm.mediaType,
+                      callback: function($$v) {
+                        _vm.mediaType = $$v
+                      },
+                      expression: "mediaType"
+                    }
+                  }),
                   _vm._v(" "),
                   _c(
                     "sui-dropdown",
@@ -110659,7 +110715,10 @@ var render = function() {
                 { staticClass: "pagination" },
                 [
                   _c("sui-button", {
-                    attrs: { disabled: true, icon: "left arrow" },
+                    attrs: {
+                      icon: "left arrow",
+                      disabled: _vm.pageNumber === 0 ? true : false
+                    },
                     on: { click: _vm.onClickIconLeftArrow }
                   }),
                   _vm._v(" "),
@@ -110679,7 +110738,13 @@ var render = function() {
                   }),
                   _vm._v(" "),
                   _c("sui-button", {
-                    attrs: { disabled: true, icon: "right arrow" },
+                    attrs: {
+                      icon: "right arrow",
+                      disabled:
+                        _vm.pageNumber === _vm.pageCountNumber - 1
+                          ? true
+                          : false
+                    },
                     on: { click: _vm.onClickIconRightArrow }
                   })
                 ],

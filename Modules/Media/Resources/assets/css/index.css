@@ -37,6 +37,10 @@ body {
   max-width: 120px;
 }
 
+.header .header-filter i {
+  margin: 0 1rem;
+}
+
 .header .header-icon {
   display: -webkit-box;
   display: -ms-flexbox;

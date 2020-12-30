@@ -14,21 +14,19 @@
           @keyup="onInputFilterName"
           v-model="inputFilterName"
         />
-        <sui-dropdown text="Type" floating>
-          <sui-dropdown-menu>
-            <sui-dropdown-item>Image</sui-dropdown-item>
-            <sui-dropdown-item>PDF</sui-dropdown-item>
-            <sui-dropdown-item>Video</sui-dropdown-item>
-          </sui-dropdown-menu>
-        </sui-dropdown>
+        <sui-dropdown
+          text="Type"
+          floating
+          v-model="mediaType"
+          :options="mediaTypeOption"
+        />
         <sui-dropdown text="Retired" floating>
           <sui-dropdown-menu>
             <sui-dropdown-item>True</sui-dropdown-item>
             <sui-dropdown-item>False</sui-dropdown-item>
           </sui-dropdown-menu>
         </sui-dropdown>
-        <sui-dropdown floating v-model="pageSize" :options="pageOption">
-        </sui-dropdown>
+        <sui-dropdown floating v-model="pageSize" :options="pageOption" />
       </div>
       <div class="header-icon">
         <sui-dropdown icon="eye" floating multiple>
@@ -239,8 +237,8 @@
       <div class="pagination">
         <sui-button
           @click="onClickIconLeftArrow"
-          :disabled="true"
           icon="left arrow"
+          :disabled="pageNumber === 0 ? true : false"
         />
         <span
           v-for="p in pageCount"
@@ -252,9 +250,9 @@
           >{{ p }}</span
         >
         <sui-button
-          :disabled="true"
           @click="onClickIconRightArrow"
           icon="right arrow"
+          :disabled="pageNumber === pageCountNumber - 1 ? true : false"
         />
       </div>
     </div>
@@ -308,6 +306,25 @@ export default {
       tableListSizeASC: true,
       // filter
       inputFilterName: "",
+      mediaType: "all",
+      mediaTypeOption: [
+        {
+          text: "All",
+          value: "all",
+        },
+        {
+          text: "Image",
+          value: "image",
+        },
+        {
+          text: "PDF",
+          value: "pdf",
+        },
+        {
+          text: "Video",
+          value: "video",
+        },
+      ],
       // table Row
       isActiveTableRow: [],
       isActiveProp: false,
@@ -338,6 +355,40 @@ export default {
       ],
     };
   },
+  watch: {
+    pageSize: function () {
+      console.log(this.pageSize);
+      this.pageNumber = 0;
+    },
+    mediaType: function () {
+      console.log(this.mediaType);
+
+      switch (this.mediaType) {
+        case "image":
+          axios
+            .get("http://127.0.0.1:8000/media/data")
+            .then((res) => (this.tableList = res.data))
+            .then(() => {
+              this.tableList = this.tableList.filter((t) => t.type === "jpg");
+            });
+          break;
+        case "video":
+          axios
+            .get("http://127.0.0.1:8000/media/data")
+            .then((res) => (this.tableList = res.data))
+            .then(() => {
+              this.tableList = this.tableList.filter((t) => t.type === "mp4");
+            });
+
+          break;
+        default:
+          axios
+            .get("http://127.0.0.1:8000/media/data")
+            .then((res) => (this.tableList = res.data))
+            .then(() => this.orderByTableListId());
+      }
+    },
+  },
   computed: {
     filteredTable: function () {
       return this.tableList.filter((t) => {
@@ -359,18 +410,22 @@ export default {
       }
       return pageNumber;
     },
+    pageCountNumber() {
+      let l = this.tableList.length;
+      let pageCount = Math.ceil(l / this.pageSize);
+      return pageCount;
+    },
   },
   methods: {
     onClickIconLeftArrow() {
       this.pageNumber--;
       console.log(this.pageNumber);
+      console.log(this.pageCountNumber);
     },
     onClickIconRightArrow() {
       this.pageNumber++;
       console.log(this.pageNumber);
-    },
-    tableListPagination() {
-      this.tableList = this.tableList.slice(10, 13);
+      console.log(this.pageCountNumber);
     },
     showIdTableColumn() {
       this.idTableColumn = !this.idTableColumn;
@@ -627,15 +682,28 @@ export default {
         toDataURL(
           "/storage/uploads/" + this.tableList[i].file_name,
           (dataUrl) => {
-            docDefinition.content[4].table.body.push([
-              { text: this.tableList[i].media_id },
-              { text: Object.values(this.tableList[i].name) },
-              { text: Object.values(this.tableList[i].type) },
-              { image: dataUrl, fit: [25, 25] },
-              { text: Object.values(this.tableList[i].duration) },
-              { text: Object.values(this.tableList[i].size) },
-              { text: Object.values(this.tableList[i].file_name) },
-            ]);
+            if (this.tableList[i].type === "jpg") {
+              docDefinition.content[4].table.body.push([
+                { text: this.tableList[i].media_id },
+                { text: Object.values(this.tableList[i].name) },
+                { text: Object.values(this.tableList[i].type) },
+                { image: dataUrl, fit: [25, 25] },
+                { text: Object.values(this.tableList[i].duration) },
+                { text: Object.values(this.tableList[i].size) },
+                { text: Object.values(this.tableList[i].file_name) },
+              ]);
+            } else {
+              docDefinition.content[4].table.body.push([
+                { text: this.tableList[i].media_id },
+                { text: Object.values(this.tableList[i].name) },
+                { text: Object.values(this.tableList[i].type) },
+                { text: "" },
+                { text: Object.values(this.tableList[i].duration) },
+                { text: Object.values(this.tableList[i].size) },
+                { text: Object.values(this.tableList[i].file_name) },
+              ]);
+            }
+
             if (i === this.tableList.length - 1) {
               pdfMake.createPdf(docDefinition).open();
             }
