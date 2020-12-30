@@ -124,6 +124,9 @@
         <sui-dropdown icon="print" floating multiple>
           <sui-dropdown-menu>
             <sui-dropdown-item @click="createPDF">PDF</sui-dropdown-item>
+            <sui-dropdown-item @click="createCSV(csvData)"
+              >CSV</sui-dropdown-item
+            >
           </sui-dropdown-menu>
         </sui-dropdown>
       </div>
@@ -414,6 +417,12 @@ export default {
       let l = this.tableList.length;
       let pageCount = Math.ceil(l / this.pageSize);
       return pageCount;
+    },
+    csvData() {
+      return this.tableList.map((item) => ({
+        Name: item.name,
+        Type: item.type,
+      }));
     },
   },
   methods: {
@@ -710,6 +719,21 @@ export default {
           }
         );
       }
+    },
+    createCSV(arrData) {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += [
+        Object.keys(arrData[0]).join(";"),
+        ...arrData.map((item) => Object.values(item).join(";")),
+      ]
+        .join("\n")
+        .replace(/(^\[)|(\]$)/gm, "");
+
+      const data = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", data);
+      link.setAttribute("download", Math.floor(Math.random() * 1000) + ".csv");
+      link.click();
     },
   },
 };

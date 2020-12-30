@@ -16,7 +16,7 @@ class DisplayProfileController extends AppBaseController
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'http://192.168.1.5/xibo-cms/web/api/authorize/access_token',
+            CURLOPT_URL => 'http://192.168.1.7/xibo-cms/web/api/authorize/access_token',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -46,7 +46,7 @@ class DisplayProfileController extends AppBaseController
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'http://192.168.1.5/xibo-cms/web/api/displayprofile',
+            CURLOPT_URL => 'http://192.168.1.7/xibo-cms/web/api/displayprofile',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,

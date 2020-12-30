@@ -107640,6 +107640,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
 
 
 
@@ -107796,6 +107799,14 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       var l = this.tableList.length;
       var pageCount = Math.ceil(l / this.pageSize);
       return pageCount;
+    },
+    csvData: function csvData() {
+      return this.tableList.map(function (item) {
+        return {
+          Name: item.name,
+          Type: item.type
+        };
+      });
     }
   },
   methods: {
@@ -108073,6 +108084,18 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       for (var i = 0; i < this.tableList.length; i++) {
         _loop(i);
       }
+    },
+    createCSV: function createCSV(arrData) {
+      var csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += [Object.keys(arrData[0]).join(";")].concat(_toConsumableArray(arrData.map(function (item) {
+        return Object.values(item).join(";");
+      }))).join("\n").replace(/(^\[)|(\]$)/gm, "");
+
+      var data = encodeURI(csvContent);
+      var link = document.createElement("a");
+      link.setAttribute("href", data);
+      link.setAttribute("download", Math.floor(Math.random() * 1000) + ".csv");
+      link.click();
     }
   }
 });
@@ -110478,6 +110501,18 @@ var render = function() {
                             "sui-dropdown-item",
                             { on: { click: _vm.createPDF } },
                             [_vm._v("PDF")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "sui-dropdown-item",
+                            {
+                              on: {
+                                click: function($event) {
+                                  _vm.createCSV(_vm.csvData)
+                                }
+                              }
+                            },
+                            [_vm._v("CSV")]
                           )
                         ],
                         1
