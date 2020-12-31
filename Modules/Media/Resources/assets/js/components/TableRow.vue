@@ -15,7 +15,7 @@
           alt=""
         />
       </sui-table-cell>
-      <sui-table-cell>{{ list.tags }}</sui-table-cell>
+      <sui-table-cell v-if="tagsTableColumn">{{ list.tags }}</sui-table-cell>
       <sui-table-cell v-if="durationTableColumn">{{
         list.duration
       }}</sui-table-cell>
@@ -78,6 +78,7 @@ export default {
     typeTableColumn: Boolean,
     thumbnailTableColumn: Boolean,
     durationTableColumn: Boolean,
+    tagsTableColumn: Boolean,
     sizeTableColumn: Boolean,
     ownerTableColumn: Boolean,
     permissionTableColumn: Boolean,

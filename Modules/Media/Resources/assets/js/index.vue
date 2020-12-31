@@ -21,6 +21,7 @@
           selection
           allow-additions
           v-model="inputTagName"
+          :options="tagFilterOption"
           id="inputTags"
         />
         <sui-dropdown
@@ -76,6 +77,14 @@
               >Duration
               <i
                 v-if="durationTableColumn"
+                class="fa fa-check"
+                style="font-size: 14px"
+              ></i
+            ></sui-dropdown-item>
+            <sui-dropdown-item @click="showTagsTableColumn"
+              >Tags
+              <i
+                v-if="tagsTableColumn"
                 class="fa fa-check"
                 style="font-size: 14px"
               ></i
@@ -182,7 +191,9 @@
             <sui-table-header-cell v-if="thumbnailTableColumn"
               >Thumbnail</sui-table-header-cell
             >
-            <sui-table-header-cell>Tags</sui-table-header-cell>
+            <sui-table-header-cell v-if="tagsTableColumn"
+              >Tags</sui-table-header-cell
+            >
             <sui-table-header-cell v-if="durationTableColumn"
               >Duration</sui-table-header-cell
             >
@@ -215,11 +226,7 @@
           </sui-table-row>
         </sui-table-header>
         <TableRow
-          v-for="list in inputFilterName
-            ? filteredTableByName
-            : inputTagName
-            ? filteredTableByTag
-            : paginationTableList"
+          v-for="list in tableListComputed"
           v-bind:key="list.id"
           v-bind:list="list"
           v-bind:idTableColumn="idTableColumn"
@@ -227,6 +234,7 @@
           v-bind:typeTableColumn="typeTableColumn"
           v-bind:thumbnailTableColumn="thumbnailTableColumn"
           v-bind:durationTableColumn="durationTableColumn"
+          v-bind:tagsTableColumn="tagsTableColumn"
           v-bind:sizeTableColumn="sizeTableColumn"
           v-bind:ownerTableColumn="ownerTableColumn"
           v-bind:permissionTableColumn="permissionTableColumn"
@@ -269,7 +277,7 @@
         <sui-button
           @click="onClickIconRightArrow"
           icon="right arrow"
-          :disabled="pageNumber === pageCountNumber - 1 ? true : false"
+          :disabled="pageNumber + 1 === pageCount ? true : false"
         />
       </div>
     </div>
@@ -304,6 +312,7 @@ export default {
       typeTableColumn: false,
       thumbnailTableColumn: true,
       durationTableColumn: true,
+      tagsTableColumn: false,
       sizeTableColumn: true,
       ownerTableColumn: true,
       permissionTableColumn: true,
@@ -311,7 +320,7 @@ export default {
       createdTableColumn: false,
       updatedTableColumn: false,
       // Data from database
-      tableList: null,
+      tableList: {},
       // Show Modal
       modal: false,
       // Sorting table
@@ -323,8 +332,10 @@ export default {
       tableListSizeASC: true,
       // filter
       inputFilterName: "",
-      inputTagName: "",
+      inputFilterNameActive: true,
+      inputTagName: [],
       mediaType: "all",
+      mediaTypeActive: true,
       mediaTypeOption: [
         {
           text: "All",
@@ -343,12 +354,14 @@ export default {
           value: "video",
         },
       ],
+      tagFilterOption: [],
       // table Row
       isActiveTableRow: [],
       isActiveProp: false,
       // pagination
       pageNumber: 0,
       pageSize: 25,
+      pageCount: [],
       pageOption: [
         {
           text: "5",
@@ -375,42 +388,154 @@ export default {
   },
   watch: {
     pageSize: function () {
-      console.log(this.pageSize);
       this.pageNumber = 0;
     },
     mediaType: function () {
       console.log(this.mediaType);
 
-      switch (this.mediaType) {
-        case "image":
-          axios
-            .get("http://127.0.0.1:8000/media/data")
-            .then((res) => (this.tableList = res.data))
-            .then(() => {
-              this.tableList = this.tableList.filter((t) => t.type === "jpg");
-            });
-          break;
-        case "video":
-          axios
-            .get("http://127.0.0.1:8000/media/data")
-            .then((res) => (this.tableList = res.data))
-            .then(() => {
-              this.tableList = this.tableList.filter((t) => t.type === "mp4");
-            });
+      // switch (this.mediaType) {
+      //   case "image":
+      //     let mediaTypeArray = _.filter(this.tableList, ["type", "jpg"]);
+      //     this.tableList = mediaTypeArray;
+      //     break;
+      //   default:
+      //     this.tableList;
+      // }
 
-          break;
-        default:
-          axios
-            .get("http://127.0.0.1:8000/media/data")
-            .then((res) => (this.tableList = res.data))
-            .then(() => this.orderByTableListId());
+      // switch (this.mediaType) {
+      //   case "image":
+      //     axios
+      //       .get("http://127.0.0.1:8000/media/data")
+      //       .then((res) => (this.tableList = res.data))
+      //       .then(() => {
+      //         this.tableList = this.tableList.filter((t) => t.type === "jpg");
+      //       });
+      //     break;
+      //   case "video":
+      //     axios
+      //       .get("http://127.0.0.1:8000/media/data")
+      //       .then((res) => (this.tableList = res.data))
+      //       .then(() => {
+      //         this.tableList = this.tableList.filter((t) => t.type === "mp4");
+      //       });
+
+      //     break;
+      //   default:
+      //     axios
+      //       .get("http://127.0.0.1:8000/media/data")
+      //       .then((res) => (this.tableList = res.data))
+      //       .then(() => this.orderByTableListId());
+      // }
+    },
+    inputTagName: function () {
+      console.log(this.inputTagName);
+    },
+    pageNumber: function () {
+      console.log(this.pageNumber + "Page number");
+    },
+    inputFilterName: function () {
+      if (this.inputFilterName === "") {
+        this.inputFilterNameActive = true;
       }
     },
-    tableList: function () {
-      console.log(this.tableList);
+    mediaType: function () {
+      this.mediaTypeActive = true;
     },
   },
   computed: {
+    tableListComputed() {
+      let originalTableList = this.tableList;
+      let mediaTypeArray;
+      let arrayOfTags = [];
+
+      if (originalTableList.length > 0) {
+        originalTableList.map((o) => {
+          if (o.tags) {
+            let arrayTags = o.tags.split(",");
+            arrayTags.map((arr) => {
+              if (_.indexOf(arrayOfTags, arr) < 0) {
+                arrayOfTags.push({
+                  text: arr,
+                  value: arr,
+                });
+              }
+            });
+          }
+        });
+
+        this.tagFilterOption = _.uniqWith(arrayOfTags, _.isEqual);
+      }
+
+      console.log(this.inputTagName);
+
+      if (this.inputTagName.length > 0) {
+        let newOriginalArray = [];
+        originalTableList.map((or) => {
+          let tableTagArray = or.tags.split(",");
+          tableTagArray.map((tabTagAr) => {
+            this.inputTagName.map((inTagName) => {
+              if (tabTagAr === inTagName) {
+                newOriginalArray.push(or);
+              }
+            });
+          });
+        });
+
+        originalTableList = _.uniqWith(newOriginalArray, _.isEqual);
+      }
+
+      // if (this.inputTagName) {
+      //   originalTableList = originalTableList.filter((t) => {
+      //     return t.name.match(this.inputFilterName);
+      //   });
+      // }
+
+      switch (this.mediaType) {
+        case "image":
+          if (this.mediaTypeActive) {
+            this.pageNumber = 0;
+          }
+          this.mediaTypeActive = false;
+          mediaTypeArray = _.filter(this.tableList, ["type", "jpg"]);
+          originalTableList = mediaTypeArray;
+          break;
+        case "video":
+          if (this.mediaTypeActive) {
+            this.pageNumber = 0;
+          }
+          this.mediaTypeActive = false;
+          mediaTypeArray = _.filter(this.tableList, ["type", "mp4"]);
+          originalTableList = mediaTypeArray;
+          break;
+        default:
+          originalTableList;
+      }
+
+      if (this.inputFilterName) {
+        if (this.inputFilterNameActive) {
+          this.pageNumber = 0;
+        }
+        this.inputFilterNameActive = false;
+        originalTableList = originalTableList.filter((t) => {
+          return t.name.match(this.inputFilterName);
+        });
+      }
+
+      const start = this.pageNumber * this.pageSize;
+      const end = start + this.pageSize;
+
+      let tableLength = this.tableList.length > 0 && originalTableList.length;
+
+      let count = Math.ceil(tableLength / this.pageSize);
+
+      this.pageCount = count;
+
+      if (this.tableList.length > 0) {
+        originalTableList = originalTableList.slice(start, end);
+      }
+
+      return originalTableList;
+    },
     filteredTableByName: function () {
       return this.tableList.filter((t) => {
         return t.name.match(this.inputFilterName);
@@ -418,28 +543,8 @@ export default {
     },
     filteredTableByTag: function () {
       return this.tableList.filter((t) => {
-        return t.name.match(this.inputTagName);
+        return t.tags.includes(this.inputTagName);
       });
-    },
-    paginationTableList: function () {
-      const start = this.pageNumber * this.pageSize,
-        end = start + this.pageSize;
-      let newTableList = this.tableList.slice(start, end);
-      return newTableList;
-    },
-    pageCount() {
-      let l = this.tableList.length;
-      let pageCount = Math.ceil(l / this.pageSize);
-      let pageNumber = [];
-      for (let i = 1; pageCount - i >= 0; i++) {
-        pageNumber.push(i);
-      }
-      return pageNumber;
-    },
-    pageCountNumber() {
-      let l = this.tableList.length;
-      let pageCount = Math.ceil(l / this.pageSize);
-      return pageCount;
     },
     csvData() {
       return this.tableList.map((item) => ({
@@ -452,12 +557,10 @@ export default {
     onClickIconLeftArrow() {
       this.pageNumber--;
       console.log(this.pageNumber);
-      console.log(this.pageCountNumber);
     },
     onClickIconRightArrow() {
       this.pageNumber++;
       console.log(this.pageNumber);
-      console.log(this.pageCountNumber);
     },
     showIdTableColumn() {
       this.idTableColumn = !this.idTableColumn;
@@ -473,6 +576,9 @@ export default {
     },
     showDurationTableColumn() {
       this.durationTableColumn = !this.durationTableColumn;
+    },
+    showTagsTableColumn() {
+      this.tagsTableColumn = !this.tagsTableColumn;
     },
     showSizeTableColumn() {
       this.sizeTableColumn = !this.sizeTableColumn;

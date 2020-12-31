@@ -30864,239 +30864,11 @@ module.exports = function(module) {
 /* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/*
-  MIT License http://www.opensource.org/licenses/mit-license.php
-  Author Tobias Koppers @sokra
-  Modified by Evan You @yyx990803
-*/
-
-var hasDocument = typeof document !== 'undefined'
-
-if (typeof DEBUG !== 'undefined' && DEBUG) {
-  if (!hasDocument) {
-    throw new Error(
-    'vue-style-loader cannot be used in a non-browser environment. ' +
-    "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
-  ) }
-}
-
-var listToStyles = __webpack_require__(55)
-
-/*
-type StyleObject = {
-  id: number;
-  parts: Array<StyleObjectPart>
-}
-
-type StyleObjectPart = {
-  css: string;
-  media: string;
-  sourceMap: ?string
-}
-*/
-
-var stylesInDom = {/*
-  [id: number]: {
-    id: number,
-    refs: number,
-    parts: Array<(obj?: StyleObjectPart) => void>
-  }
-*/}
-
-var head = hasDocument && (document.head || document.getElementsByTagName('head')[0])
-var singletonElement = null
-var singletonCounter = 0
-var isProduction = false
-var noop = function () {}
-var options = null
-var ssrIdKey = 'data-vue-ssr-id'
-
-// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-// tags it will allow on a page
-var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\b/.test(navigator.userAgent.toLowerCase())
-
-module.exports = function (parentId, list, _isProduction, _options) {
-  isProduction = _isProduction
-
-  options = _options || {}
-
-  var styles = listToStyles(parentId, list)
-  addStylesToDom(styles)
-
-  return function update (newList) {
-    var mayRemove = []
-    for (var i = 0; i < styles.length; i++) {
-      var item = styles[i]
-      var domStyle = stylesInDom[item.id]
-      domStyle.refs--
-      mayRemove.push(domStyle)
-    }
-    if (newList) {
-      styles = listToStyles(parentId, newList)
-      addStylesToDom(styles)
-    } else {
-      styles = []
-    }
-    for (var i = 0; i < mayRemove.length; i++) {
-      var domStyle = mayRemove[i]
-      if (domStyle.refs === 0) {
-        for (var j = 0; j < domStyle.parts.length; j++) {
-          domStyle.parts[j]()
-        }
-        delete stylesInDom[domStyle.id]
-      }
-    }
-  }
-}
-
-function addStylesToDom (styles /* Array<StyleObject> */) {
-  for (var i = 0; i < styles.length; i++) {
-    var item = styles[i]
-    var domStyle = stylesInDom[item.id]
-    if (domStyle) {
-      domStyle.refs++
-      for (var j = 0; j < domStyle.parts.length; j++) {
-        domStyle.parts[j](item.parts[j])
-      }
-      for (; j < item.parts.length; j++) {
-        domStyle.parts.push(addStyle(item.parts[j]))
-      }
-      if (domStyle.parts.length > item.parts.length) {
-        domStyle.parts.length = item.parts.length
-      }
-    } else {
-      var parts = []
-      for (var j = 0; j < item.parts.length; j++) {
-        parts.push(addStyle(item.parts[j]))
-      }
-      stylesInDom[item.id] = { id: item.id, refs: 1, parts: parts }
-    }
-  }
-}
-
-function createStyleElement () {
-  var styleElement = document.createElement('style')
-  styleElement.type = 'text/css'
-  head.appendChild(styleElement)
-  return styleElement
-}
-
-function addStyle (obj /* StyleObjectPart */) {
-  var update, remove
-  var styleElement = document.querySelector('style[' + ssrIdKey + '~="' + obj.id + '"]')
-
-  if (styleElement) {
-    if (isProduction) {
-      // has SSR styles and in production mode.
-      // simply do nothing.
-      return noop
-    } else {
-      // has SSR styles but in dev mode.
-      // for some reason Chrome can't handle source map in server-rendered
-      // style tags - source maps in <style> only works if the style tag is
-      // created and inserted dynamically. So we remove the server rendered
-      // styles and inject new ones.
-      styleElement.parentNode.removeChild(styleElement)
-    }
-  }
-
-  if (isOldIE) {
-    // use singleton mode for IE9.
-    var styleIndex = singletonCounter++
-    styleElement = singletonElement || (singletonElement = createStyleElement())
-    update = applyToSingletonTag.bind(null, styleElement, styleIndex, false)
-    remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true)
-  } else {
-    // use multi-style-tag mode in all other cases
-    styleElement = createStyleElement()
-    update = applyToTag.bind(null, styleElement)
-    remove = function () {
-      styleElement.parentNode.removeChild(styleElement)
-    }
-  }
-
-  update(obj)
-
-  return function updateStyle (newObj /* StyleObjectPart */) {
-    if (newObj) {
-      if (newObj.css === obj.css &&
-          newObj.media === obj.media &&
-          newObj.sourceMap === obj.sourceMap) {
-        return
-      }
-      update(obj = newObj)
-    } else {
-      remove()
-    }
-  }
-}
-
-var replaceText = (function () {
-  var textStore = []
-
-  return function (index, replacement) {
-    textStore[index] = replacement
-    return textStore.filter(Boolean).join('\n')
-  }
-})()
-
-function applyToSingletonTag (styleElement, index, remove, obj) {
-  var css = remove ? '' : obj.css
-
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = replaceText(index, css)
-  } else {
-    var cssNode = document.createTextNode(css)
-    var childNodes = styleElement.childNodes
-    if (childNodes[index]) styleElement.removeChild(childNodes[index])
-    if (childNodes.length) {
-      styleElement.insertBefore(cssNode, childNodes[index])
-    } else {
-      styleElement.appendChild(cssNode)
-    }
-  }
-}
-
-function applyToTag (styleElement, obj) {
-  var css = obj.css
-  var media = obj.media
-  var sourceMap = obj.sourceMap
-
-  if (media) {
-    styleElement.setAttribute('media', media)
-  }
-  if (options.ssrId) {
-    styleElement.setAttribute(ssrIdKey, obj.id)
-  }
-
-  if (sourceMap) {
-    // https://developer.chrome.com/devtools/docs/javascript-debugging
-    // this makes source maps inside style tags work properly in Chrome
-    css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */'
-    // http://stackoverflow.com/a/26603875
-    css += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + ' */'
-  }
-
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = css
-  } else {
-    while (styleElement.firstChild) {
-      styleElement.removeChild(styleElement.firstChild)
-    }
-    styleElement.appendChild(document.createTextNode(css))
-  }
-}
+module.exports = __webpack_require__(54);
 
 
 /***/ }),
 /* 40 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(57);
-
-
-/***/ }),
-/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(setImmediate) {/*! pdfmake v0.1.68, @license MIT, @link http://pdfmake.org */
@@ -107186,15 +106958,15 @@ module.exports = function () {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10).setImmediate))
 
 /***/ }),
-/* 42 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(11)
 /* script */
-var __vue_script__ = __webpack_require__(56)
+var __vue_script__ = __webpack_require__(53)
 /* template */
-var __vue_template__ = __webpack_require__(147)
+var __vue_template__ = __webpack_require__(78)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -107233,6 +107005,234 @@ module.exports = Component.exports
 
 
 /***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
+  Modified by Evan You @yyx990803
+*/
+
+var hasDocument = typeof document !== 'undefined'
+
+if (typeof DEBUG !== 'undefined' && DEBUG) {
+  if (!hasDocument) {
+    throw new Error(
+    'vue-style-loader cannot be used in a non-browser environment. ' +
+    "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
+  ) }
+}
+
+var listToStyles = __webpack_require__(59)
+
+/*
+type StyleObject = {
+  id: number;
+  parts: Array<StyleObjectPart>
+}
+
+type StyleObjectPart = {
+  css: string;
+  media: string;
+  sourceMap: ?string
+}
+*/
+
+var stylesInDom = {/*
+  [id: number]: {
+    id: number,
+    refs: number,
+    parts: Array<(obj?: StyleObjectPart) => void>
+  }
+*/}
+
+var head = hasDocument && (document.head || document.getElementsByTagName('head')[0])
+var singletonElement = null
+var singletonCounter = 0
+var isProduction = false
+var noop = function () {}
+var options = null
+var ssrIdKey = 'data-vue-ssr-id'
+
+// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+// tags it will allow on a page
+var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\b/.test(navigator.userAgent.toLowerCase())
+
+module.exports = function (parentId, list, _isProduction, _options) {
+  isProduction = _isProduction
+
+  options = _options || {}
+
+  var styles = listToStyles(parentId, list)
+  addStylesToDom(styles)
+
+  return function update (newList) {
+    var mayRemove = []
+    for (var i = 0; i < styles.length; i++) {
+      var item = styles[i]
+      var domStyle = stylesInDom[item.id]
+      domStyle.refs--
+      mayRemove.push(domStyle)
+    }
+    if (newList) {
+      styles = listToStyles(parentId, newList)
+      addStylesToDom(styles)
+    } else {
+      styles = []
+    }
+    for (var i = 0; i < mayRemove.length; i++) {
+      var domStyle = mayRemove[i]
+      if (domStyle.refs === 0) {
+        for (var j = 0; j < domStyle.parts.length; j++) {
+          domStyle.parts[j]()
+        }
+        delete stylesInDom[domStyle.id]
+      }
+    }
+  }
+}
+
+function addStylesToDom (styles /* Array<StyleObject> */) {
+  for (var i = 0; i < styles.length; i++) {
+    var item = styles[i]
+    var domStyle = stylesInDom[item.id]
+    if (domStyle) {
+      domStyle.refs++
+      for (var j = 0; j < domStyle.parts.length; j++) {
+        domStyle.parts[j](item.parts[j])
+      }
+      for (; j < item.parts.length; j++) {
+        domStyle.parts.push(addStyle(item.parts[j]))
+      }
+      if (domStyle.parts.length > item.parts.length) {
+        domStyle.parts.length = item.parts.length
+      }
+    } else {
+      var parts = []
+      for (var j = 0; j < item.parts.length; j++) {
+        parts.push(addStyle(item.parts[j]))
+      }
+      stylesInDom[item.id] = { id: item.id, refs: 1, parts: parts }
+    }
+  }
+}
+
+function createStyleElement () {
+  var styleElement = document.createElement('style')
+  styleElement.type = 'text/css'
+  head.appendChild(styleElement)
+  return styleElement
+}
+
+function addStyle (obj /* StyleObjectPart */) {
+  var update, remove
+  var styleElement = document.querySelector('style[' + ssrIdKey + '~="' + obj.id + '"]')
+
+  if (styleElement) {
+    if (isProduction) {
+      // has SSR styles and in production mode.
+      // simply do nothing.
+      return noop
+    } else {
+      // has SSR styles but in dev mode.
+      // for some reason Chrome can't handle source map in server-rendered
+      // style tags - source maps in <style> only works if the style tag is
+      // created and inserted dynamically. So we remove the server rendered
+      // styles and inject new ones.
+      styleElement.parentNode.removeChild(styleElement)
+    }
+  }
+
+  if (isOldIE) {
+    // use singleton mode for IE9.
+    var styleIndex = singletonCounter++
+    styleElement = singletonElement || (singletonElement = createStyleElement())
+    update = applyToSingletonTag.bind(null, styleElement, styleIndex, false)
+    remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true)
+  } else {
+    // use multi-style-tag mode in all other cases
+    styleElement = createStyleElement()
+    update = applyToTag.bind(null, styleElement)
+    remove = function () {
+      styleElement.parentNode.removeChild(styleElement)
+    }
+  }
+
+  update(obj)
+
+  return function updateStyle (newObj /* StyleObjectPart */) {
+    if (newObj) {
+      if (newObj.css === obj.css &&
+          newObj.media === obj.media &&
+          newObj.sourceMap === obj.sourceMap) {
+        return
+      }
+      update(obj = newObj)
+    } else {
+      remove()
+    }
+  }
+}
+
+var replaceText = (function () {
+  var textStore = []
+
+  return function (index, replacement) {
+    textStore[index] = replacement
+    return textStore.filter(Boolean).join('\n')
+  }
+})()
+
+function applyToSingletonTag (styleElement, index, remove, obj) {
+  var css = remove ? '' : obj.css
+
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = replaceText(index, css)
+  } else {
+    var cssNode = document.createTextNode(css)
+    var childNodes = styleElement.childNodes
+    if (childNodes[index]) styleElement.removeChild(childNodes[index])
+    if (childNodes.length) {
+      styleElement.insertBefore(cssNode, childNodes[index])
+    } else {
+      styleElement.appendChild(cssNode)
+    }
+  }
+}
+
+function applyToTag (styleElement, obj) {
+  var css = obj.css
+  var media = obj.media
+  var sourceMap = obj.sourceMap
+
+  if (media) {
+    styleElement.setAttribute('media', media)
+  }
+  if (options.ssrId) {
+    styleElement.setAttribute(ssrIdKey, obj.id)
+  }
+
+  if (sourceMap) {
+    // https://developer.chrome.com/devtools/docs/javascript-debugging
+    // this makes source maps inside style tags work properly in Chrome
+    css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */'
+    // http://stackoverflow.com/a/26603875
+    css += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + ' */'
+  }
+
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = css
+  } else {
+    while (styleElement.firstChild) {
+      styleElement.removeChild(styleElement.firstChild)
+    }
+    styleElement.appendChild(document.createTextNode(css))
+  }
+}
+
+
+/***/ }),
 /* 43 */,
 /* 44 */,
 /* 45 */,
@@ -107253,7 +107253,7 @@ module.exports = __webpack_require__(52);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_vue__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_vue__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue__ = __webpack_require__(35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue__);
@@ -107263,7 +107263,7 @@ window.Vue = __webpack_require__(14);
 
 
 
-Vue.component('index', __webpack_require__(42).default);
+Vue.component('index', __webpack_require__(41).default);
 
 Vue.use(__WEBPACK_IMPORTED_MODULE_1_semantic_ui_vue___default.a);
 
@@ -107275,47 +107275,12 @@ var app = new Vue({
 });
 
 /***/ }),
-/* 53 */,
-/* 54 */,
-/* 55 */
-/***/ (function(module, exports) {
-
-/**
- * Translates the list format produced by css-loader into something
- * easier to manipulate.
- */
-module.exports = function listToStyles (parentId, list) {
-  var styles = []
-  var newStyles = {}
-  for (var i = 0; i < list.length; i++) {
-    var item = list[i]
-    var id = item[0]
-    var css = item[1]
-    var media = item[2]
-    var sourceMap = item[3]
-    var part = {
-      id: parentId + ':' + i,
-      css: css,
-      media: media,
-      sourceMap: sourceMap
-    }
-    if (!newStyles[id]) {
-      styles.push(newStyles[id] = { id: id, parts: [part] })
-    } else {
-      newStyles[id].parts.push(part)
-    }
-  }
-  return styles
-}
-
-
-/***/ }),
-/* 56 */
+/* 53 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
@@ -107323,13 +107288,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_sweetalert___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_sweetalert__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_lodash__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_pdfmake__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_pdfmake__ = __webpack_require__(40);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_pdfmake___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_pdfmake__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_Modal__ = __webpack_require__(59);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_Modal__ = __webpack_require__(56);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_Modal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__components_Modal__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_TableRow__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_TableRow__ = __webpack_require__(64);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_TableRow___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__components_TableRow__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__css_index_css__ = __webpack_require__(78);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__css_index_css__ = __webpack_require__(76);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__css_index_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__css_index_css__);
 
 
@@ -107337,6 +107302,16 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -107647,6 +107622,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       typeTableColumn: false,
       thumbnailTableColumn: true,
       durationTableColumn: true,
+      tagsTableColumn: false,
       sizeTableColumn: true,
       ownerTableColumn: true,
       permissionTableColumn: true,
@@ -107654,7 +107630,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       createdTableColumn: false,
       updatedTableColumn: false,
       // Data from database
-      tableList: null,
+      tableList: {},
       // Show Modal
       modal: false,
       // Sorting table
@@ -107666,8 +107642,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       tableListSizeASC: true,
       // filter
       inputFilterName: "",
-      inputTagName: "",
+      inputFilterNameActive: true,
+      inputTagName: [],
       mediaType: "all",
+      mediaTypeActive: true,
       mediaTypeOption: [{
         text: "All",
         value: "all"
@@ -107681,12 +107659,14 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         text: "Video",
         value: "video"
       }],
+      tagFilterOption: [],
       // table Row
       isActiveTableRow: [],
       isActiveProp: false,
       // pagination
       pageNumber: 0,
       pageSize: 25,
+      pageCount: [],
       pageOption: [{
         text: "5",
         value: 5
@@ -107706,49 +107686,158 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     };
   },
 
-  watch: {
+  watch: _defineProperty({
     pageSize: function pageSize() {
-      console.log(this.pageSize);
       this.pageNumber = 0;
     },
     mediaType: function mediaType() {
+      console.log(this.mediaType);
+
+      // switch (this.mediaType) {
+      //   case "image":
+      //     let mediaTypeArray = _.filter(this.tableList, ["type", "jpg"]);
+      //     this.tableList = mediaTypeArray;
+      //     break;
+      //   default:
+      //     this.tableList;
+      // }
+
+      // switch (this.mediaType) {
+      //   case "image":
+      //     axios
+      //       .get("http://127.0.0.1:8000/media/data")
+      //       .then((res) => (this.tableList = res.data))
+      //       .then(() => {
+      //         this.tableList = this.tableList.filter((t) => t.type === "jpg");
+      //       });
+      //     break;
+      //   case "video":
+      //     axios
+      //       .get("http://127.0.0.1:8000/media/data")
+      //       .then((res) => (this.tableList = res.data))
+      //       .then(() => {
+      //         this.tableList = this.tableList.filter((t) => t.type === "mp4");
+      //       });
+
+      //     break;
+      //   default:
+      //     axios
+      //       .get("http://127.0.0.1:8000/media/data")
+      //       .then((res) => (this.tableList = res.data))
+      //       .then(() => this.orderByTableListId());
+      // }
+    },
+    inputTagName: function inputTagName() {
+      console.log(this.inputTagName);
+    },
+    pageNumber: function pageNumber() {
+      console.log(this.pageNumber + "Page number");
+    },
+    inputFilterName: function inputFilterName() {
+      if (this.inputFilterName === "") {
+        this.inputFilterNameActive = true;
+      }
+    }
+  }, "mediaType", function mediaType() {
+    this.mediaTypeActive = true;
+  }),
+  computed: {
+    tableListComputed: function tableListComputed() {
       var _this2 = this;
 
-      console.log(this.mediaType);
+      var originalTableList = this.tableList;
+      var mediaTypeArray = void 0;
+      var arrayOfTags = [];
+
+      if (originalTableList.length > 0) {
+        originalTableList.map(function (o) {
+          if (o.tags) {
+            var arrayTags = o.tags.split(",");
+            arrayTags.map(function (arr) {
+              if (__WEBPACK_IMPORTED_MODULE_3_lodash___default.a.indexOf(arrayOfTags, arr) < 0) {
+                arrayOfTags.push({
+                  text: arr,
+                  value: arr
+                });
+              }
+            });
+          }
+        });
+
+        this.tagFilterOption = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.uniqWith(arrayOfTags, __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.isEqual);
+      }
+
+      console.log(this.inputTagName);
+
+      if (this.inputTagName.length > 0) {
+        var newOriginalArray = [];
+        originalTableList.map(function (or) {
+          var tableTagArray = or.tags.split(",");
+          tableTagArray.map(function (tabTagAr) {
+            _this2.inputTagName.map(function (inTagName) {
+              if (tabTagAr === inTagName) {
+                newOriginalArray.push(or);
+              }
+            });
+          });
+        });
+
+        originalTableList = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.uniqWith(newOriginalArray, __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.isEqual);
+      }
+
+      // if (this.inputTagName) {
+      //   originalTableList = originalTableList.filter((t) => {
+      //     return t.name.match(this.inputFilterName);
+      //   });
+      // }
 
       switch (this.mediaType) {
         case "image":
-          __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
-            return _this2.tableList = res.data;
-          }).then(function () {
-            _this2.tableList = _this2.tableList.filter(function (t) {
-              return t.type === "jpg";
-            });
-          });
+          if (this.mediaTypeActive) {
+            this.pageNumber = 0;
+          }
+          this.mediaTypeActive = false;
+          mediaTypeArray = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.filter(this.tableList, ["type", "jpg"]);
+          originalTableList = mediaTypeArray;
           break;
         case "video":
-          __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
-            return _this2.tableList = res.data;
-          }).then(function () {
-            _this2.tableList = _this2.tableList.filter(function (t) {
-              return t.type === "mp4";
-            });
-          });
-
+          if (this.mediaTypeActive) {
+            this.pageNumber = 0;
+          }
+          this.mediaTypeActive = false;
+          mediaTypeArray = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.filter(this.tableList, ["type", "mp4"]);
+          originalTableList = mediaTypeArray;
           break;
         default:
-          __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
-            return _this2.tableList = res.data;
-          }).then(function () {
-            return _this2.orderByTableListId();
-          });
+          originalTableList;
       }
+
+      if (this.inputFilterName) {
+        if (this.inputFilterNameActive) {
+          this.pageNumber = 0;
+        }
+        this.inputFilterNameActive = false;
+        originalTableList = originalTableList.filter(function (t) {
+          return t.name.match(_this2.inputFilterName);
+        });
+      }
+
+      var start = this.pageNumber * this.pageSize;
+      var end = start + this.pageSize;
+
+      var tableLength = this.tableList.length > 0 && originalTableList.length;
+
+      var count = Math.ceil(tableLength / this.pageSize);
+
+      this.pageCount = count;
+
+      if (this.tableList.length > 0) {
+        originalTableList = originalTableList.slice(start, end);
+      }
+
+      return originalTableList;
     },
-    tableList: function tableList() {
-      console.log(this.tableList);
-    }
-  },
-  computed: {
+
     filteredTableByName: function filteredTableByName() {
       var _this3 = this;
 
@@ -107760,28 +107849,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       var _this4 = this;
 
       return this.tableList.filter(function (t) {
-        return t.name.match(_this4.inputTagName);
+        return t.tags.includes(_this4.inputTagName);
       });
-    },
-    paginationTableList: function paginationTableList() {
-      var start = this.pageNumber * this.pageSize,
-          end = start + this.pageSize;
-      var newTableList = this.tableList.slice(start, end);
-      return newTableList;
-    },
-    pageCount: function pageCount() {
-      var l = this.tableList.length;
-      var pageCount = Math.ceil(l / this.pageSize);
-      var pageNumber = [];
-      for (var i = 1; pageCount - i >= 0; i++) {
-        pageNumber.push(i);
-      }
-      return pageNumber;
-    },
-    pageCountNumber: function pageCountNumber() {
-      var l = this.tableList.length;
-      var pageCount = Math.ceil(l / this.pageSize);
-      return pageCount;
     },
     csvData: function csvData() {
       return this.tableList.map(function (item) {
@@ -107796,12 +107865,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     onClickIconLeftArrow: function onClickIconLeftArrow() {
       this.pageNumber--;
       console.log(this.pageNumber);
-      console.log(this.pageCountNumber);
     },
     onClickIconRightArrow: function onClickIconRightArrow() {
       this.pageNumber++;
       console.log(this.pageNumber);
-      console.log(this.pageCountNumber);
     },
     showIdTableColumn: function showIdTableColumn() {
       this.idTableColumn = !this.idTableColumn;
@@ -107817,6 +107884,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     },
     showDurationTableColumn: function showDurationTableColumn() {
       this.durationTableColumn = !this.durationTableColumn;
+    },
+    showTagsTableColumn: function showTagsTableColumn() {
+      this.tagsTableColumn = !this.tagsTableColumn;
     },
     showSizeTableColumn: function showSizeTableColumn() {
       this.sizeTableColumn = !this.sizeTableColumn;
@@ -108084,7 +108154,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 });
 
 /***/ }),
-/* 57 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -108109,7 +108179,7 @@ var oldRuntime = hadRuntime && g.regeneratorRuntime;
 // Force reevalutation of runtime.js.
 g.regeneratorRuntime = undefined;
 
-module.exports = __webpack_require__(58);
+module.exports = __webpack_require__(55);
 
 if (hadRuntime) {
   // Restore the original runtime.
@@ -108125,7 +108195,7 @@ if (hadRuntime) {
 
 
 /***/ }),
-/* 58 */
+/* 55 */
 /***/ (function(module, exports) {
 
 /**
@@ -108858,19 +108928,19 @@ if (hadRuntime) {
 
 
 /***/ }),
-/* 59 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(60)
+  __webpack_require__(57)
 }
 var normalizeComponent = __webpack_require__(11)
 /* script */
-var __vue_script__ = __webpack_require__(62)
+var __vue_script__ = __webpack_require__(60)
 /* template */
-var __vue_template__ = __webpack_require__(65)
+var __vue_template__ = __webpack_require__(63)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -108909,17 +108979,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 60 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(61);
+var content = __webpack_require__(58);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(39)("4ebf569e", content, false, {});
+var update = __webpack_require__(42)("4ebf569e", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -108935,7 +109005,7 @@ if(false) {
 }
 
 /***/ }),
-/* 61 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(3)(false);
@@ -108949,16 +109019,49 @@ exports.push([module.i, "\ni.icon[data-v-07d562b3] {\r\n  height: auto !importan
 
 
 /***/ }),
-/* 62 */
+/* 59 */
+/***/ (function(module, exports) {
+
+/**
+ * Translates the list format produced by css-loader into something
+ * easier to manipulate.
+ */
+module.exports = function listToStyles (parentId, list) {
+  var styles = []
+  var newStyles = {}
+  for (var i = 0; i < list.length; i++) {
+    var item = list[i]
+    var id = item[0]
+    var css = item[1]
+    var media = item[2]
+    var sourceMap = item[3]
+    var part = {
+      id: parentId + ':' + i,
+      css: css,
+      media: media,
+      sourceMap: sourceMap
+    }
+    if (!newStyles[id]) {
+      styles.push(newStyles[id] = { id: id, parts: [part] })
+    } else {
+      newStyles[id].parts.push(part)
+    }
+  }
+  return styles
+}
+
+
+/***/ }),
+/* 60 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__css_modal_css__ = __webpack_require__(63);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__css_modal_css__ = __webpack_require__(61);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__css_modal_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__css_modal_css__);
 
 
@@ -109137,13 +109240,13 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 });
 
 /***/ }),
-/* 63 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(64);
+var content = __webpack_require__(62);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -109168,7 +109271,7 @@ if(false) {
 }
 
 /***/ }),
-/* 64 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(3)(false);
@@ -109182,7 +109285,7 @@ exports.push([module.i, ".my-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  le
 
 
 /***/ }),
-/* 65 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -109340,15 +109443,15 @@ if (false) {
 }
 
 /***/ }),
-/* 66 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(11)
 /* script */
-var __vue_script__ = __webpack_require__(67)
+var __vue_script__ = __webpack_require__(65)
 /* template */
-var __vue_template__ = __webpack_require__(77)
+var __vue_template__ = __webpack_require__(75)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -109387,12 +109490,12 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 67 */
+/* 65 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
@@ -109400,9 +109503,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_lodash__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_sweetalert__ = __webpack_require__(37);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_sweetalert___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_sweetalert__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__EditTableRow__ = __webpack_require__(68);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__EditTableRow__ = __webpack_require__(66);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__EditTableRow___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__EditTableRow__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__css_table_row_css__ = __webpack_require__(75);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__css_table_row_css__ = __webpack_require__(73);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__css_table_row_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__css_table_row_css__);
 
 
@@ -109488,6 +109591,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
     typeTableColumn: Boolean,
     thumbnailTableColumn: Boolean,
     durationTableColumn: Boolean,
+    tagsTableColumn: Boolean,
     sizeTableColumn: Boolean,
     ownerTableColumn: Boolean,
     permissionTableColumn: Boolean,
@@ -109583,19 +109687,19 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 });
 
 /***/ }),
-/* 68 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(69)
+  __webpack_require__(67)
 }
 var normalizeComponent = __webpack_require__(11)
 /* script */
-var __vue_script__ = __webpack_require__(71)
+var __vue_script__ = __webpack_require__(69)
 /* template */
-var __vue_template__ = __webpack_require__(74)
+var __vue_template__ = __webpack_require__(72)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -109634,17 +109738,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 69 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(70);
+var content = __webpack_require__(68);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(39)("32b7f48a", content, false, {});
+var update = __webpack_require__(42)("32b7f48a", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -109660,7 +109764,7 @@ if(false) {
 }
 
 /***/ }),
-/* 70 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(3)(false);
@@ -109674,14 +109778,14 @@ exports.push([module.i, "\ni.icon[data-v-5a66e180] {\r\n  margin: 0 !important;\
 
 
 /***/ }),
-/* 71 */
+/* 69 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_edit_table_modal_css__ = __webpack_require__(72);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_edit_table_modal_css__ = __webpack_require__(70);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_edit_table_modal_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__css_edit_table_modal_css__);
 //
 //
@@ -109788,13 +109892,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 72 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(73);
+var content = __webpack_require__(71);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -109819,7 +109923,7 @@ if(false) {
 }
 
 /***/ }),
-/* 73 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(3)(false);
@@ -109833,7 +109937,7 @@ exports.push([module.i, ".edit-table-modal {\n  top: 0;\n  bottom: 0;\n  right: 
 
 
 /***/ }),
-/* 74 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -109994,13 +110098,13 @@ if (false) {
 }
 
 /***/ }),
-/* 75 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(76);
+var content = __webpack_require__(74);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -110025,7 +110129,7 @@ if(false) {
 }
 
 /***/ }),
-/* 76 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(3)(false);
@@ -110039,7 +110143,7 @@ exports.push([module.i, ".swal-button--Delete {\n  background-color: #d9534f;\n}
 
 
 /***/ }),
-/* 77 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -110085,7 +110189,9 @@ var render = function() {
                   ])
                 : _vm._e(),
               _vm._v(" "),
-              _c("sui-table-cell", [_vm._v(_vm._s(_vm.list.tags))]),
+              _vm.tagsTableColumn
+                ? _c("sui-table-cell", [_vm._v(_vm._s(_vm.list.tags))])
+                : _vm._e(),
               _vm._v(" "),
               _vm.durationTableColumn
                 ? _c("sui-table-cell", [_vm._v(_vm._s(_vm.list.duration))])
@@ -110174,13 +110280,13 @@ if (false) {
 }
 
 /***/ }),
-/* 78 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(79);
+var content = __webpack_require__(77);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -110205,7 +110311,7 @@ if(false) {
 }
 
 /***/ }),
-/* 79 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(3)(false);
@@ -110219,74 +110325,7 @@ exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing:
 
 
 /***/ }),
-/* 80 */,
-/* 81 */,
-/* 82 */,
-/* 83 */,
-/* 84 */,
-/* 85 */,
-/* 86 */,
-/* 87 */,
-/* 88 */,
-/* 89 */,
-/* 90 */,
-/* 91 */,
-/* 92 */,
-/* 93 */,
-/* 94 */,
-/* 95 */,
-/* 96 */,
-/* 97 */,
-/* 98 */,
-/* 99 */,
-/* 100 */,
-/* 101 */,
-/* 102 */,
-/* 103 */,
-/* 104 */,
-/* 105 */,
-/* 106 */,
-/* 107 */,
-/* 108 */,
-/* 109 */,
-/* 110 */,
-/* 111 */,
-/* 112 */,
-/* 113 */,
-/* 114 */,
-/* 115 */,
-/* 116 */,
-/* 117 */,
-/* 118 */,
-/* 119 */,
-/* 120 */,
-/* 121 */,
-/* 122 */,
-/* 123 */,
-/* 124 */,
-/* 125 */,
-/* 126 */,
-/* 127 */,
-/* 128 */,
-/* 129 */,
-/* 130 */,
-/* 131 */,
-/* 132 */,
-/* 133 */,
-/* 134 */,
-/* 135 */,
-/* 136 */,
-/* 137 */,
-/* 138 */,
-/* 139 */,
-/* 140 */,
-/* 141 */,
-/* 142 */,
-/* 143 */,
-/* 144 */,
-/* 145 */,
-/* 146 */,
-/* 147 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -110361,6 +110400,7 @@ var render = function() {
                       search: "",
                       selection: "",
                       "allow-additions": "",
+                      options: _vm.tagFilterOption,
                       id: "inputTags"
                     },
                     model: {
@@ -110491,6 +110531,20 @@ var render = function() {
                             [
                               _vm._v("Duration\n            "),
                               _vm.durationTableColumn
+                                ? _c("i", {
+                                    staticClass: "fa fa-check",
+                                    staticStyle: { "font-size": "14px" }
+                                  })
+                                : _vm._e()
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "sui-dropdown-item",
+                            { on: { click: _vm.showTagsTableColumn } },
+                            [
+                              _vm._v("Tags\n            "),
+                              _vm.tagsTableColumn
                                 ? _c("i", {
                                     staticClass: "fa fa-check",
                                     staticStyle: { "font-size": "14px" }
@@ -110713,7 +110767,9 @@ var render = function() {
                             ? _c("sui-table-header-cell", [_vm._v("Thumbnail")])
                             : _vm._e(),
                           _vm._v(" "),
-                          _c("sui-table-header-cell", [_vm._v("Tags")]),
+                          _vm.tagsTableColumn
+                            ? _c("sui-table-header-cell", [_vm._v("Tags")])
+                            : _vm._e(),
                           _vm._v(" "),
                           _vm.durationTableColumn
                             ? _c("sui-table-header-cell", [_vm._v("Duration")])
@@ -110773,35 +110829,29 @@ var render = function() {
                     1
                   ),
                   _vm._v(" "),
-                  _vm._l(
-                    _vm.inputFilterName
-                      ? _vm.filteredTableByName
-                      : _vm.inputTagName
-                        ? _vm.filteredTableByTag
-                        : _vm.paginationTableList,
-                    function(list) {
-                      return _c("TableRow", {
-                        key: list.id,
-                        attrs: {
-                          list: list,
-                          idTableColumn: _vm.idTableColumn,
-                          nameTableColumn: _vm.nameTableColumn,
-                          typeTableColumn: _vm.typeTableColumn,
-                          thumbnailTableColumn: _vm.thumbnailTableColumn,
-                          durationTableColumn: _vm.durationTableColumn,
-                          sizeTableColumn: _vm.sizeTableColumn,
-                          ownerTableColumn: _vm.ownerTableColumn,
-                          permissionTableColumn: _vm.permissionTableColumn,
-                          fileNameTableColumn: _vm.fileNameTableColumn,
-                          createdTableColumn: _vm.createdTableColumn,
-                          updatedTableColumn: _vm.updatedTableColumn,
-                          isActiveTableRow: _vm.isActiveTableRow,
-                          isActiveProp: _vm.isActiveProp
-                        },
-                        on: { onUpdate: _vm.onUpdate }
-                      })
-                    }
-                  )
+                  _vm._l(_vm.tableListComputed, function(list) {
+                    return _c("TableRow", {
+                      key: list.id,
+                      attrs: {
+                        list: list,
+                        idTableColumn: _vm.idTableColumn,
+                        nameTableColumn: _vm.nameTableColumn,
+                        typeTableColumn: _vm.typeTableColumn,
+                        thumbnailTableColumn: _vm.thumbnailTableColumn,
+                        durationTableColumn: _vm.durationTableColumn,
+                        tagsTableColumn: _vm.tagsTableColumn,
+                        sizeTableColumn: _vm.sizeTableColumn,
+                        ownerTableColumn: _vm.ownerTableColumn,
+                        permissionTableColumn: _vm.permissionTableColumn,
+                        fileNameTableColumn: _vm.fileNameTableColumn,
+                        createdTableColumn: _vm.createdTableColumn,
+                        updatedTableColumn: _vm.updatedTableColumn,
+                        isActiveTableRow: _vm.isActiveTableRow,
+                        isActiveProp: _vm.isActiveProp
+                      },
+                      on: { onUpdate: _vm.onUpdate }
+                    })
+                  })
                 ],
                 2
               )
@@ -110879,9 +110929,7 @@ var render = function() {
                     attrs: {
                       icon: "right arrow",
                       disabled:
-                        _vm.pageNumber === _vm.pageCountNumber - 1
-                          ? true
-                          : false
+                        _vm.pageNumber + 1 === _vm.pageCount ? true : false
                     },
                     on: { click: _vm.onClickIconRightArrow }
                   })
