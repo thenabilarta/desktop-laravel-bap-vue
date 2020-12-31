@@ -355,6 +355,7 @@ export default {
         },
       ],
       tagFilterOption: [],
+      mediaTagActive: true,
       // table Row
       isActiveTableRow: [],
       isActiveProp: false,
@@ -390,8 +391,8 @@ export default {
     pageSize: function () {
       this.pageNumber = 0;
     },
-    mediaType: function () {
-      console.log(this.mediaType);
+    tableList: function () {
+      console.log(this.tableList);
 
       // switch (this.mediaType) {
       //   case "image":
@@ -438,6 +439,11 @@ export default {
         this.inputFilterNameActive = true;
       }
     },
+    inputTagName: function () {
+      if (this.inputTagName.length === 0) {
+        this.mediaTagActive = true;
+      }
+    },
     mediaType: function () {
       this.mediaTypeActive = true;
     },
@@ -466,9 +472,11 @@ export default {
         this.tagFilterOption = _.uniqWith(arrayOfTags, _.isEqual);
       }
 
-      console.log(this.inputTagName);
-
       if (this.inputTagName.length > 0) {
+        if (this.mediaTagActive) {
+          this.pageNumber = 0;
+        }
+        this.mediaTagActive = false;
         let newOriginalArray = [];
         originalTableList.map((or) => {
           let tableTagArray = or.tags.split(",");
@@ -496,7 +504,7 @@ export default {
             this.pageNumber = 0;
           }
           this.mediaTypeActive = false;
-          mediaTypeArray = _.filter(this.tableList, ["type", "jpg"]);
+          mediaTypeArray = _.filter(originalTableList, ["type", "jpg"]);
           originalTableList = mediaTypeArray;
           break;
         case "video":
@@ -504,7 +512,7 @@ export default {
             this.pageNumber = 0;
           }
           this.mediaTypeActive = false;
-          mediaTypeArray = _.filter(this.tableList, ["type", "mp4"]);
+          mediaTypeArray = _.filter(originalTableList, ["type", "mp4"]);
           originalTableList = mediaTypeArray;
           break;
         default:

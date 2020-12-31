@@ -34,7 +34,7 @@
         </div>
         <div class="edit-table-modal-body-3">
           <div class="edit-table-modal-body-3-1">
-            <sui-checkbox label="Retired" toggle false />
+            <sui-checkbox label="Retired" toggle @change="toggleRetired" />
             <!-- <p>Retired</p> -->
           </div>
           <div class="edit-table-modal-body-3-2">
@@ -72,13 +72,18 @@ export default {
         media_id: this.list.media_id,
         duration: this.list.duration,
         tags: this.list.tags.split(","),
+        retired: this.list.retired,
       },
     };
   },
   props: {
     list: Object,
   },
+  mounted() {
+    console.log(this.list);
+  },
   methods: {
+    toggleRetired() {},
     closeModal() {
       this.$emit("closeModal");
     },

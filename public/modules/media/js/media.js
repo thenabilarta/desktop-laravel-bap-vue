@@ -107298,6 +107298,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__css_index_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__css_index_css__);
 
 
+var _watch;
+
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -107660,6 +107662,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         value: "video"
       }],
       tagFilterOption: [],
+      mediaTagActive: true,
       // table Row
       isActiveTableRow: [],
       isActiveProp: false,
@@ -107686,12 +107689,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
 
-  watch: _defineProperty({
+  watch: (_watch = {
     pageSize: function pageSize() {
       this.pageNumber = 0;
     },
-    mediaType: function mediaType() {
-      console.log(this.mediaType);
+    tableList: function tableList() {
+      console.log(this.tableList);
 
       // switch (this.mediaType) {
       //   case "image":
@@ -107738,9 +107741,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.inputFilterNameActive = true;
       }
     }
-  }, "mediaType", function mediaType() {
+  }, _defineProperty(_watch, "inputTagName", function inputTagName() {
+    if (this.inputTagName.length === 0) {
+      this.mediaTagActive = true;
+    }
+  }), _defineProperty(_watch, "mediaType", function mediaType() {
     this.mediaTypeActive = true;
-  }),
+  }), _watch),
   computed: {
     tableListComputed: function tableListComputed() {
       var _this2 = this;
@@ -107767,9 +107774,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.tagFilterOption = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.uniqWith(arrayOfTags, __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.isEqual);
       }
 
-      console.log(this.inputTagName);
-
       if (this.inputTagName.length > 0) {
+        if (this.mediaTagActive) {
+          this.pageNumber = 0;
+        }
+        this.mediaTagActive = false;
         var newOriginalArray = [];
         originalTableList.map(function (or) {
           var tableTagArray = or.tags.split(",");
@@ -107797,7 +107806,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             this.pageNumber = 0;
           }
           this.mediaTypeActive = false;
-          mediaTypeArray = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.filter(this.tableList, ["type", "jpg"]);
+          mediaTypeArray = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.filter(originalTableList, ["type", "jpg"]);
           originalTableList = mediaTypeArray;
           break;
         case "video":
@@ -107805,7 +107814,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             this.pageNumber = 0;
           }
           this.mediaTypeActive = false;
-          mediaTypeArray = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.filter(this.tableList, ["type", "mp4"]);
+          mediaTypeArray = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.filter(originalTableList, ["type", "mp4"]);
           originalTableList = mediaTypeArray;
           break;
         default:
@@ -109860,7 +109869,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         listName: this.list.name,
         media_id: this.list.media_id,
         duration: this.list.duration,
-        tags: this.list.tags.split(",")
+        tags: this.list.tags.split(","),
+        retired: this.list.retired
       }
     };
   },
@@ -109868,7 +109878,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   props: {
     list: Object
   },
+  mounted: function mounted() {
+    console.log(this.list);
+  },
+
   methods: {
+    toggleRetired: function toggleRetired() {},
     closeModal: function closeModal() {
       this.$emit("closeModal");
     },
@@ -110027,7 +110042,8 @@ var render = function() {
               { staticClass: "edit-table-modal-body-3-1" },
               [
                 _c("sui-checkbox", {
-                  attrs: { label: "Retired", toggle: "", false: "" }
+                  attrs: { label: "Retired", toggle: "" },
+                  on: { change: _vm.toggleRetired }
                 })
               ],
               1
