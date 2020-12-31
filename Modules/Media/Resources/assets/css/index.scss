@@ -33,7 +33,7 @@ body {
   justify-content: space-between;
 
   .header-filter {
-    width: 50%;
+    width: 60%;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -100,4 +100,8 @@ th {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#inputTags i {
+  display: none !important;
 }

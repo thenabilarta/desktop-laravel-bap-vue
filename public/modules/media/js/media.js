@@ -107190,21 +107190,17 @@ module.exports = function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(53)
-}
 var normalizeComponent = __webpack_require__(11)
 /* script */
 var __vue_script__ = __webpack_require__(56)
 /* template */
-var __vue_template__ = __webpack_require__(80)
+var __vue_template__ = __webpack_require__(147)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
-var __vue_styles__ = injectStyle
+var __vue_styles__ = null
 /* scopeId */
-var __vue_scopeId__ = "data-v-23154196"
+var __vue_scopeId__ = null
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -107279,46 +107275,8 @@ var app = new Vue({
 });
 
 /***/ }),
-/* 53 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(54);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(39)("2c0ba8de", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-23154196\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./index.vue", function() {
-     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-23154196\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./index.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 54 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(3)(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n.ui.multiple.dropdown[data-v-23154196] {\r\n  padding: 0 !important;\n}\r\n", ""]);
-
-// exports
-
-
-/***/ }),
+/* 53 */,
+/* 54 */,
 /* 55 */
 /***/ (function(module, exports) {
 
@@ -107643,6 +107601,20 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -107694,6 +107666,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       tableListSizeASC: true,
       // filter
       inputFilterName: "",
+      inputTagName: "",
       mediaType: "all",
       mediaTypeOption: [{
         text: "All",
@@ -107770,14 +107743,24 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             return _this2.orderByTableListId();
           });
       }
+    },
+    tableList: function tableList() {
+      console.log(this.tableList);
     }
   },
   computed: {
-    filteredTable: function filteredTable() {
+    filteredTableByName: function filteredTableByName() {
       var _this3 = this;
 
       return this.tableList.filter(function (t) {
         return t.name.match(_this3.inputFilterName);
+      });
+    },
+    filteredTableByTag: function filteredTableByTag() {
+      var _this4 = this;
+
+      return this.tableList.filter(function (t) {
+        return t.name.match(_this4.inputTagName);
       });
     },
     paginationTableList: function paginationTableList() {
@@ -107869,7 +107852,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       this.isActiveTableRow = [];
     },
     onClickWithSelected: function onClickWithSelected() {
-      var _this4 = this;
+      var _this5 = this;
 
       console.log(this.isActiveTableRow);
       __WEBPACK_IMPORTED_MODULE_2_sweetalert___default()("Do you want to delete media with ID " + [].concat(_toConsumableArray(this.isActiveTableRow)).join(", ") + " ?", {
@@ -107892,7 +107875,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 case 3:
                   console.log("DELETED GAN");
                   _context.next = 6;
-                  return _this4.isActiveTableRow.map(function (a) {
+                  return _this5.isActiveTableRow.map(function (a) {
                     __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/delete/" + a).then(function (res) {
                       return console.log(res);
                     });
@@ -107900,7 +107883,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
                 case 6:
                   _context.next = 8;
-                  return _this4.onUpdate();
+                  return _this5.onUpdate();
 
                 case 8:
                   return _context.abrupt("break", 10);
@@ -107913,7 +107896,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                   return _context.stop();
               }
             }
-          }, _callee, _this4);
+          }, _callee, _this5);
         }));
 
         return function (_x) {
@@ -107925,22 +107908,22 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       this.modal = !this.modal;
     },
     onCloseModal: function onCloseModal() {
-      var _this5 = this;
-
-      this.modal = false;
-      __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
-        return _this5.tableList = res.data;
-      }).then(function () {
-        _this5.tableListIdASC = false;
-        _this5.orderByTableListId();
-      });
-    },
-    onUpdate: function onUpdate() {
       var _this6 = this;
 
       this.modal = false;
       __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
         return _this6.tableList = res.data;
+      }).then(function () {
+        _this6.tableListIdASC = false;
+        _this6.orderByTableListId();
+      });
+    },
+    onUpdate: function onUpdate() {
+      var _this7 = this;
+
+      this.modal = false;
+      __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
+        return _this7.tableList = res.data;
       });
     },
     onInputFilterName: function onInputFilterName() {
@@ -108015,7 +107998,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       }
     },
     createPDF: function createPDF() {
-      var _this7 = this;
+      var _this8 = this;
 
       var docDefinition = {
         pageOrientation: "landscape",
@@ -108068,14 +108051,14 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           xhr.send();
         }
 
-        toDataURL("/storage/uploads/" + _this7.tableList[i].file_name, function (dataUrl) {
-          if (_this7.tableList[i].type === "jpg") {
-            docDefinition.content[4].table.body.push([{ text: _this7.tableList[i].media_id }, { text: Object.values(_this7.tableList[i].name) }, { text: Object.values(_this7.tableList[i].type) }, { image: dataUrl, fit: [25, 25] }, { text: Object.values(_this7.tableList[i].duration) }, { text: Object.values(_this7.tableList[i].size) }, { text: Object.values(_this7.tableList[i].file_name) }]);
+        toDataURL("/storage/uploads/" + _this8.tableList[i].file_name, function (dataUrl) {
+          if (_this8.tableList[i].type === "jpg") {
+            docDefinition.content[4].table.body.push([{ text: _this8.tableList[i].media_id }, { text: Object.values(_this8.tableList[i].name) }, { text: Object.values(_this8.tableList[i].type) }, { image: dataUrl, fit: [25, 25] }, { text: Object.values(_this8.tableList[i].duration) }, { text: Object.values(_this8.tableList[i].size) }, { text: Object.values(_this8.tableList[i].file_name) }]);
           } else {
-            docDefinition.content[4].table.body.push([{ text: _this7.tableList[i].media_id }, { text: Object.values(_this7.tableList[i].name) }, { text: Object.values(_this7.tableList[i].type) }, { text: "" }, { text: Object.values(_this7.tableList[i].duration) }, { text: Object.values(_this7.tableList[i].size) }, { text: Object.values(_this7.tableList[i].file_name) }]);
+            docDefinition.content[4].table.body.push([{ text: _this8.tableList[i].media_id }, { text: Object.values(_this8.tableList[i].name) }, { text: Object.values(_this8.tableList[i].type) }, { text: "" }, { text: Object.values(_this8.tableList[i].duration) }, { text: Object.values(_this8.tableList[i].size) }, { text: Object.values(_this8.tableList[i].file_name) }]);
           }
 
-          if (i === _this7.tableList.length - 1) {
+          if (i === _this8.tableList.length - 1) {
             __WEBPACK_IMPORTED_MODULE_4_pdfmake___default.a.createPdf(docDefinition).open();
           }
         });
@@ -109475,6 +109458,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
+//
 
 
 
@@ -109749,6 +109733,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -109761,7 +109755,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       form: {
         listName: this.list.name,
         media_id: this.list.media_id,
-        duration: this.list.duration
+        duration: this.list.duration,
+        tags: this.list.tags.split(",")
       }
     };
   },
@@ -109776,14 +109771,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     onChangeInput: function onChangeInput() {
       console.log(this.form.listName);
     },
+    onChangeInputTags: function onChangeInputTags() {
+      console.log(this.form.tags);
+    },
     formSubmit: function formSubmit() {
-      var _this = this;
-
+      this.form.tags = this.form.tags.join();
       __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/media/edit", this.form).then(function (res) {
         return console.log(res.data);
-      }).then(function () {
-        return _this.tableEditBind();
       });
+      // .then(() => this.tableEditBind());
     },
     tableEditBind: function tableEditBind() {
       this.$emit("updateEdit");
@@ -109831,7 +109827,7 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, ".edit-table-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.5);\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  z-index: 1100 !important;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-table-modal .edit-table-modal-content {\n  height: 50%;\n  width: 50%;\n  max-width: 500px;\n  border-radius: 10px;\n  overflow: hidden;\n  background-color: #f5f5f5;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-header {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 3rem;\n  border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-header h1 {\n  font-size: 20px;\n  font-weight: 400;\n  padding: 0 1rem;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body {\n  height: 65%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  padding: 0 3rem;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 {\n  -webkit-box-flex: 2;\n      -ms-flex: 2;\n          flex: 2;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 .edit-table-input-name {\n  width: 500px !important;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 .edit-table-input-number {\n  max-width: 100px !important;\n  margin-left: 2rem;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-2 {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 {\n  -webkit-box-flex: 2;\n      -ms-flex: 2;\n          flex: 2;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-1 {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-1 input {\n  margin: auto 1rem;\n  width: 15px;\n  height: 15px;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-2 {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-2 input {\n  margin: auto 1rem;\n  width: 15px;\n  height: 15px;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-actions {\n  height: 20%;\n  padding: 0 3rem;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-pack: distribute;\n      justify-content: space-around;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\ninput {\n  position: static !important;\n  opacity: 1 !important;\n}\n\n[type=\"checkbox\"]:not(.filled-in) + label:after {\n  transform: none !important;\n  -webkit-transform: none !important;\n}", ""]);
+exports.push([module.i, ".edit-table-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.5);\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  z-index: 1100 !important;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-table-modal .edit-table-modal-content {\n  height: 50%;\n  width: 50%;\n  max-width: 500px;\n  border-radius: 10px;\n  overflow: hidden;\n  background-color: #f5f5f5;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-header {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 3rem;\n  border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-header h1 {\n  font-size: 20px;\n  font-weight: 400;\n  padding: 0 1rem;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body {\n  height: 65%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  padding: 0 3rem;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 {\n  -webkit-box-flex: 2;\n      -ms-flex: 2;\n          flex: 2;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 .edit-table-input-name {\n  width: 500px !important;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 .edit-table-input-number {\n  max-width: 100px !important;\n  margin-left: 2rem;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-2 {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 {\n  -webkit-box-flex: 2;\n      -ms-flex: 2;\n          flex: 2;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-1 {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-1 input {\n  margin: auto 1rem;\n  width: 15px;\n  height: 15px;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-2 {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-2 input {\n  margin: auto 1rem;\n  width: 15px;\n  height: 15px;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-actions {\n  height: 20%;\n  padding: 0 3rem;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-pack: distribute;\n      justify-content: space-around;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\ninput {\n  position: static !important;\n  opacity: 1 !important;\n}\n\n[type='checkbox']:not(.filled-in) + label:after {\n  transform: none !important;\n  -webkit-transform: none !important;\n}\n\n#inputTags i {\n  display: none !important;\n}", ""]);
 
 // exports
 
@@ -109898,8 +109894,24 @@ var render = function() {
             "div",
             { staticClass: "edit-table-modal-body-2" },
             [
-              _c("sui-input", {
-                attrs: { placeholder: "Media Tags", fluid: "" }
+              _c("sui-dropdown", {
+                attrs: {
+                  multiple: "",
+                  placeholder: "Tags",
+                  fluid: "",
+                  search: "",
+                  selection: "",
+                  "allow-additions": "",
+                  id: "inputTags"
+                },
+                on: { keyup: _vm.onChangeInputTags },
+                model: {
+                  value: _vm.form.tags,
+                  callback: function($$v) {
+                    _vm.$set(_vm.form, "tags", $$v)
+                  },
+                  expression: "form.tags"
+                }
               })
             ],
             1
@@ -110073,6 +110085,8 @@ var render = function() {
                   ])
                 : _vm._e(),
               _vm._v(" "),
+              _c("sui-table-cell", [_vm._v(_vm._s(_vm.list.tags))]),
+              _vm._v(" "),
               _vm.durationTableColumn
                 ? _c("sui-table-cell", [_vm._v(_vm._s(_vm.list.duration))])
                 : _vm._e(),
@@ -110199,13 +110213,80 @@ exports = module.exports = __webpack_require__(3)(false);
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap);", ""]);
 
 // module
-exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n}\n\n.header {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.header .header-filter {\n  width: 50%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -ms-flex-pack: distribute;\n      justify-content: space-around;\n}\n\n.header .header-filter .ui.input > input {\n  max-width: 120px;\n}\n\n.header .header-filter i {\n  margin: 0 1rem;\n}\n\n.header .header-icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n\n.header .header-icon i {\n  font-size: 2rem;\n  margin: 0 1rem;\n}\n\n.body {\n  overflow-x: scroll;\n  margin: 20px;\n  padding: 0px !important;\n}\n\n.td-table-image {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.table-image {\n  height: 30px;\n  margin: 0;\n  padding: 0;\n}\n\n.footer {\n  min-height: 50px;\n  padding: 20px;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.footer #pageNumberFooter {\n  font-size: 1rem;\n  padding: 0 1rem;\n}\n\ni,\nth {\n  cursor: pointer !important;\n}\n\n.loading {\n  height: 70vh;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}", ""]);
+exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n}\n\n.header {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.header .header-filter {\n  width: 60%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -ms-flex-pack: distribute;\n      justify-content: space-around;\n}\n\n.header .header-filter .ui.input > input {\n  max-width: 120px;\n}\n\n.header .header-filter i {\n  margin: 0 1rem;\n}\n\n.header .header-icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n\n.header .header-icon i {\n  font-size: 2rem;\n  margin: 0 1rem;\n}\n\n.body {\n  overflow-x: scroll;\n  margin: 20px;\n  padding: 0px !important;\n}\n\n.td-table-image {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.table-image {\n  height: 30px;\n  margin: 0;\n  padding: 0;\n}\n\n.footer {\n  min-height: 50px;\n  padding: 20px;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.footer #pageNumberFooter {\n  font-size: 1rem;\n  padding: 0 1rem;\n}\n\ni,\nth {\n  cursor: pointer !important;\n}\n\n.loading {\n  height: 70vh;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n#inputTags i {\n  display: none !important;\n}", ""]);
 
 // exports
 
 
 /***/ }),
-/* 80 */
+/* 80 */,
+/* 81 */,
+/* 82 */,
+/* 83 */,
+/* 84 */,
+/* 85 */,
+/* 86 */,
+/* 87 */,
+/* 88 */,
+/* 89 */,
+/* 90 */,
+/* 91 */,
+/* 92 */,
+/* 93 */,
+/* 94 */,
+/* 95 */,
+/* 96 */,
+/* 97 */,
+/* 98 */,
+/* 99 */,
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */,
+/* 104 */,
+/* 105 */,
+/* 106 */,
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */,
+/* 111 */,
+/* 112 */,
+/* 113 */,
+/* 114 */,
+/* 115 */,
+/* 116 */,
+/* 117 */,
+/* 118 */,
+/* 119 */,
+/* 120 */,
+/* 121 */,
+/* 122 */,
+/* 123 */,
+/* 124 */,
+/* 125 */,
+/* 126 */,
+/* 127 */,
+/* 128 */,
+/* 129 */,
+/* 130 */,
+/* 131 */,
+/* 132 */,
+/* 133 */,
+/* 134 */,
+/* 135 */,
+/* 136 */,
+/* 137 */,
+/* 138 */,
+/* 139 */,
+/* 140 */,
+/* 141 */,
+/* 142 */,
+/* 143 */,
+/* 144 */,
+/* 145 */,
+/* 146 */,
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -110270,6 +110351,24 @@ var render = function() {
                         _vm.inputFilterName = $$v
                       },
                       expression: "inputFilterName"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("sui-dropdown", {
+                    attrs: {
+                      multiple: "",
+                      placeholder: "Tags",
+                      search: "",
+                      selection: "",
+                      "allow-additions": "",
+                      id: "inputTags"
+                    },
+                    model: {
+                      value: _vm.inputTagName,
+                      callback: function($$v) {
+                        _vm.inputTagName = $$v
+                      },
+                      expression: "inputTagName"
                     }
                   }),
                   _vm._v(" "),
@@ -110614,6 +110713,8 @@ var render = function() {
                             ? _c("sui-table-header-cell", [_vm._v("Thumbnail")])
                             : _vm._e(),
                           _vm._v(" "),
+                          _c("sui-table-header-cell", [_vm._v("Tags")]),
+                          _vm._v(" "),
                           _vm.durationTableColumn
                             ? _c("sui-table-header-cell", [_vm._v("Duration")])
                             : _vm._e(),
@@ -110674,8 +110775,10 @@ var render = function() {
                   _vm._v(" "),
                   _vm._l(
                     _vm.inputFilterName
-                      ? _vm.filteredTable
-                      : _vm.paginationTableList,
+                      ? _vm.filteredTableByName
+                      : _vm.inputTagName
+                        ? _vm.filteredTableByTag
+                        : _vm.paginationTableList,
                     function(list) {
                       return _c("TableRow", {
                         key: list.id,

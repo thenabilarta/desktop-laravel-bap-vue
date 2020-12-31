@@ -15,6 +15,15 @@
           v-model="inputFilterName"
         />
         <sui-dropdown
+          multiple
+          placeholder="Tags"
+          search
+          selection
+          allow-additions
+          v-model="inputTagName"
+          id="inputTags"
+        />
+        <sui-dropdown
           text="Type"
           floating
           v-model="mediaType"
@@ -173,6 +182,7 @@
             <sui-table-header-cell v-if="thumbnailTableColumn"
               >Thumbnail</sui-table-header-cell
             >
+            <sui-table-header-cell>Tags</sui-table-header-cell>
             <sui-table-header-cell v-if="durationTableColumn"
               >Duration</sui-table-header-cell
             >
@@ -205,7 +215,11 @@
           </sui-table-row>
         </sui-table-header>
         <TableRow
-          v-for="list in inputFilterName ? filteredTable : paginationTableList"
+          v-for="list in inputFilterName
+            ? filteredTableByName
+            : inputTagName
+            ? filteredTableByTag
+            : paginationTableList"
           v-bind:key="list.id"
           v-bind:list="list"
           v-bind:idTableColumn="idTableColumn"
@@ -309,6 +323,7 @@ export default {
       tableListSizeASC: true,
       // filter
       inputFilterName: "",
+      inputTagName: "",
       mediaType: "all",
       mediaTypeOption: [
         {
@@ -391,11 +406,19 @@ export default {
             .then(() => this.orderByTableListId());
       }
     },
+    tableList: function () {
+      console.log(this.tableList);
+    },
   },
   computed: {
-    filteredTable: function () {
+    filteredTableByName: function () {
       return this.tableList.filter((t) => {
         return t.name.match(this.inputFilterName);
+      });
+    },
+    filteredTableByTag: function () {
+      return this.tableList.filter((t) => {
+        return t.name.match(this.inputTagName);
       });
     },
     paginationTableList: function () {
@@ -739,8 +762,3 @@ export default {
 };
 </script>
 
-<style scoped>
-.ui.multiple.dropdown {
-  padding: 0 !important;
-}
-</style>

@@ -104,7 +104,11 @@ input {
   opacity: 1 !important;
 }
 
-[type="checkbox"]:not(.filled-in) + label:after {
+[type='checkbox']:not(.filled-in) + label:after {
   transform: none !important;
   -webkit-transform: none !important;
+}
+
+#inputTags i {
+  display: none !important;
 }

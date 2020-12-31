@@ -142,13 +142,9 @@ class MediaController extends AppBaseController
 
         $duration = $request->duration;
 
-        // $media_id_real = $request->media_id["media_id"];
+        $tags = $request->tags;
 
-        // $media_type = explode('.', $media_id);
-
-        // $media_type_real = $media_type[1];
-
-        $post = 'name=' . $newfilename . '&duration=' . $duration . '&retired=0&tags=0&updateInLayouts=0';
+        $post = 'name=' . $newfilename . '&duration=' . $duration . '&retired=0&tags=' . $tags . '&updateInLayouts=0';
 
         $curl = curl_init();
 
@@ -175,16 +171,13 @@ class MediaController extends AppBaseController
         $contents = $response;
         $content = json_decode($contents, true);
 
-        // $status = $content->getStatusCode();
-
-
-
         if ($content["name"] === $newfilename) {
             $mediaNewName = Media::where('media_id', $media_id)->firstOrFail();
 
             if ($mediaNewName) {
                 $mediaNewName->name = $newfilename;
                 $mediaNewName->duration = $duration;
+                $mediaNewName->tags = $tags;
                 $mediaNewName->save();
             }
         }

@@ -15,6 +15,7 @@
           alt=""
         />
       </sui-table-cell>
+      <sui-table-cell>{{ list.tags }}</sui-table-cell>
       <sui-table-cell v-if="durationTableColumn">{{
         list.duration
       }}</sui-table-cell>

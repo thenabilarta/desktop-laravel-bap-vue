@@ -20,7 +20,17 @@
           />
         </div>
         <div class="edit-table-modal-body-2">
-          <sui-input placeholder="Media Tags" fluid />
+          <sui-dropdown
+            multiple
+            placeholder="Tags"
+            fluid
+            search
+            selection
+            allow-additions
+            v-model="form.tags"
+            id="inputTags"
+            @keyup="onChangeInputTags"
+          />
         </div>
         <div class="edit-table-modal-body-3">
           <div class="edit-table-modal-body-3-1">
@@ -61,6 +71,7 @@ export default {
         listName: this.list.name,
         media_id: this.list.media_id,
         duration: this.list.duration,
+        tags: this.list.tags.split(","),
       },
     };
   },
@@ -74,11 +85,15 @@ export default {
     onChangeInput() {
       console.log(this.form.listName);
     },
+    onChangeInputTags() {
+      console.log(this.form.tags);
+    },
     formSubmit() {
+      this.form.tags = this.form.tags.join();
       axios
         .post("http://127.0.0.1:8000/media/edit", this.form)
-        .then((res) => console.log(res.data))
-        .then(() => this.tableEditBind());
+        .then((res) => console.log(res.data));
+      // .then(() => this.tableEditBind());
     },
     tableEditBind() {
       this.$emit("updateEdit");
