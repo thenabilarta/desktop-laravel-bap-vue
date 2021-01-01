@@ -19,7 +19,9 @@
       <sui-table-cell v-if="durationTableColumn">{{
         list.duration
       }}</sui-table-cell>
-      <sui-table-cell v-if="sizeTableColumn">{{ list.size }}</sui-table-cell>
+      <sui-table-cell v-if="sizeTableColumn">{{
+        (list.size / 1000).toFixed(1) + " kb"
+      }}</sui-table-cell>
       <sui-table-cell v-if="ownerTableColumn">Admin</sui-table-cell>
       <sui-table-cell v-if="permissionTableColumn">Null</sui-table-cell>
       <sui-table-cell v-if="fileNameTableColumn">{{

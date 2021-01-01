@@ -109560,6 +109560,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
+//
+//
 
 
 
@@ -110224,7 +110226,9 @@ var render = function() {
                 : _vm._e(),
               _vm._v(" "),
               _vm.sizeTableColumn
-                ? _c("sui-table-cell", [_vm._v(_vm._s(_vm.list.size))])
+                ? _c("sui-table-cell", [
+                    _vm._v(_vm._s((_vm.list.size / 1000).toFixed(1) + " kb"))
+                  ])
                 : _vm._e(),
               _vm._v(" "),
               _vm.ownerTableColumn
