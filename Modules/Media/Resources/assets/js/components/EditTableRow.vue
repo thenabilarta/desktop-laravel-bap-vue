@@ -34,7 +34,12 @@
         </div>
         <div class="edit-table-modal-body-3">
           <div class="edit-table-modal-body-3-1">
-            <sui-checkbox label="Retired" toggle @change="toggleRetired" />
+            <sui-checkbox
+              label="Retired"
+              toggle
+              @change="toggleRetired"
+              v-model="form.retired"
+            />
             <!-- <p>Retired</p> -->
           </div>
           <div class="edit-table-modal-body-3-2">
@@ -72,7 +77,7 @@ export default {
         media_id: this.list.media_id,
         duration: this.list.duration,
         tags: this.list.tags.split(","),
-        retired: this.list.retired,
+        retired: this.list.retired === "0" ? false : true,
       },
     };
   },
@@ -83,7 +88,9 @@ export default {
     console.log(this.list);
   },
   methods: {
-    toggleRetired() {},
+    toggleRetired() {
+      console.log(this.form.retired);
+    },
     closeModal() {
       this.$emit("closeModal");
     },
@@ -94,7 +101,14 @@ export default {
       console.log(this.form.tags);
     },
     formSubmit() {
-      this.form.tags = this.form.tags.join();
+      if (this.form.tags.length > 0) {
+        this.form.tags = this.form.tags.join();
+      }
+      if (this.form.retired === false) {
+        this.form.retired === "0";
+      } else {
+        this.form.retired === "1";
+      }
       axios
         .post("http://127.0.0.1:8000/media/edit", this.form)
         .then((res) => console.log(res.data));

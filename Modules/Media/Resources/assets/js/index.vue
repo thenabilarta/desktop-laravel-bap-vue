@@ -30,12 +30,12 @@
           v-model="mediaType"
           :options="mediaTypeOption"
         />
-        <sui-dropdown text="Retired" floating>
-          <sui-dropdown-menu>
-            <sui-dropdown-item>True</sui-dropdown-item>
-            <sui-dropdown-item>False</sui-dropdown-item>
-          </sui-dropdown-menu>
-        </sui-dropdown>
+        <sui-dropdown
+          text="Retired"
+          floating
+          v-model="retiredMediaModel"
+          :options="retiredFilterOption"
+        />
         <sui-dropdown floating v-model="pageSize" :options="pageOption" />
       </div>
       <div class="header-icon">
@@ -356,6 +356,17 @@ export default {
       ],
       tagFilterOption: [],
       mediaTagActive: true,
+      retiredMediaModel: 0,
+      retiredFilterOption: [
+        {
+          text: "Not Retired",
+          value: 0,
+        },
+        {
+          text: "Retired",
+          value: 1,
+        },
+      ],
       // table Row
       isActiveTableRow: [],
       isActiveProp: false,
@@ -393,40 +404,6 @@ export default {
     },
     tableList: function () {
       console.log(this.tableList);
-
-      // switch (this.mediaType) {
-      //   case "image":
-      //     let mediaTypeArray = _.filter(this.tableList, ["type", "jpg"]);
-      //     this.tableList = mediaTypeArray;
-      //     break;
-      //   default:
-      //     this.tableList;
-      // }
-
-      // switch (this.mediaType) {
-      //   case "image":
-      //     axios
-      //       .get("http://127.0.0.1:8000/media/data")
-      //       .then((res) => (this.tableList = res.data))
-      //       .then(() => {
-      //         this.tableList = this.tableList.filter((t) => t.type === "jpg");
-      //       });
-      //     break;
-      //   case "video":
-      //     axios
-      //       .get("http://127.0.0.1:8000/media/data")
-      //       .then((res) => (this.tableList = res.data))
-      //       .then(() => {
-      //         this.tableList = this.tableList.filter((t) => t.type === "mp4");
-      //       });
-
-      //     break;
-      //   default:
-      //     axios
-      //       .get("http://127.0.0.1:8000/media/data")
-      //       .then((res) => (this.tableList = res.data))
-      //       .then(() => this.orderByTableListId());
-      // }
     },
     inputTagName: function () {
       console.log(this.inputTagName);
@@ -470,6 +447,21 @@ export default {
         });
 
         this.tagFilterOption = _.uniqWith(arrayOfTags, _.isEqual);
+      }
+
+      if (originalTableList.length > 0) {
+        let retiredMediaArray;
+        if (this.retiredMediaModel === 0) {
+          originalTableList.map((org) => {
+            retiredMediaArray = _.filter(originalTableList, ["retired", "0"]);
+            originalTableList = retiredMediaArray;
+          });
+        } else if (this.retiredMediaModel === 1) {
+          originalTableList.map((org) => {
+            retiredMediaArray = _.filter(originalTableList, ["retired", "1"]);
+            originalTableList = retiredMediaArray;
+          });
+        }
       }
 
       if (this.inputTagName.length > 0) {

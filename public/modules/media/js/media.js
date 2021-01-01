@@ -107663,6 +107663,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }],
       tagFilterOption: [],
       mediaTagActive: true,
+      retiredMediaModel: 0,
+      retiredFilterOption: [{
+        text: "Not Retired",
+        value: 0
+      }, {
+        text: "Retired",
+        value: 1
+      }],
       // table Row
       isActiveTableRow: [],
       isActiveProp: false,
@@ -107695,40 +107703,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     tableList: function tableList() {
       console.log(this.tableList);
-
-      // switch (this.mediaType) {
-      //   case "image":
-      //     let mediaTypeArray = _.filter(this.tableList, ["type", "jpg"]);
-      //     this.tableList = mediaTypeArray;
-      //     break;
-      //   default:
-      //     this.tableList;
-      // }
-
-      // switch (this.mediaType) {
-      //   case "image":
-      //     axios
-      //       .get("http://127.0.0.1:8000/media/data")
-      //       .then((res) => (this.tableList = res.data))
-      //       .then(() => {
-      //         this.tableList = this.tableList.filter((t) => t.type === "jpg");
-      //       });
-      //     break;
-      //   case "video":
-      //     axios
-      //       .get("http://127.0.0.1:8000/media/data")
-      //       .then((res) => (this.tableList = res.data))
-      //       .then(() => {
-      //         this.tableList = this.tableList.filter((t) => t.type === "mp4");
-      //       });
-
-      //     break;
-      //   default:
-      //     axios
-      //       .get("http://127.0.0.1:8000/media/data")
-      //       .then((res) => (this.tableList = res.data))
-      //       .then(() => this.orderByTableListId());
-      // }
     },
     inputTagName: function inputTagName() {
       console.log(this.inputTagName);
@@ -107772,6 +107746,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
 
         this.tagFilterOption = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.uniqWith(arrayOfTags, __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.isEqual);
+      }
+
+      if (originalTableList.length > 0) {
+        var retiredMediaArray = void 0;
+        if (this.retiredMediaModel === 0) {
+          originalTableList.map(function (org) {
+            retiredMediaArray = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.filter(originalTableList, ["retired", "0"]);
+            originalTableList = retiredMediaArray;
+          });
+        } else if (this.retiredMediaModel === 1) {
+          originalTableList.map(function (org) {
+            retiredMediaArray = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.filter(originalTableList, ["retired", "1"]);
+            originalTableList = retiredMediaArray;
+          });
+        }
       }
 
       if (this.inputTagName.length > 0) {
@@ -109856,6 +109845,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
@@ -109870,7 +109864,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         media_id: this.list.media_id,
         duration: this.list.duration,
         tags: this.list.tags.split(","),
-        retired: this.list.retired
+        retired: this.list.retired === "0" ? false : true
       }
     };
   },
@@ -109883,7 +109877,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
 
   methods: {
-    toggleRetired: function toggleRetired() {},
+    toggleRetired: function toggleRetired() {
+      console.log(this.form.retired);
+    },
     closeModal: function closeModal() {
       this.$emit("closeModal");
     },
@@ -109894,7 +109890,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       console.log(this.form.tags);
     },
     formSubmit: function formSubmit() {
-      this.form.tags = this.form.tags.join();
+      if (this.form.tags.length > 0) {
+        this.form.tags = this.form.tags.join();
+      }
+      if (this.form.retired === false) {
+        this.form.retired === "0";
+      } else {
+        this.form.retired === "1";
+      }
       __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/media/edit", this.form).then(function (res) {
         return console.log(res.data);
       });
@@ -110043,7 +110046,14 @@ var render = function() {
               [
                 _c("sui-checkbox", {
                   attrs: { label: "Retired", toggle: "" },
-                  on: { change: _vm.toggleRetired }
+                  on: { change: _vm.toggleRetired },
+                  model: {
+                    value: _vm.form.retired,
+                    callback: function($$v) {
+                      _vm.$set(_vm.form, "retired", $$v)
+                    },
+                    expression: "form.retired"
+                  }
                 })
               ],
               1
@@ -110443,22 +110453,20 @@ var render = function() {
                     }
                   }),
                   _vm._v(" "),
-                  _c(
-                    "sui-dropdown",
-                    { attrs: { text: "Retired", floating: "" } },
-                    [
-                      _c(
-                        "sui-dropdown-menu",
-                        [
-                          _c("sui-dropdown-item", [_vm._v("True")]),
-                          _vm._v(" "),
-                          _c("sui-dropdown-item", [_vm._v("False")])
-                        ],
-                        1
-                      )
-                    ],
-                    1
-                  ),
+                  _c("sui-dropdown", {
+                    attrs: {
+                      text: "Retired",
+                      floating: "",
+                      options: _vm.retiredFilterOption
+                    },
+                    model: {
+                      value: _vm.retiredMediaModel,
+                      callback: function($$v) {
+                        _vm.retiredMediaModel = $$v
+                      },
+                      expression: "retiredMediaModel"
+                    }
+                  }),
                   _vm._v(" "),
                   _c("sui-dropdown", {
                     attrs: { floating: "", options: _vm.pageOption },

@@ -146,7 +146,11 @@ class MediaController extends AppBaseController
 
         $retired = $request->retired;
 
-        $post = 'name=' . $newfilename . '&duration=' . $duration . '&retired=1&tags=' . $tags . '&updateInLayouts=0';
+        if ($retired === "") {
+            $retired = "0";
+        }
+
+        $post = 'name=' . $newfilename . '&duration=' . $duration . '&retired=' . $retired . '&tags=' . $tags . '&updateInLayouts=0';
 
         $curl = curl_init();
 
@@ -180,7 +184,7 @@ class MediaController extends AppBaseController
                 $mediaNewName->name = $newfilename;
                 $mediaNewName->duration = $duration;
                 $mediaNewName->tags = $tags;
-                $mediaNewName->retired = "1";
+                $mediaNewName->retired = $retired;
                 $mediaNewName->save();
             }
         }
