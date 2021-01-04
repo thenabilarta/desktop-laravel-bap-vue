@@ -282,6 +282,7 @@
           :style="
             p === pageNumber + 1 ? 'font-weight:bold; font-size: 15px' : ''
           "
+          @click="onClickPageNumber(p)"
           >{{ p }}</span
         >
         <sui-button
@@ -557,6 +558,9 @@ export default {
     },
   },
   methods: {
+    onClickPageNumber(p) {
+      this.pageNumber = p - 1;
+    },
     onClickIconLeftArrow() {
       this.pageNumber--;
       console.log(this.pageNumber);
