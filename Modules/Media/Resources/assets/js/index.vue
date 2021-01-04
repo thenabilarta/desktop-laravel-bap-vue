@@ -480,12 +480,6 @@ export default {
         originalTableList = _.uniqWith(newOriginalArray, _.isEqual);
       }
 
-      // if (this.inputTagName) {
-      //   originalTableList = originalTableList.filter((t) => {
-      //     return t.name.match(this.inputFilterName);
-      //   });
-      // }
-
       switch (this.mediaType) {
         case "image":
           if (this.mediaTypeActive) {

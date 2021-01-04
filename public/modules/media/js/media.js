@@ -107780,12 +107780,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         originalTableList = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.uniqWith(newOriginalArray, __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.isEqual);
       }
 
-      // if (this.inputTagName) {
-      //   originalTableList = originalTableList.filter((t) => {
-      //     return t.name.match(this.inputFilterName);
-      //   });
-      // }
-
       switch (this.mediaType) {
         case "image":
           if (this.mediaTypeActive) {
@@ -109862,7 +109856,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         listName: this.list.name,
         media_id: this.list.media_id,
         duration: this.list.duration,
-        tags: this.list.tags.length > 0 ? this.list.tags.split(",") : [],
+        tags: this.list.tags === "" ? null : this.list.tags.split(","),
         retired: this.list.retired === "0" ? false : true
       }
     };
@@ -109870,6 +109864,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
   props: {
     list: Object
+  },
+  watch: {
+    form: function form() {
+      console.log(this.form.tags);
+    }
   },
   mounted: function mounted() {
     console.log(this.list);
