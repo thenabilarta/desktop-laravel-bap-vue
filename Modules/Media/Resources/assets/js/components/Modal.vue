@@ -23,7 +23,6 @@
               :state="f.uploadResult"
             />
             <p v-else>Failed, change the image name</p>
-            <p>File size: {{ (f.fileAttr.size / 1000).toFixed(1) + " kb" }}</p>
           </div>
           <div class="actions">
             <sui-icon @click="uploadSingle(f)" name="cloud upload" />
