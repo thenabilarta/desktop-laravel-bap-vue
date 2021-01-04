@@ -107655,9 +107655,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: "Image",
         value: "image"
       }, {
-        text: "PDF",
-        value: "pdf"
-      }, {
         text: "Video",
         value: "video"
       }],
@@ -109865,7 +109862,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         listName: this.list.name,
         media_id: this.list.media_id,
         duration: this.list.duration,
-        tags: this.list.tags.split(","),
+        tags: this.list.tags.length > 0 ? this.list.tags.split(",") : [],
         retired: this.list.retired === "0" ? false : true
       }
     };

@@ -346,10 +346,6 @@ export default {
           value: "image",
         },
         {
-          text: "PDF",
-          value: "pdf",
-        },
-        {
           text: "Video",
           value: "video",
         },
