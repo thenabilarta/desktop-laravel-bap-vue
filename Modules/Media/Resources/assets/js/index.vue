@@ -194,9 +194,18 @@
             <sui-table-header-cell v-if="tagsTableColumn"
               >Tags</sui-table-header-cell
             >
-            <sui-table-header-cell v-if="durationTableColumn"
-              >Duration</sui-table-header-cell
-            >
+            <sui-table-header-cell
+              @click="orderByTableListDuration"
+              v-if="durationTableColumn"
+              >Duration
+              <sui-icon
+                v-if="sortTableListDuration"
+                :name="
+                  this.tableListDurationASC
+                    ? 'sort amount down'
+                    : 'sort amount up'
+                "
+            /></sui-table-header-cell>
             <sui-table-header-cell
               @click="orderByTableListSize"
               v-if="sizeTableColumn"
@@ -328,9 +337,11 @@ export default {
       sortTableListId: true,
       sortTableListName: false,
       sortTableListSize: false,
+      sortTableListDuration: false,
       tableListIdASC: false,
       tableListNameASC: true,
       tableListSizeASC: true,
+      tableListDurationASC: false,
       // filter
       inputFilterName: "",
       inputFilterNameActive: true,
@@ -470,11 +481,6 @@ export default {
         let newOriginalArray = [];
         originalTableList.map((or) => {
           let tableTagArray = or.tags.split(",");
-          // this.inputTagName.map((inTagName) => {
-          //   if (tabTagAr === inTagName) {
-          //     newOriginalArray.push(or);
-          //   }
-          // });
           if (this.inputTagName.every((val) => tableTagArray.includes(val))) {
             newOriginalArray.push(or);
           }
@@ -674,6 +680,7 @@ export default {
       this.sortTableListName = false;
       this.sortTableListType = false;
       this.sortTableListSize = false;
+      this.sortTableListDuration = false;
       this.sortTableListId = true;
       let parsedId = _.forEach(this.tableList, (val) => {
         let number = parseInt(val.media_id);
@@ -693,6 +700,7 @@ export default {
       this.sortTableListId = false;
       this.sortTableListType = false;
       this.sortTableListSize = false;
+      this.sortTableListDuration = false;
       this.sortTableListName = true;
       if (this.tableListNameASC) {
         let sortedTableListByNameASC = _.orderBy(
@@ -716,6 +724,7 @@ export default {
       this.sortTableListSize = false;
       this.sortTableListId = false;
       this.sortTableListName = false;
+      this.sortTableListDuration = false;
       this.sortTableListType = true;
       if (this.tableListTypeASC) {
         let sortedTableListByTypeASC = _.orderBy(
@@ -739,10 +748,10 @@ export default {
       this.sortTableListId = false;
       this.sortTableListName = false;
       this.sortTableListType = false;
+      this.sortTableListDuration = false;
       this.sortTableListSize = true;
       let parsedSize = _.forEach(this.tableList, (val) => {
         let number = parseInt(val.size);
-        val.size = number;
       });
       if (this.tableListSizeASC) {
         let sortedMediaBySizeASC = _.orderBy(parsedSize, "size", "asc");
@@ -752,6 +761,33 @@ export default {
         let sortedMediaBySizeDESC = _.orderBy(parsedSize, "size", "desc");
         this.tableList = sortedMediaBySizeDESC;
         this.tableListSizeASC = true;
+      }
+    },
+    orderByTableListDuration() {
+      this.sortTableListId = false;
+      this.sortTableListName = false;
+      this.sortTableListType = false;
+      this.sortTableListSize = false;
+      this.sortTableListDuration = true;
+      let parsedDuration = _.forEach(this.tableList, (val) => {
+        let number = parseInt(val.duration);
+      });
+      if (this.tableListDurationASC) {
+        let sortedMediaByDurationASC = _.orderBy(
+          parsedDuration,
+          "duration",
+          "asc"
+        );
+        this.tableList = sortedMediaByDurationASC;
+        this.tableListDurationASC = false;
+      } else {
+        let sortedMediaByDurationDESC = _.orderBy(
+          parsedDuration,
+          "duration",
+          "desc"
+        );
+        this.tableList = sortedMediaByDurationDESC;
+        this.tableListDurationASC = true;
       }
     },
     createPDF() {

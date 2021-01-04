@@ -107593,6 +107593,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -107640,9 +107649,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       sortTableListId: true,
       sortTableListName: false,
       sortTableListSize: false,
+      sortTableListDuration: false,
       tableListIdASC: false,
       tableListNameASC: true,
       tableListSizeASC: true,
+      tableListDurationASC: false,
       // filter
       inputFilterName: "",
       inputFilterNameActive: true,
@@ -107770,11 +107781,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var newOriginalArray = [];
         originalTableList.map(function (or) {
           var tableTagArray = or.tags.split(",");
-          // this.inputTagName.map((inTagName) => {
-          //   if (tabTagAr === inTagName) {
-          //     newOriginalArray.push(or);
-          //   }
-          // });
           if (_this2.inputTagName.every(function (val) {
             return tableTagArray.includes(val);
           })) {
@@ -108008,6 +108014,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.sortTableListName = false;
       this.sortTableListType = false;
       this.sortTableListSize = false;
+      this.sortTableListDuration = false;
       this.sortTableListId = true;
       var parsedId = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.forEach(this.tableList, function (val) {
         var number = parseInt(val.media_id);
@@ -108027,6 +108034,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.sortTableListId = false;
       this.sortTableListType = false;
       this.sortTableListSize = false;
+      this.sortTableListDuration = false;
       this.sortTableListName = true;
       if (this.tableListNameASC) {
         var sortedTableListByNameASC = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.orderBy(this.tableList, ["name"], "asc");
@@ -108042,6 +108050,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.sortTableListSize = false;
       this.sortTableListId = false;
       this.sortTableListName = false;
+      this.sortTableListDuration = false;
       this.sortTableListType = true;
       if (this.tableListTypeASC) {
         var sortedTableListByTypeASC = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.orderBy(this.tableList, ["type"], "asc");
@@ -108057,10 +108066,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.sortTableListId = false;
       this.sortTableListName = false;
       this.sortTableListType = false;
+      this.sortTableListDuration = false;
       this.sortTableListSize = true;
       var parsedSize = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.forEach(this.tableList, function (val) {
         var number = parseInt(val.size);
-        val.size = number;
       });
       if (this.tableListSizeASC) {
         var sortedMediaBySizeASC = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.orderBy(parsedSize, "size", "asc");
@@ -108070,6 +108079,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var sortedMediaBySizeDESC = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.orderBy(parsedSize, "size", "desc");
         this.tableList = sortedMediaBySizeDESC;
         this.tableListSizeASC = true;
+      }
+    },
+    orderByTableListDuration: function orderByTableListDuration() {
+      this.sortTableListId = false;
+      this.sortTableListName = false;
+      this.sortTableListType = false;
+      this.sortTableListSize = false;
+      this.sortTableListDuration = true;
+      var parsedDuration = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.forEach(this.tableList, function (val) {
+        var number = parseInt(val.duration);
+      });
+      if (this.tableListDurationASC) {
+        var sortedMediaByDurationASC = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.orderBy(parsedDuration, "duration", "asc");
+        this.tableList = sortedMediaByDurationASC;
+        this.tableListDurationASC = false;
+      } else {
+        var sortedMediaByDurationDESC = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.orderBy(parsedDuration, "duration", "desc");
+        this.tableList = sortedMediaByDurationDESC;
+        this.tableListDurationASC = true;
       }
     },
     createPDF: function createPDF() {
@@ -110901,7 +110929,23 @@ var render = function() {
                             : _vm._e(),
                           _vm._v(" "),
                           _vm.durationTableColumn
-                            ? _c("sui-table-header-cell", [_vm._v("Duration")])
+                            ? _c(
+                                "sui-table-header-cell",
+                                { on: { click: _vm.orderByTableListDuration } },
+                                [
+                                  _vm._v("Duration\n            "),
+                                  _vm.sortTableListDuration
+                                    ? _c("sui-icon", {
+                                        attrs: {
+                                          name: this.tableListDurationASC
+                                            ? "sort amount down"
+                                            : "sort amount up"
+                                        }
+                                      })
+                                    : _vm._e()
+                                ],
+                                1
+                              )
                             : _vm._e(),
                           _vm._v(" "),
                           _vm.sizeTableColumn
