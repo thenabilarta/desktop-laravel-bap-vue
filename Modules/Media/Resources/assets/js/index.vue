@@ -410,9 +410,6 @@ export default {
     pageSize: function () {
       this.pageNumber = 0;
     },
-    tableList: function () {
-      console.log(this.tableList);
-    },
     inputTagName: function () {
       console.log(this.inputTagName);
     },

@@ -66,9 +66,6 @@ export default {
     EditTableRow: EditTableRow,
   },
   watch: {
-    list: function () {
-      console.log("Changed");
-    },
     isActiveProp: function () {
       this.isActive = false;
     },

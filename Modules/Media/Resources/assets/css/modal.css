@@ -93,6 +93,12 @@
   padding: 0.4rem 0;
 }
 
+.my-modal .my-modal-content .my-modal-row .single-row .input p {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 12px;
+}
+
 .my-modal .my-modal-content .my-modal-row .single-row .actions {
   display: -webkit-box;
   display: -ms-flexbox;

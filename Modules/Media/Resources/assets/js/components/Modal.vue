@@ -16,15 +16,14 @@
               v-model="f.fileInputName"
               @keydown="inputChangeName(f)"
             />
-            <p v-if="f.status === 'ready'">
-              Ready to Upload
-            </p>
+            <p v-if="f.status === 'ready'">Ready to Upload</p>
             <sui-progress
               v-else-if="f.status === 'uploading'"
               :percent="f.uploadPercentage"
               :state="f.uploadResult"
             />
             <p v-else>Failed, change the image name</p>
+            <p>File size: {{ (f.fileAttr.size / 1000).toFixed(1) + " kb" }}</p>
           </div>
           <div class="actions">
             <sui-icon @click="uploadSingle(f)" name="cloud upload" />
@@ -129,7 +128,7 @@ export default {
       );
       const config = {
         headers: { "content-type": "multipart/form-data" },
-        onUploadProgress: function(progressEvent) {
+        onUploadProgress: function (progressEvent) {
           f.uploadPercentage = parseInt(
             Math.round(progressEvent.loaded / progressEvent.total) * 100
           );
