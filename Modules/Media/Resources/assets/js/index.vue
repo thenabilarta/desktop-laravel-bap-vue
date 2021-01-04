@@ -244,6 +244,7 @@
           v-bind:isActiveTableRow="isActiveTableRow"
           v-bind:isActiveProp="isActiveProp"
           v-on:onUpdate="onUpdate"
+          v-on:refreshTable="onUpdate"
         ></TableRow>
       </sui-table>
     </div>
@@ -413,6 +414,7 @@ export default {
       }
     },
     inputTagName: function () {
+      console.log(this.inputTagName);
       if (this.inputTagName.length === 0) {
         this.mediaTagActive = true;
       }
@@ -468,13 +470,14 @@ export default {
         let newOriginalArray = [];
         originalTableList.map((or) => {
           let tableTagArray = or.tags.split(",");
-          tableTagArray.map((tabTagAr) => {
-            this.inputTagName.map((inTagName) => {
-              if (tabTagAr === inTagName) {
-                newOriginalArray.push(or);
-              }
-            });
-          });
+          // this.inputTagName.map((inTagName) => {
+          //   if (tabTagAr === inTagName) {
+          //     newOriginalArray.push(or);
+          //   }
+          // });
+          if (this.inputTagName.every((val) => tableTagArray.includes(val))) {
+            newOriginalArray.push(or);
+          }
         });
 
         originalTableList = _.uniqWith(newOriginalArray, _.isEqual);
@@ -538,8 +541,15 @@ export default {
     },
     csvData() {
       return this.tableList.map((item) => ({
+        Media_ID: item.media_id,
         Name: item.name,
+        Duration: item.duration,
         Type: item.type,
+        Size: (item.size / 1000).toFixed(1) + " kb",
+        File_name: item.file_name,
+        Retired: item.retired === "0" ? "false" : "true",
+        Created_at: item.created_at,
+        Updated_at: item.updated_at,
       }));
     },
   },
@@ -650,7 +660,12 @@ export default {
       this.modal = false;
       axios
         .get("http://127.0.0.1:8000/media/data")
-        .then((res) => (this.tableList = res.data));
+        .then((res) => (this.tableList = res.data))
+        .then(() => {
+          this.tableListIdASC = false;
+          this.orderByTableListId();
+        });
+      this.isActiveTableRow = [];
     },
     onInputFilterName() {
       console.log(this.inputFilterName);
@@ -842,8 +857,8 @@ export default {
     createCSV(arrData) {
       let csvContent = "data:text/csv;charset=utf-8,";
       csvContent += [
-        Object.keys(arrData[0]).join(";"),
-        ...arrData.map((item) => Object.values(item).join(";")),
+        Object.keys(arrData[0]).join(","),
+        ...arrData.map((item) => Object.values(item).join(",")),
       ]
         .join("\n")
         .replace(/(^\[)|(\]$)/gm, "");

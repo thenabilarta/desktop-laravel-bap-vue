@@ -107592,6 +107592,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 
@@ -107713,6 +107714,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     }
   }, _defineProperty(_watch, "inputTagName", function inputTagName() {
+    console.log(this.inputTagName);
     if (this.inputTagName.length === 0) {
       this.mediaTagActive = true;
     }
@@ -107768,13 +107770,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var newOriginalArray = [];
         originalTableList.map(function (or) {
           var tableTagArray = or.tags.split(",");
-          tableTagArray.map(function (tabTagAr) {
-            _this2.inputTagName.map(function (inTagName) {
-              if (tabTagAr === inTagName) {
-                newOriginalArray.push(or);
-              }
-            });
-          });
+          // this.inputTagName.map((inTagName) => {
+          //   if (tabTagAr === inTagName) {
+          //     newOriginalArray.push(or);
+          //   }
+          // });
+          if (_this2.inputTagName.every(function (val) {
+            return tableTagArray.includes(val);
+          })) {
+            newOriginalArray.push(or);
+          }
         });
 
         originalTableList = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.uniqWith(newOriginalArray, __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.isEqual);
@@ -107844,8 +107849,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     csvData: function csvData() {
       return this.tableList.map(function (item) {
         return {
+          Media_ID: item.media_id,
           Name: item.name,
-          Type: item.type
+          Duration: item.duration,
+          Type: item.type,
+          Size: (item.size / 1000).toFixed(1) + " kb",
+          File_name: item.file_name,
+          Retired: item.retired === "0" ? "false" : "true",
+          Created_at: item.created_at,
+          Updated_at: item.updated_at
         };
       });
     }
@@ -107983,7 +107995,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.modal = false;
       __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
         return _this7.tableList = res.data;
+      }).then(function () {
+        _this7.tableListIdASC = false;
+        _this7.orderByTableListId();
       });
+      this.isActiveTableRow = [];
     },
     onInputFilterName: function onInputFilterName() {
       console.log(this.inputFilterName);
@@ -108129,8 +108145,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     createCSV: function createCSV(arrData) {
       var csvContent = "data:text/csv;charset=utf-8,";
-      csvContent += [Object.keys(arrData[0]).join(";")].concat(_toConsumableArray(arrData.map(function (item) {
-        return Object.values(item).join(";");
+      csvContent += [Object.keys(arrData[0]).join(",")].concat(_toConsumableArray(arrData.map(function (item) {
+        return Object.values(item).join(",");
       }))).join("\n").replace(/(^\[)|(\]$)/gm, "");
 
       var data = encodeURI(csvContent);
@@ -109553,6 +109569,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
+//
+//
 
 
 
@@ -109657,7 +109675,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
       this.isEditing = true;
     },
     onCloseModal: function onCloseModal() {
-      this.isEditing = false;
+      this.$emit("refreshTable");
+      this.refreshTable();
     },
     refreshTable: function refreshTable() {
       this.$emit("refreshTable");
@@ -109843,6 +109862,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -109881,6 +109921,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     closeModal: function closeModal() {
       this.$emit("closeModal");
     },
+    modalContent: function modalContent() {
+      console.log("Modal content");
+    },
     onChangeInput: function onChangeInput() {
       console.log(this.form.listName);
     },
@@ -109888,7 +109931,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       console.log(this.form.tags);
     },
     formSubmit: function formSubmit() {
-      if (this.form.tags.length > 0) {
+      var _this = this;
+
+      if (this.form.tags !== null && this.form.tags.length > 0) {
         this.form.tags = this.form.tags.join();
       }
       if (this.form.retired === false) {
@@ -109898,8 +109943,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       }
       __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/media/edit", this.form).then(function (res) {
         return console.log(res.data);
+      }).then(function () {
+        return _this.closeModal();
       });
-      // .then(() => this.tableEditBind());
     },
     tableEditBind: function tableEditBind() {
       this.$emit("updateEdit");
@@ -109947,7 +109993,7 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, ".edit-table-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.5);\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  z-index: 1100 !important;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-table-modal .edit-table-modal-content {\n  height: 50%;\n  width: 50%;\n  max-width: 500px;\n  border-radius: 10px;\n  overflow: hidden;\n  background-color: #f5f5f5;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-header {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 3rem;\n  border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-header h1 {\n  font-size: 20px;\n  font-weight: 400;\n  padding: 0 1rem;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body {\n  height: 65%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  padding: 0 3rem;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 {\n  -webkit-box-flex: 2;\n      -ms-flex: 2;\n          flex: 2;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 .edit-table-input-name {\n  width: 500px !important;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 .edit-table-input-number {\n  max-width: 100px !important;\n  margin-left: 2rem;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-2 {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 {\n  -webkit-box-flex: 2;\n      -ms-flex: 2;\n          flex: 2;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-1 {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-1 input {\n  margin: auto 1rem;\n  width: 15px;\n  height: 15px;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-2 {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-2 input {\n  margin: auto 1rem;\n  width: 15px;\n  height: 15px;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-actions {\n  height: 20%;\n  padding: 0 3rem;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-pack: distribute;\n      justify-content: space-around;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\ninput {\n  position: static !important;\n  opacity: 1 !important;\n}\n\n[type='checkbox']:not(.filled-in) + label:after {\n  transform: none !important;\n  -webkit-transform: none !important;\n}\n\n#inputTags i {\n  display: none !important;\n}", ""]);
+exports.push([module.i, ".edit-table-modal {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.5);\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  z-index: 1100 !important;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-table-modal .edit-table-modal-content {\n  height: 50%;\n  width: 50%;\n  max-width: 500px;\n  border-radius: 10px;\n  overflow: hidden;\n  background-color: #f5f5f5;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-header {\n  height: 15%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 3rem;\n  border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-header h1 {\n  font-size: 20px;\n  font-weight: 400;\n  padding: 0 1rem;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body {\n  height: 65%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  padding: 0 3rem;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  padding: 2rem 0;\n  width: 100%;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 .edit-table-modal-body-input-name {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: start;\n      -ms-flex-align: start;\n          align-items: flex-start;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  width: 70%;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 .edit-table-modal-body-input-number {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: start;\n      -ms-flex-align: start;\n          align-items: flex-start;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  width: 25%;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 .edit-table-modal-body-input-number > * {\n  margin-left: 0 !important;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 .edit-table-input-name {\n  width: 100% !important;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 .edit-table-input-number {\n  width: 100% !important;\n  margin-left: 2rem;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-1 p {\n  font-size: 12px;\n  color: red;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-2 {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 {\n  -webkit-box-flex: 2;\n      -ms-flex: 2;\n          flex: 2;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-1 {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-1 input {\n  margin: auto 1rem;\n  width: 15px;\n  height: 15px;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-2 {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-body .edit-table-modal-body-3 .edit-table-modal-body-3-2 input {\n  margin: auto 1rem;\n  width: 15px;\n  height: 15px;\n}\n\n.edit-table-modal .edit-table-modal-content .edit-table-modal-actions {\n  height: 20%;\n  padding: 0 8rem;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-pack: distribute;\n      justify-content: space-around;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\ninput {\n  position: static !important;\n  opacity: 1 !important;\n}\n\n[type=\"checkbox\"]:not(.filled-in) + label:after {\n  transform: none !important;\n  -webkit-transform: none !important;\n}\n\n#inputTags i {\n  display: none !important;\n}", ""]);
 
 // exports
 
@@ -109974,131 +110020,186 @@ var render = function() {
       }
     },
     [
-      _c("div", { staticClass: "edit-table-modal-content" }, [
-        _vm._m(0),
-        _vm._v(" "),
-        _c("div", { staticClass: "edit-table-modal-body" }, [
-          _c(
-            "div",
-            { staticClass: "edit-table-modal-body-1" },
-            [
-              _c("sui-input", {
-                staticClass: "edit-table-input-name",
-                attrs: { placeholder: _vm.list.name },
-                on: { keydown: _vm.onChangeInput },
-                model: {
-                  value: _vm.form.listName,
-                  callback: function($$v) {
-                    _vm.$set(_vm.form, "listName", $$v)
-                  },
-                  expression: "form.listName"
-                }
-              }),
-              _vm._v(" "),
-              _c("sui-input", {
-                staticClass: "edit-table-input-number",
-                attrs: { type: "number", placeholder: _vm.list.duration },
-                model: {
-                  value: _vm.form.duration,
-                  callback: function($$v) {
-                    _vm.$set(_vm.form, "duration", $$v)
-                  },
-                  expression: "form.duration"
-                }
-              })
-            ],
-            1
-          ),
+      _c(
+        "div",
+        {
+          staticClass: "edit-table-modal-content",
+          on: {
+            click: function($event) {
+              if ($event.target !== $event.currentTarget) {
+                return null
+              }
+              return _vm.modalContent($event)
+            }
+          }
+        },
+        [
+          _vm._m(0),
           _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "edit-table-modal-body-2" },
-            [
-              _c("sui-dropdown", {
-                attrs: {
-                  multiple: "",
-                  placeholder: "Tags",
-                  fluid: "",
-                  search: "",
-                  selection: "",
-                  "allow-additions": "",
-                  id: "inputTags"
-                },
-                on: { keyup: _vm.onChangeInputTags },
-                model: {
-                  value: _vm.form.tags,
-                  callback: function($$v) {
-                    _vm.$set(_vm.form, "tags", $$v)
-                  },
-                  expression: "form.tags"
-                }
-              })
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c("div", { staticClass: "edit-table-modal-body-3" }, [
-            _c(
-              "div",
-              { staticClass: "edit-table-modal-body-3-1" },
-              [
-                _c("sui-checkbox", {
-                  attrs: { label: "Retired", toggle: "" },
-                  on: { change: _vm.toggleRetired },
-                  model: {
-                    value: _vm.form.retired,
-                    callback: function($$v) {
-                      _vm.$set(_vm.form, "retired", $$v)
+          _c("div", { staticClass: "edit-table-modal-body" }, [
+            _c("div", { staticClass: "edit-table-modal-body-1" }, [
+              _c(
+                "div",
+                { staticClass: "edit-table-modal-body-input-name" },
+                [
+                  _c("sui-input", {
+                    staticClass: "edit-table-input-name",
+                    attrs: {
+                      placeholder: "name",
+                      error:
+                        _vm.form.listName === "" ||
+                        _vm.form.listName.split("").length > 50
                     },
-                    expression: "form.retired"
-                  }
-                })
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "edit-table-modal-body-3-2" },
-              [
-                _c("sui-checkbox", {
-                  attrs: {
-                    label:
-                      "Update in all layouts where they have been assigned",
-                    toggle: "",
-                    true: ""
-                  }
-                })
-              ],
-              1
-            )
-          ])
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "edit-table-modal-actions" },
-          [
-            _c(
-              "sui-button",
-              {
-                attrs: { size: "small", color: "green" },
-                on: { click: _vm.formSubmit }
-              },
-              [_vm._v("Replace")]
-            ),
-            _vm._v(" "),
-            _c("sui-button", { attrs: { size: "small", color: "yellow" } }, [
-              _vm._v("Cancel")
+                    on: { keydown: _vm.onChangeInput },
+                    model: {
+                      value: _vm.form.listName,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "listName", $$v)
+                      },
+                      expression: "form.listName"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _vm.form.listName === ""
+                    ? _c("p", [_vm._v("Nama harus diisi")])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.form.listName.split("").length > 50
+                    ? _c("p", [
+                        _vm._v(
+                          "\n            Maksimum nama 50 karakter\n          "
+                        )
+                      ])
+                    : _vm._e()
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "edit-table-modal-body-input-number" },
+                [
+                  _c("sui-input", {
+                    staticClass: "edit-table-input-number",
+                    attrs: {
+                      type: "number",
+                      placeholder: "duration",
+                      error: _vm.form.duration <= 0
+                    },
+                    model: {
+                      value: _vm.form.duration,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "duration", $$v)
+                      },
+                      expression: "form.duration"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _vm.form.duration <= 0
+                    ? _c("p", [_vm._v("Durasi harus diisi")])
+                    : _vm._e()
+                ],
+                1
+              )
             ]),
             _vm._v(" "),
-            _c("sui-button", { attrs: { size: "small", color: "teal" } }, [
-              _vm._v("Help")
+            _c(
+              "div",
+              { staticClass: "edit-table-modal-body-2" },
+              [
+                _c("sui-dropdown", {
+                  attrs: {
+                    multiple: "",
+                    placeholder: "Tags",
+                    fluid: "",
+                    search: "",
+                    selection: "",
+                    "allow-additions": "",
+                    id: "inputTags"
+                  },
+                  on: { keyup: _vm.onChangeInputTags },
+                  model: {
+                    value: _vm.form.tags,
+                    callback: function($$v) {
+                      _vm.$set(_vm.form, "tags", $$v)
+                    },
+                    expression: "form.tags"
+                  }
+                })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c("div", { staticClass: "edit-table-modal-body-3" }, [
+              _c(
+                "div",
+                { staticClass: "edit-table-modal-body-3-1" },
+                [
+                  _c("sui-checkbox", {
+                    attrs: { label: "Retired", toggle: "" },
+                    on: { change: _vm.toggleRetired },
+                    model: {
+                      value: _vm.form.retired,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "retired", $$v)
+                      },
+                      expression: "form.retired"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "edit-table-modal-body-3-2" },
+                [
+                  _c("sui-checkbox", {
+                    attrs: {
+                      label:
+                        "Update in all layouts where they have been assigned",
+                      toggle: "",
+                      true: ""
+                    }
+                  })
+                ],
+                1
+              )
             ])
-          ],
-          1
-        )
-      ])
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "edit-table-modal-actions" },
+            [
+              _c(
+                "sui-button",
+                {
+                  attrs: {
+                    size: "small",
+                    color: "green",
+                    disabled:
+                      _vm.form.listName === "" ||
+                      _vm.form.duration <= 0 ||
+                      _vm.form.listName.split("").length > 50
+                  },
+                  on: { click: _vm.formSubmit }
+                },
+                [_vm._v("Replace")]
+              ),
+              _vm._v(" "),
+              _c("sui-button", { attrs: { size: "small", color: "yellow" } }, [
+                _vm._v("Cancel")
+              ]),
+              _vm._v(" "),
+              _c("sui-button", { attrs: { size: "small", color: "teal" } }, [
+                _vm._v("Help")
+              ])
+            ],
+            1
+          )
+        ]
+      )
     ]
   )
 }
@@ -110161,7 +110262,7 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, ".swal-button--Delete {\n  background-color: #d9534f;\n}\n\n.swal-button--Delete:hover {\n  background-color: #d82720 !important;\n}\n\n.swal-button--Cancel {\n  background-color: #f0ad4e;\n}\n\n.swal-button--Cancel:hover {\n  background-color: #f0a53c !important;\n}\n\n.swal-text {\n  color: black;\n}\n\ntr {\n  cursor: pointer;\n}", ""]);
+exports.push([module.i, ".swal-button--Delete {\n  background-color: #d9534f;\n}\n\n.swal-button--Delete:hover {\n  background-color: #d82720 !important;\n}\n\n.swal-button--Cancel {\n  background-color: #f0ad4e;\n}\n\n.swal-button--Cancel:hover {\n  background-color: #f0a53c !important;\n}\n\n.swal-text {\n  color: black;\n}\n\ntd {\n  cursor: pointer;\n}", ""]);
 
 // exports
 
@@ -110214,7 +110315,11 @@ var render = function() {
                 : _vm._e(),
               _vm._v(" "),
               _vm.tagsTableColumn
-                ? _c("sui-table-cell", [_vm._v(_vm._s(_vm.list.tags))])
+                ? _c("sui-table-cell", [
+                    _vm._v(
+                      _vm._s(_vm.list.tags.split(",").join(", ")) + "\n    "
+                    )
+                  ])
                 : _vm._e(),
               _vm._v(" "),
               _vm.durationTableColumn
@@ -110345,7 +110450,7 @@ exports = module.exports = __webpack_require__(3)(false);
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap);", ""]);
 
 // module
-exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: 'Lato', sans-serif;\n}\n\n.header {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.header .header-filter {\n  width: 60%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -ms-flex-pack: distribute;\n      justify-content: space-around;\n}\n\n.header .header-filter .ui.input > input {\n  max-width: 120px;\n}\n\n.header .header-filter i {\n  margin: 0 1rem;\n}\n\n.header .header-icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n\n.header .header-icon i {\n  font-size: 2rem;\n  margin: 0 1rem;\n}\n\n.body {\n  overflow-x: scroll;\n  margin: 20px;\n  padding: 0px !important;\n}\n\n.td-table-image {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.table-image {\n  height: 30px;\n  margin: 0;\n  padding: 0;\n}\n\n.footer {\n  min-height: 50px;\n  padding: 20px;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.footer #pageNumberFooter {\n  font-size: 1rem;\n  padding: 0 1rem;\n}\n\ni,\nth {\n  cursor: pointer !important;\n}\n\n.loading {\n  height: 70vh;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n#inputTags i {\n  display: none !important;\n}", ""]);
+exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\nhtml,\nbody {\n  font-size: 14px;\n  font-family: \"Lato\", sans-serif;\n}\n\n.header {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.header .header-filter {\n  width: 60%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -ms-flex-pack: distribute;\n      justify-content: space-around;\n}\n\n.header .header-filter .ui.input > input {\n  max-width: 120px;\n}\n\n.header .header-filter i {\n  margin: 0 1rem;\n}\n\n.header .header-icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n}\n\n.header .header-icon i {\n  font-size: 2rem;\n  margin: 0 1rem;\n}\n\n.body {\n  padding: 20px !important;\n}\n\n.td-table-image {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.table-image {\n  height: 30px;\n  margin: 0;\n  padding: 0;\n}\n\n.footer {\n  min-height: 50px;\n  padding: 0 20px 20px 20px;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.footer #pageNumberFooter {\n  font-size: 1rem;\n  padding: 0 1rem;\n}\n\ni,\nth {\n  cursor: pointer !important;\n}\n\n.loading {\n  height: 70vh;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n#inputTags i {\n  display: none !important;\n}", ""]);
 
 // exports
 
@@ -110873,7 +110978,7 @@ var render = function() {
                         isActiveTableRow: _vm.isActiveTableRow,
                         isActiveProp: _vm.isActiveProp
                       },
-                      on: { onUpdate: _vm.onUpdate }
+                      on: { onUpdate: _vm.onUpdate, refreshTable: _vm.onUpdate }
                     })
                   })
                 ],

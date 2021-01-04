@@ -15,7 +15,9 @@
           alt=""
         />
       </sui-table-cell>
-      <sui-table-cell v-if="tagsTableColumn">{{ list.tags }}</sui-table-cell>
+      <sui-table-cell v-if="tagsTableColumn"
+        >{{ list.tags.split(",").join(", ") }}
+      </sui-table-cell>
       <sui-table-cell v-if="durationTableColumn">{{
         list.duration
       }}</sui-table-cell>
@@ -128,7 +130,8 @@ export default {
       this.isEditing = true;
     },
     onCloseModal() {
-      this.isEditing = false;
+      this.$emit("refreshTable");
+      this.refreshTable();
     },
     refreshTable() {
       this.$emit("refreshTable");
