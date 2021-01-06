@@ -113,7 +113,7 @@ export default {
         switch (value) {
           case "delete":
             await axios
-              .get("http://127.0.0.1:8000/media/delete/" + this.list.mediaId)
+              .get("http://127.0.0.1:8000/mediax/delete/" + this.list.mediaId)
               .then((res) => console.log(res))
               .then(() => this.refreshTable());
             break;

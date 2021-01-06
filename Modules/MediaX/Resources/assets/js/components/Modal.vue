@@ -134,7 +134,7 @@ export default {
         }.bind(f),
       };
       axios
-        .post("http://127.0.0.1:8000/media", formData, config)
+        .post("http://127.0.0.1:8000/mediax", formData, config)
         .then((this.uploading = true))
         .then((response) => {
           console.log(response.data);

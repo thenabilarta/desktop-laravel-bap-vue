@@ -95,9 +95,9 @@ export default {
     return {
       form: {
         listName: this.list.name,
-        media_id: this.list.media_id,
+        media_id: this.list.mediaId,
         duration: this.list.duration,
-        tags: this.list.tags === "" ? null : this.list.tags.split(","),
+        tags: this.list.tags === null ? null : this.list.tags.split(","),
         retired: this.list.retired === "0" ? false : true,
       },
     };
@@ -139,7 +139,7 @@ export default {
         this.form.retired === "1";
       }
       axios
-        .post("http://127.0.0.1:8000/media/edit", this.form)
+        .post("http://127.0.0.1:8000/mediax/edit", this.form)
         .then((res) => console.log(res.data))
         .then(() => this.closeModal());
     },

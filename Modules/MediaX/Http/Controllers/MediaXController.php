@@ -80,14 +80,6 @@ class MediaXController extends AppBaseController
 
         $fileName = request('fileName');
 
-        $checkIfNameExist = Media::where('name', $fileName)->first();
-
-        if ($checkIfNameExist) {
-            return response()->json(["status" => "failed"]);
-        }
-
-        $imagePath = $file->storeAs('public/uploads', $file_name);
-
         $curl_file =  new CURLFile($file_path, $file_ext, $file_name);
         $post_data = array(
             'files' => $curl_file,
@@ -113,35 +105,8 @@ class MediaXController extends AppBaseController
         $contents = $response;
         $content = json_decode($contents, true);
 
-        $form_data = array(
-            'media_id' => '',
-            'name' => $fileName,
-            'stored_as' => '',
-            'file_name' => $file_name,
-            'file_path' => $imagePath,
-            'retired' => '',
-            'size' => '',
-            'type' => '',
-            'tags' => '',
-            'duration' => '',
-        );
-
-        if (!isset($content["files"][0]["error"])) {
-            $media = Media::create($form_data);
-
-            $medias = $media->getAttributes();
-
-            $mediaId = Media::find($medias["id"]);
-
-            if ($mediaId) {
-                $mediaId->media_id = $content["files"][0]["mediaId"];
-                $mediaId->retired = $content["files"][0]["retired"];
-                $mediaId->stored_as = $content["files"][0]["storedas"];
-                $mediaId->size = $content["files"][0]["size"];
-                $mediaId->type = $content["files"][0]["type"];
-                $mediaId->duration = $content["files"][0]["duration"];
-                $mediaId->save();
-            }
+        if (isset($content["files"][0]["error"])) {
+            return response()->json(["status" => "failed"]);
         }
 
         return response()->json(["status" => "ok"]);
@@ -190,16 +155,8 @@ class MediaXController extends AppBaseController
         $contents = $response;
         $content = json_decode($contents, true);
 
-        if ($content["name"] === $newfilename) {
-            $mediaNewName = Media::where('media_id', $media_id)->firstOrFail();
-
-            if ($mediaNewName) {
-                $mediaNewName->name = $newfilename;
-                $mediaNewName->duration = $duration;
-                $mediaNewName->tags = $tags;
-                $mediaNewName->retired = $retired;
-                $mediaNewName->save();
-            }
+        if (isset($content["error"])) {
+            return response()->json(["status" => "failed"]);
         }
 
         return response()->json(["status" => "ok"]);
@@ -207,8 +164,6 @@ class MediaXController extends AppBaseController
 
     public function delete($id)
     {
-        $media = Media::where('media_id', $id)->firstOrFail();
-
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -231,8 +186,6 @@ class MediaXController extends AppBaseController
 
         $contents = $response;
         $content = json_decode($contents, true);
-
-        $media->delete();
 
         return $content;
     }

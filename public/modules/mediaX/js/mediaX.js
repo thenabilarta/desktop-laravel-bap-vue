@@ -108611,7 +108611,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.mediaTagActive = false;
         var newOriginalArray = [];
         originalTableList.map(function (or) {
-          var tableTagArray = or.tags.split(",");
+          var tableTagArray = or.tags ? or.tags.split(",") : [];
           if (_this2.inputTagName.every(function (val) {
             return tableTagArray.includes(val);
           })) {
@@ -108628,7 +108628,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             this.pageNumber = 0;
           }
           this.mediaTypeActive = false;
-          mediaTypeArray = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.filter(originalTableList, ["type", "jpg"]);
+          mediaTypeArray = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.filter(originalTableList, ["mediaType", "image"]);
           originalTableList = mediaTypeArray;
           break;
         case "video":
@@ -108636,7 +108636,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             this.pageNumber = 0;
           }
           this.mediaTypeActive = false;
-          mediaTypeArray = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.filter(originalTableList, ["type", "mp4"]);
+          mediaTypeArray = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.filter(originalTableList, ["mediaType", "video"]);
           originalTableList = mediaTypeArray;
           break;
         default:
@@ -108686,15 +108686,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     csvData: function csvData() {
       return this.tableList.map(function (item) {
         return {
-          Media_ID: item.media_id,
+          Media_ID: item.mediaId,
           Name: item.name,
           Duration: item.duration,
-          Type: item.type,
-          Size: (item.size / 1000).toFixed(1) + " kb",
-          File_name: item.file_name,
+          Type: item.mediaType,
+          Size: (item.fileSize / 1000).toFixed(1) + " kb",
+          File_name: item.fileName,
           Retired: item.retired === "0" ? "false" : "true",
-          Created_at: item.created_at,
-          Updated_at: item.updated_at
+          Created_at: item.createdDt,
+          Updated_at: item.modifiedDt
         };
       });
     }
@@ -108822,7 +108822,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this6 = this;
 
       this.modal = false;
-      __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
+      __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/mediax/data").then(function (res) {
         return _this6.tableList = res.data;
       }).then(function () {
         _this6.tableListIdASC = false;
@@ -108833,7 +108833,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this7 = this;
 
       this.modal = false;
-      __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/data").then(function (res) {
+      __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/mediax/data").then(function (res) {
         return _this7.tableList = res.data;
       }).then(function () {
         _this7.tableListIdASC = false;
@@ -108845,7 +108845,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       console.log(this.inputFilterName);
     },
     orderByTableListId: function orderByTableListId() {
-      console.log("TEST");
       this.sortTableListName = false;
       this.sortTableListType = false;
       this.sortTableListSize = false;
@@ -108966,8 +108965,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       };
 
-      console.log(docDefinition);
-
       var _loop = function _loop(i) {
         function toDataURL(url, callback) {
           var xhr = new XMLHttpRequest();
@@ -108983,11 +108980,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           xhr.send();
         }
 
-        toDataURL("/storage/uploads/" + _this8.tableList[i].file_name, function (dataUrl) {
-          if (_this8.tableList[i].type === "jpg") {
-            docDefinition.content[4].table.body.push([{ text: _this8.tableList[i].media_id }, { text: Object.values(_this8.tableList[i].name) }, { text: Object.values(_this8.tableList[i].type) }, { image: dataUrl, fit: [25, 25] }, { text: Object.values(_this8.tableList[i].duration) }, { text: Object.values(_this8.tableList[i].size) }, { text: Object.values(_this8.tableList[i].file_name) }]);
+        toDataURL("http://localhost/xibo-data/" + _this8.tableList[i].storedAs, function (dataUrl) {
+          if (_this8.tableList[i].mediaType === "image") {
+            docDefinition.content[4].table.body.push([{ text: _this8.tableList[i].mediaId }, { text: Object.values(_this8.tableList[i].name) }, { text: Object.values(_this8.tableList[i].mediaType) }, { image: dataUrl, fit: [25, 25] }, { text: _this8.tableList[i].duration }, { text: Object.values(_this8.tableList[i].fileSize) }, { text: Object.values(_this8.tableList[i].fileName) }]);
           } else {
-            docDefinition.content[4].table.body.push([{ text: _this8.tableList[i].media_id }, { text: Object.values(_this8.tableList[i].name) }, { text: Object.values(_this8.tableList[i].type) }, { text: "" }, { text: Object.values(_this8.tableList[i].duration) }, { text: Object.values(_this8.tableList[i].size) }, { text: Object.values(_this8.tableList[i].file_name) }]);
+            docDefinition.content[4].table.body.push([{ text: _this8.tableList[i].mediaId }, { text: Object.values(_this8.tableList[i].name) }, { text: Object.values(_this8.tableList[i].mediaType) }, { text: "" }, { text: _this8.tableList[i].duration }, { text: Object.values(_this8.tableList[i].fileSize) }, { text: Object.values(_this8.tableList[i].fileName) }]);
           }
 
           if (i === _this8.tableList.length - 1) {
@@ -109250,7 +109247,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
           f.uploadPercentage = parseInt(Math.round(progressEvent.loaded / progressEvent.total) * 100);
         }.bind(f)
       };
-      __WEBPACK_IMPORTED_MODULE_1_axios___default.a.post("http://127.0.0.1:8000/media", formData, config).then(this.uploading = true).then(function (response) {
+      __WEBPACK_IMPORTED_MODULE_1_axios___default.a.post("http://127.0.0.1:8000/mediax", formData, config).then(this.uploading = true).then(function (response) {
         console.log(response.data);
         if (response.data.status === "ok") {
           f.uploadResult = "success";
@@ -109688,7 +109685,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
                 case 3:
                   _context.next = 5;
-                  return __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/media/delete/" + _this.list.mediaId).then(function (res) {
+                  return __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("http://127.0.0.1:8000/mediax/delete/" + _this.list.mediaId).then(function (res) {
                     return console.log(res);
                   }).then(function () {
                     return _this.refreshTable();
@@ -109941,9 +109938,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     return {
       form: {
         listName: this.list.name,
-        media_id: this.list.media_id,
+        media_id: this.list.mediaId,
         duration: this.list.duration,
-        tags: this.list.tags === "" ? null : this.list.tags.split(","),
+        tags: this.list.tags === null ? null : this.list.tags.split(","),
         retired: this.list.retired === "0" ? false : true
       }
     };
@@ -109988,7 +109985,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       } else {
         this.form.retired === "1";
       }
-      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/media/edit", this.form).then(function (res) {
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://127.0.0.1:8000/mediax/edit", this.form).then(function (res) {
         return console.log(res.data);
       }).then(function () {
         return _this.closeModal();

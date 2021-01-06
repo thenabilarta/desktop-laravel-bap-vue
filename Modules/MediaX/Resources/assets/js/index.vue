@@ -478,7 +478,7 @@ export default {
         this.mediaTagActive = false;
         let newOriginalArray = [];
         originalTableList.map((or) => {
-          let tableTagArray = or.tags.split(",");
+          let tableTagArray = or.tags ? or.tags.split(",") : [];
           if (this.inputTagName.every((val) => tableTagArray.includes(val))) {
             newOriginalArray.push(or);
           }
@@ -493,7 +493,7 @@ export default {
             this.pageNumber = 0;
           }
           this.mediaTypeActive = false;
-          mediaTypeArray = _.filter(originalTableList, ["type", "jpg"]);
+          mediaTypeArray = _.filter(originalTableList, ["mediaType", "image"]);
           originalTableList = mediaTypeArray;
           break;
         case "video":
@@ -501,7 +501,7 @@ export default {
             this.pageNumber = 0;
           }
           this.mediaTypeActive = false;
-          mediaTypeArray = _.filter(originalTableList, ["type", "mp4"]);
+          mediaTypeArray = _.filter(originalTableList, ["mediaType", "video"]);
           originalTableList = mediaTypeArray;
           break;
         default:
@@ -545,15 +545,15 @@ export default {
     },
     csvData() {
       return this.tableList.map((item) => ({
-        Media_ID: item.media_id,
+        Media_ID: item.mediaId,
         Name: item.name,
         Duration: item.duration,
-        Type: item.type,
-        Size: (item.size / 1000).toFixed(1) + " kb",
-        File_name: item.file_name,
+        Type: item.mediaType,
+        Size: (item.fileSize / 1000).toFixed(1) + " kb",
+        File_name: item.fileName,
         Retired: item.retired === "0" ? "false" : "true",
-        Created_at: item.created_at,
-        Updated_at: item.updated_at,
+        Created_at: item.createdDt,
+        Updated_at: item.modifiedDt,
       }));
     },
   },
@@ -656,7 +656,7 @@ export default {
     onCloseModal() {
       this.modal = false;
       axios
-        .get("http://127.0.0.1:8000/media/data")
+        .get("http://127.0.0.1:8000/mediax/data")
         .then((res) => (this.tableList = res.data))
         .then(() => {
           this.tableListIdASC = false;
@@ -666,7 +666,7 @@ export default {
     onUpdate() {
       this.modal = false;
       axios
-        .get("http://127.0.0.1:8000/media/data")
+        .get("http://127.0.0.1:8000/mediax/data")
         .then((res) => (this.tableList = res.data))
         .then(() => {
           this.tableListIdASC = false;
@@ -678,7 +678,6 @@ export default {
       console.log(this.inputFilterName);
     },
     orderByTableListId() {
-      console.log("TEST");
       this.sortTableListName = false;
       this.sortTableListType = false;
       this.sortTableListSize = false;
@@ -837,8 +836,6 @@ export default {
         },
       };
 
-      console.log(docDefinition);
-
       for (let i = 0; i < this.tableList.length; i++) {
         function toDataURL(url, callback) {
           var xhr = new XMLHttpRequest();
@@ -855,27 +852,27 @@ export default {
         }
 
         toDataURL(
-          "/storage/uploads/" + this.tableList[i].file_name,
+          "http://localhost/xibo-data/" + this.tableList[i].storedAs,
           (dataUrl) => {
-            if (this.tableList[i].type === "jpg") {
+            if (this.tableList[i].mediaType === "image") {
               docDefinition.content[4].table.body.push([
-                { text: this.tableList[i].media_id },
+                { text: this.tableList[i].mediaId },
                 { text: Object.values(this.tableList[i].name) },
-                { text: Object.values(this.tableList[i].type) },
+                { text: Object.values(this.tableList[i].mediaType) },
                 { image: dataUrl, fit: [25, 25] },
-                { text: Object.values(this.tableList[i].duration) },
-                { text: Object.values(this.tableList[i].size) },
-                { text: Object.values(this.tableList[i].file_name) },
+                { text: this.tableList[i].duration },
+                { text: Object.values(this.tableList[i].fileSize) },
+                { text: Object.values(this.tableList[i].fileName) },
               ]);
             } else {
               docDefinition.content[4].table.body.push([
-                { text: this.tableList[i].media_id },
+                { text: this.tableList[i].mediaId },
                 { text: Object.values(this.tableList[i].name) },
-                { text: Object.values(this.tableList[i].type) },
+                { text: Object.values(this.tableList[i].mediaType) },
                 { text: "" },
-                { text: Object.values(this.tableList[i].duration) },
-                { text: Object.values(this.tableList[i].size) },
-                { text: Object.values(this.tableList[i].file_name) },
+                { text: this.tableList[i].duration },
+                { text: Object.values(this.tableList[i].fileSize) },
+                { text: Object.values(this.tableList[i].fileName) },
               ]);
             }
 
