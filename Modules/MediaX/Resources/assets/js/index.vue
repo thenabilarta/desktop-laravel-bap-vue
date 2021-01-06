@@ -684,16 +684,12 @@ export default {
       this.sortTableListSize = false;
       this.sortTableListDuration = false;
       this.sortTableListId = true;
-      let parsedId = _.forEach(this.tableList, (val) => {
-        let number = parseInt(val.media_id);
-        val.media_id = number;
-      });
       if (this.tableListIdASC) {
-        let sortedMediaByIdASC = _.orderBy(parsedId, "media_id", "asc");
+        let sortedMediaByIdASC = _.orderBy(this.tableList, "mediaId", "asc");
         this.tableList = sortedMediaByIdASC;
         this.tableListIdASC = false;
       } else {
-        let sortedMediaByIdDESC = _.orderBy(parsedId, "media_id", "desc");
+        let sortedMediaByIdDESC = _.orderBy(this.tableList, "mediaId", "desc");
         this.tableList = sortedMediaByIdDESC;
         this.tableListIdASC = true;
       }
@@ -731,7 +727,7 @@ export default {
       if (this.tableListTypeASC) {
         let sortedTableListByTypeASC = _.orderBy(
           this.tableList,
-          ["type"],
+          ["mediaType"],
           "asc"
         );
         this.tableList = sortedTableListByTypeASC;
@@ -739,7 +735,7 @@ export default {
       } else {
         let sortedTableListByTypeDESC = _.orderBy(
           this.tableList,
-          ["type"],
+          ["mediaType"],
           "desc"
         );
         this.tableList = sortedTableListByTypeDESC;
@@ -753,14 +749,15 @@ export default {
       this.sortTableListDuration = false;
       this.sortTableListSize = true;
       let parsedSize = _.forEach(this.tableList, (val) => {
-        let number = parseInt(val.size);
+        let number = parseInt(val.fileSize);
+        return (val.fileSize = number);
       });
       if (this.tableListSizeASC) {
-        let sortedMediaBySizeASC = _.orderBy(parsedSize, "size", "asc");
+        let sortedMediaBySizeASC = _.orderBy(parsedSize, "fileSize", "asc");
         this.tableList = sortedMediaBySizeASC;
         this.tableListSizeASC = false;
       } else {
-        let sortedMediaBySizeDESC = _.orderBy(parsedSize, "size", "desc");
+        let sortedMediaBySizeDESC = _.orderBy(parsedSize, "fileSize", "desc");
         this.tableList = sortedMediaBySizeDESC;
         this.tableListSizeASC = true;
       }
@@ -771,12 +768,9 @@ export default {
       this.sortTableListType = false;
       this.sortTableListSize = false;
       this.sortTableListDuration = true;
-      let parsedDuration = _.forEach(this.tableList, (val) => {
-        let number = parseInt(val.duration);
-      });
       if (this.tableListDurationASC) {
         let sortedMediaByDurationASC = _.orderBy(
-          parsedDuration,
+          this.tableList,
           "duration",
           "asc"
         );
@@ -784,7 +778,7 @@ export default {
         this.tableListDurationASC = false;
       } else {
         let sortedMediaByDurationDESC = _.orderBy(
-          parsedDuration,
+          this.tableList,
           "duration",
           "desc"
         );

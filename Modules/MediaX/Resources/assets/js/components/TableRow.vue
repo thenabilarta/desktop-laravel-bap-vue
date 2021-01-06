@@ -20,7 +20,7 @@
         <p v-else>N/A</p>
       </sui-table-cell>
       <sui-table-cell v-if="tagsTableColumn"
-        >{{ list.tags.split(",").join(", ") }}
+        >{{ list.tags ? list.tags.split(",").join(", ") : "" }}
       </sui-table-cell>
       <sui-table-cell v-if="durationTableColumn">{{
         list.duration

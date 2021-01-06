@@ -1,11 +1,11 @@
 {
     "/modules/media/js/media.js": "/modules/media/js/media.js",
+    "/modules/mediaX/js/mediaX.js": "/modules/mediaX/js/mediaX.js",
     "/modules/schedule/js/schedule.js": "/modules/schedule/js/schedule.js",
     "/modules/display/js/display.js": "/modules/display/js/display.js",
     "/modules/displayProfile/js/displayProfile.js": "/modules/displayProfile/js/displayProfile.js",
     "/modules/layout/js/layout.js": "/modules/layout/js/layout.js",
     "/modules/displayGroup/js/displayGroup.js": "/modules/displayGroup/js/displayGroup.js",
     "/modules/dayparting/js/dayparting.js": "/modules/dayparting/js/dayparting.js",
-    "/modules/campaign/js/campaign.js": "/modules/campaign/js/campaign.js",
-    "/modules/mediaX/js/mediaX.js": "/modules/mediaX/js/mediaX.js"
+    "/modules/campaign/js/campaign.js": "/modules/campaign/js/campaign.js"
 }
