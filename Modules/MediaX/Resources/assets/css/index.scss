@@ -1,0 +1,106 @@
+$blue: #0e6eb8;
+$blue-hover: #2185d0;
+$red: #b03060;
+$orange: #fe9a76;
+$yellow: #ffd700;
+$olive: #32cd32;
+$green: #016936;
+$teal: #008080;
+$blue: #0e6eb8;
+$violet: #ee82ee;
+$purple: #b413ec;
+$pink: #ff1493;
+$brown: #a52a2a;
+$grey: #a0a0a0;
+$black: #000000;
+
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap");
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-size: 14px;
+  font-family: "Lato", sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+
+  .header-filter {
+    width: 60%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    .ui.input > input {
+      max-width: 120px;
+    }
+
+    i {
+      margin: 0 1rem;
+    }
+  }
+
+  .header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      font-size: 2rem;
+      margin: 0 1rem;
+    }
+  }
+}
+
+.body {
+  padding: 20px !important;
+}
+
+.td-table-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.table-image {
+  height: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.footer {
+  min-height: 50px;
+  padding: 0 20px 20px 20px;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+
+  #pageNumberFooter {
+    font-size: 1rem;
+    padding: 0 1rem;
+    cursor: pointer;
+  }
+}
+
+i,
+th {
+  cursor: pointer !important;
+}
+
+.loading {
+  height: 70vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#inputTags i {
+  display: none !important;
+}

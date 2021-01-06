@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAAA,AAAA,oBAAoB,CAAC;EACnB,gBAAgB,EAAE,OAAO;CAC1B;;AAED,AAAA,oBAAoB,AAAA,MAAM,CAAC;EACzB,gBAAgB,EAAE,kBAAkB;CACrC;;AAED,AAAA,oBAAoB,CAAC;EACnB,gBAAgB,EAAE,OAAO;CAC1B;;AAED,AAAA,oBAAoB,AAAA,MAAM,CAAC;EACzB,gBAAgB,EAAE,kBAAkB;CACrC;;AAED,AAAA,UAAU,CAAC;EACT,KAAK,EAAE,KAAK;CACb;;AAED,AAAA,EAAE,CAAC;EACD,MAAM,EAAE,OAAO;CAChB",
+    "sources": [
+        "table-row.scss"
+    ],
+    "names": [],
+    "file": "table-row.css"
+}

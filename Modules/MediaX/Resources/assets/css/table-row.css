@@ -1,0 +1,24 @@
+.swal-button--Delete {
+  background-color: #d9534f;
+}
+
+.swal-button--Delete:hover {
+  background-color: #d82720 !important;
+}
+
+.swal-button--Cancel {
+  background-color: #f0ad4e;
+}
+
+.swal-button--Cancel:hover {
+  background-color: #f0a53c !important;
+}
+
+.swal-text {
+  color: black;
+}
+
+td {
+  cursor: pointer;
+}
+/*# sourceMappingURL=table-row.css.map */

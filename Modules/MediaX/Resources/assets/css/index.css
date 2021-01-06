@@ -1,0 +1,124 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap");
+* {
+  padding: 0;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+html,
+body {
+  font-size: 14px;
+  font-family: "Lato", sans-serif;
+}
+
+.header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.header .header-filter {
+  width: 60%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+}
+
+.header .header-filter .ui.input > input {
+  max-width: 120px;
+}
+
+.header .header-filter i {
+  margin: 0 1rem;
+}
+
+.header .header-icon {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.header .header-icon i {
+  font-size: 2rem;
+  margin: 0 1rem;
+}
+
+.body {
+  padding: 20px !important;
+}
+
+.td-table-image {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.table-image {
+  height: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.footer {
+  min-height: 50px;
+  padding: 0 20px 20px 20px;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.footer #pageNumberFooter {
+  font-size: 1rem;
+  padding: 0 1rem;
+  cursor: pointer;
+}
+
+i,
+th {
+  cursor: pointer !important;
+}
+
+.loading {
+  height: 70vh;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+#inputTags i {
+  display: none !important;
+}
+/*# sourceMappingURL=index.css.map */
