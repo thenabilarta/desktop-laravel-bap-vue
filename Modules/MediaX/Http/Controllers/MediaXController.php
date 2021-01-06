@@ -1,8 +1,7 @@
 <?php
 
-namespace Modules\Media\Http\Controllers;
+namespace Modules\MediaX\Http\Controllers;
 
-use Modules\Media\Entities\Media;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -11,7 +10,7 @@ use CURLFile;
 
 session_start();
 
-class MediaController extends AppBaseController
+class MediaXController extends AppBaseController
 {
     public function index()
     {
@@ -40,14 +39,35 @@ class MediaController extends AppBaseController
 
         $_SESSION["token"] = $token;
 
-        return view('media::index');
+        return view('mediax::index');
     }
 
     public function data()
     {
-        $media = Media::all();
+        $curl = curl_init();
 
-        return $media;
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'http://192.168.1.2/xibo-cms/web/api/library?length=100',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: Bearer ' . $_SESSION["token"],
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        $contents = $response;
+        $content = json_decode($contents, true);
+
+        return $content;
     }
 
     public function addmedia(Request $request)

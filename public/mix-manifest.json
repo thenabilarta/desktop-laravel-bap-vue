@@ -6,5 +6,6 @@
     "/modules/layout/js/layout.js": "/modules/layout/js/layout.js",
     "/modules/displayGroup/js/displayGroup.js": "/modules/displayGroup/js/displayGroup.js",
     "/modules/dayparting/js/dayparting.js": "/modules/dayparting/js/dayparting.js",
-    "/modules/campaign/js/campaign.js": "/modules/campaign/js/campaign.js"
+    "/modules/campaign/js/campaign.js": "/modules/campaign/js/campaign.js",
+    "/modules/mediaX/js/mediaX.js": "/modules/mediaX/js/mediaX.js"
 }

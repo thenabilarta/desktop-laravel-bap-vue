@@ -1,0 +1,16 @@
+{
+    "name": "MediaX",
+    "alias": "mediax",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\MediaX\\Providers\\MediaXServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}
